@@ -1,4 +1,4 @@
-package org.example.store_project.member;
+package org.example.store.member;
 
 import lombok.*;
 import org.example.store_project.chat.Chat;

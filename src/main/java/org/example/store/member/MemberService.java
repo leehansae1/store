@@ -1,4 +1,4 @@
-package org.example.store_project.member;
+package org.example.store.member;
 
 public class MemberService {
 }
