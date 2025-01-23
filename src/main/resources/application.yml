@@ -1,0 +1,66 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: store
+
+  output:
+    ansi:
+      enabled: always
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@//localhost:1521/xe
+    username: crof672
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+
+    open-in-view: false
+
+  #  security:
+  #    user:
+  #      name: 1234
+  #      password: 1234
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username:
+    password:
+    properties:
+      debug: true
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.naver.com
+    protocol: smtps
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
+
+api:
+  key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
