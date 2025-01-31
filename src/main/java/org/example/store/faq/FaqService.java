@@ -1,10 +1,9 @@
-package org.example.store_project.faq;
+package org.example.store.faq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store_project.member.Member;
-import org.example.store_project.member.MemberRepository;
-import org.example.store_project.member.MemberService;
+import org.example.store.member.Member;
+import org.example.store.member.MemberService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,9 +1,9 @@
-package org.example.store_project.faq;
+package org.example.store.faq;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.example.store_project.member.Member;
+import org.example.store.member.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

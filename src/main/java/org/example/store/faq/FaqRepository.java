@@ -1,4 +1,4 @@
-package org.example.store_project.faq;
+package org.example.store.faq;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

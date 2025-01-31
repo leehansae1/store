@@ -1,7 +1,7 @@
-package org.example.store_project.faq;
+package org.example.store.faq;
 
 import lombok.*;
-import org.example.store_project.member.MemberDto;
+import org.example.store.member.MemberDto;
 
 @Getter
 @NoArgsConstructor

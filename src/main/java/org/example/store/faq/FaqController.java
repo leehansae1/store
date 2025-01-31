@@ -1,4 +1,4 @@
-package org.example.store_project.faq;
+package org.example.store.faq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
