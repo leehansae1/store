@@ -1,4 +1,4 @@
-package org.example.store.chatRoom;
+package org.example.store_project.chatRoom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

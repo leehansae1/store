@@ -1,11 +1,8 @@
-package org.example.store.chat;
+package org.example.store_project.chat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +15,7 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    // writerId >> 어센틱 어쩌구로 변경
     @PostMapping("/chat/write/{writerId}")
     public Map<String, Object> write(@RequestBody ChatDto chatDto, @PathVariable String writerId) {
         Map<String, Object> result = new HashMap<>();

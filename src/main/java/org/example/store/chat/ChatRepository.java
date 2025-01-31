@@ -1,4 +1,4 @@
-package org.example.store.chat;
+package org.example.store_project.chat;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

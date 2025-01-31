@@ -1,9 +1,10 @@
-package org.example.store.chat;
+package org.example.store_project.chat;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.store_project.chatRoom.ChatRoom;
 import org.example.store_project.member.Member;
+import org.example.store_project.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

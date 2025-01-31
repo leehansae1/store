@@ -1,10 +1,13 @@
-package org.example.store.chat;
+package org.example.store_project.chat;
 
 import lombok.*;
 import org.example.store_project.chatRoom.ChatRoomDto;
 import org.example.store_project.member.MemberDto;
+import org.example.store_project.product.dto.ProductDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,5 +51,13 @@ public class ChatDto {
                 .chatRoom(ChatRoomDto.toEntity(chatDto.getChatRoomDto()))
                 .isRead(chatDto.isRead())
                 .build();
+    }
+
+    public static List<Chat> toEntityList(List<ChatDto> chatDtoList) {
+        List<Chat> chatList = new ArrayList<>();
+        chatDtoList.forEach(chatDto ->
+                chatList.add(toEntity(chatDto))
+        );
+        return chatList;
     }
 }
