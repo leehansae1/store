@@ -1,13 +1,13 @@
-package org.example.store_project.chatRoom;
+package org.example.store.chatRoom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store_project.chat.ChatDto;
-import org.example.store_project.chat.ChatService;
-import org.example.store_project.member.Member;
-import org.example.store_project.member.MemberService;
-import org.example.store_project.product.ProductService;
-import org.example.store_project.product.entity.Product;
+import org.example.store.chat.ChatDto;
+import org.example.store.chat.ChatService;
+import org.example.store.member.Member;
+import org.example.store.member.MemberService;
+import org.example.store.product.ProductService;
+import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

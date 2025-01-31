@@ -1,14 +1,14 @@
-package org.example.store_project.chatRoom;
+package org.example.store.chatRoom;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.store_project.chat.Chat;
-import org.example.store_project.chat.ChatDto;
-import org.example.store_project.member.Member;
-import org.example.store_project.product.entity.Product;
+import org.example.store.chat.Chat;
+import org.example.store.chat.ChatDto;
+import org.example.store.member.Member;
+import org.example.store.product.entity.Product;
 
 import java.util.ArrayList;
 import java.util.List;

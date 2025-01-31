@@ -1,9 +1,8 @@
-package org.example.store_project.chat;
+package org.example.store.chat;
 
 import lombok.*;
-import org.example.store_project.chatRoom.ChatRoomDto;
-import org.example.store_project.member.MemberDto;
-import org.example.store_project.product.dto.ProductDto;
+import org.example.store.chatRoom.ChatRoomDto;
+import org.example.store.member.MemberDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

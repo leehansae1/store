@@ -1,4 +1,4 @@
-package org.example.store_project.chatRoom;
+package org.example.store.chatRoom;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,13 +1,13 @@
-package org.example.store_project.chatRoom;
+package org.example.store.chatRoom;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.example.store_project.chat.Chat;
-import org.example.store_project.chat.ChatDto;
-import org.example.store_project.member.MemberDto;
-import org.example.store_project.product.dto.ProductDto;
+import org.example.store.chat.Chat;
+import org.example.store.chat.ChatDto;
+import org.example.store.member.MemberDto;
+import org.example.store.product.dto.ProductDto;
 
 import java.util.List;
 
