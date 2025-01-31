@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: store_project
+    name: store
 
   output:
     ansi:
