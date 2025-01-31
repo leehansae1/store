@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.repository;
+package org.example.store.member.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.dragontiger.prjectwave.member.constant.MemberStatus;
-import com.dragontiger.prjectwave.member.entity.Member;
+import org.example.store.member.constant.MemberStatus;
+import org.example.store.member.entity.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member,String>{

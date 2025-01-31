@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.service;
+package org.example.store.member.service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -12,13 +12,13 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.dragontiger.prjectwave.member.constant.Role;
-import com.dragontiger.prjectwave.member.dto.CustomUserDetails;
-import com.dragontiger.prjectwave.member.entity.Member;
-import com.dragontiger.prjectwave.member.repository.MemberRepository;
-import com.dragontiger.prjectwave.member.social.GoogleUserInfo;
-import com.dragontiger.prjectwave.member.social.KakaoUserInfo;
-import com.dragontiger.prjectwave.member.social.SocialUserInfo;
+import org.example.store.member.constant.Role;
+import org.example.store.member.dto.CustomUserDetails;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
+import org.example.store.member.social.GoogleUserInfo;
+import org.example.store.member.social.KakaoUserInfo;
+import org.example.store.member.social.SocialUserInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

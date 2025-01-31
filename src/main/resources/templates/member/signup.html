@@ -1,0 +1,109 @@
+<form action="/member/signup" method="post" enctype="multipart/form-data">
+  <div>
+    <label for="userId">USER ID</label>
+    <input
+      type="text"
+      id="userId"
+      name="userId"
+      placeholder="아이디"
+      required
+    />
+  </div>
+
+  <div>
+    <button id="btn-duplicate-id">아이디 중복 확인</button>
+  </div>
+
+  <div>
+    <label for="userPw">PASSWORD</label>
+    <input
+      type="password"
+      id="userPw"
+      name="userPw"
+      placeholder="비밀번호"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="userEmail">EMAIL</label>
+    <input
+      type="email"
+      id="user-email"
+      name="userEmail"
+      placeholder="email@example.com"
+      required
+    />
+    <button id="btn-send-email">인증번호 받기</button>
+  </div>
+
+  <div class="blind" id="email-confirm">
+    <input
+      type="text"
+      name="userEmailConfirm"
+      id="user-email-confirm"
+      placeholder="이메일 인증번호"
+    />
+  </div>
+  <div>
+    <button id="btn-email-confirm">이메일 인증</button>
+  </div>
+
+  <div>
+    <label for="userName">USER NAME</label>
+    <input
+      type="text"
+      id="userName"
+      name="userName"
+      placeholder="이름"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="addr01">ADDRESS</label>
+    <input
+      type="text"
+      id="addr01"
+      name="addr01"
+      placeholder="주소 1"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="addr02">상세 주소</label>
+    <input type="text" id="addr02" name="addr02" placeholder="주소 2" />
+  </div>
+
+  <div>
+    <label for="zipcode">우편번호</label>
+    <input type="text" id="zipcode" name="zipcode" placeholder="우편번호" />
+  </div>
+
+  <div>
+    <label for="tel">전화번호</label>
+    <input type="text" id="tel" name="tel" placeholder="전화번호" />
+  </div>
+
+  <div>
+    <label for="introduce">자기소개</label>
+    <textarea id="introduce" name="introduce" placeholder="자기소개"></textarea>
+  </div>
+
+  <div>
+    <label for="userProfile">프로필 사진</label>
+    <input type="file" id="userProfile" name="userProfile" accept="image/*" />
+  </div>
+
+  <div>
+    <button id="btn-sign-up">회원가입</button>
+  </div>
+</form>
+<script>
+  let isAuth = false;
+
+  // const btnDuplicateId = document.querySelector("#btn-duplicate-id");
+  const btnSendEmail = document.querySelector("#btn-send-email");
+  const btnEmailConfirm = document.querySelector("#btn-email-confirm");
+</script>

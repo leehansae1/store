@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.controller;
+package org.example.store.member.controller;
 
 
 
@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.dragontiger.prjectwave.member.dto.LoginDto;
-import com.dragontiger.prjectwave.member.dto.ModifyDto;
-import com.dragontiger.prjectwave.member.dto.SignupDto;
-import com.dragontiger.prjectwave.member.entity.Member;
-import com.dragontiger.prjectwave.member.service.IMemberService;
+import org.example.store.member.dto.LoginDto;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
+import org.example.store.member.service.IMemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

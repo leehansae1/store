@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.config;
+package org.example.store.member.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.dragontiger.prjectwave.member.service.OAuth2DetailService;
+import org.example.store.member.service.OAuth2DetailService;
 
 import lombok.RequiredArgsConstructor;
 

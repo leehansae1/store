@@ -1,10 +1,10 @@
-package com.dragontiger.prjectwave.member.service;
+package org.example.store.member.service;
 
 import java.util.List;
 
-import com.dragontiger.prjectwave.member.dto.ModifyDto;
-import com.dragontiger.prjectwave.member.dto.SignupDto;
-import com.dragontiger.prjectwave.member.entity.Member;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
 
 public interface IMemberService {
   public Member signup(SignupDto signupDto);                  // 회원 가입 정보 dto

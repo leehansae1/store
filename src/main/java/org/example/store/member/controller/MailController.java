@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.controller;
+package org.example.store.member.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.dragontiger.prjectwave.member.service.MailService;
+import org.example.store.member.service.MailService;
 
 
 @Controller

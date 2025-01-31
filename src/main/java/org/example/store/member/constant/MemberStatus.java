@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.constant;
+package org.example.store.member.constant;
 
 import lombok.Getter;
 

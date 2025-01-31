@@ -36,10 +36,10 @@ spring:
 
     open-in-view: false
 
-  #  security:
-  #    user:
-  #      name: 1234
-  #      password: 1234
+  security:
+    user:
+      name: dragontiger
+      password: 1234
 
   mail:
     host: smtp.naver.com
@@ -61,6 +61,5 @@ logging:
     org:
       hibernate:
         sql: debug
-
-api:
-  key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+# api:
+#   key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6

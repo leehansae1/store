@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.service;
+package org.example.store.member.service;
 
 import java.util.Random;
 
