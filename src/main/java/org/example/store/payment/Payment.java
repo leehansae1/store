@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -73,5 +76,11 @@ public class Payment {
                 .productDto(Product.fromEntity(payment.getProduct()))
                 .customer(Member.fromEntity(payment.getCustomer()))
                 .build();
+    }
+
+    public static List<PaymentDto> fromEnitityList(List<Payment> payments) {
+        List<PaymentDto> paymentDtos = new ArrayList<>();
+        payments.forEach(payment -> paymentDtos.add(fromEntity(payment)));
+        return paymentDtos;
     }
 }
