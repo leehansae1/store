@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
+import org.example.store.member.dto.MemberDto;
 import org.example.store.member.dto.ModifyDto;
 
 import jakarta.persistence.Column;
@@ -102,6 +103,29 @@ public class Member {
     this.userProfile = newProfilePath;
   }
 
+public static MemberDto fromEntity(Member member) {
+    // 멤버 테이블에 
+        return MemberDto.builder()
+                .userId(member.getUserId())
+                // 데이터 조회 시 패스워드 제외
+                .userName(member.getUserName())
+                .userProfile(member.getUserProfile())
+                .userEmail(member.getUserEmail())
+                .addr01(member.getAddr01())
+                .addr02(member.getAddr02())
+                .zipcode(member.getZipcode())
+                .tel(member.getTel())
+                .introduce(member.getIntroduce())
+                .role(Role.ROLE_USER)
+                .regDate(member.getRegDate())
+                .status(member.getStatus())
+
+                .productDtoList(Product.fromEntityList(member.getProductList()))
+                .faqDtoList(Faq.fromEntityList(member.getFaqList()))
+                .chatDtoList(Chat.fromEntityList(member.getChatList()))
+                .chatRoomDtoList(ChatRoom.fromEntityList(member.getChatRoomList()))
+                .build();
+    }
 
 
 
