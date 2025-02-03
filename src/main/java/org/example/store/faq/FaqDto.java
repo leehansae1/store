@@ -1,7 +1,7 @@
 package org.example.store.faq;
 
 import lombok.*;
-import org.example.store.member.MemberDto;
+import org.example.store.member.dto.MemberDto;
 
 import java.util.ArrayList;
 import java.util.List;

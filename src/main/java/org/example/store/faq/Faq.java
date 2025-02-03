@@ -3,7 +3,7 @@ package org.example.store.faq;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 
 import java.util.ArrayList;
 import java.util.List;
