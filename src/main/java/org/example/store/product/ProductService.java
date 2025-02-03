@@ -6,12 +6,11 @@ import org.example.store.follow.FollowService;
 import org.example.store.like_product.LikeService;
 import org.example.store.member.Member;
 import org.example.store.member.MemberDto;
-import org.example.store.product.dto.ImageDto;
 import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Image;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.*;
 
 @Service
@@ -25,12 +24,65 @@ public class ProductService {
 
     private final FollowService followService;
 
-    // 다른 서비스에서 product 가 필요할 때
+    // product 가 필요할 때
     public Product getProduct(int productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         return optionalProduct.orElse(null);
+    }
 
-        File[] files = new File[];
+    // 검색키워드로 상품 조회 -- image 테이블은 참조할 필요 없음
+    public List<ProductDto> getProductList(String searchWord) {
+        List<ProductDto> productDtoList = new ArrayList<>();
+        // LIKE 쿼리가 귀찮아서 ㅎㅎ,,,,
+        List<Product> productList = productRepository
+                .findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContaining
+                        (searchWord, searchWord, searchWord, searchWord);
+        productList.forEach(product ->
+                productDtoList.add(Product.fromEntity(product))
+        );
+        return productDtoList;
+    }
+
+    // 상품 상세 화면 >> 상품 정보 (+찜여부, 찜개수), 판매자 정보(이름, 판매자 프로필사진 등 (+팔로우 여부, 팔로우 수))
+    // 추후 매개변수에 custom detail 유저로 수정
+    public Map<String, Object> getProductDetail(int productId, Member 로그인한계정) {
+        Map<String, Object> map = new HashMap<>();
+
+        Product product = getProduct(productId);
+        ProductDto productDto = Product.fromEntity(product);
+
+        // 상품에 대한 찜 개수
+        int likeCount = likeService.getLikeCount(product);
+        productDto.setLikeCount(likeCount);
+        // 내가 찜했는지 여부
+        boolean isLiked = likeService.isLiked
+                (로그인한계정, product);
+        productDto.setLikeState(isLiked);
+        map.put("product", productDto);
+
+        // 판매자 계정 dto
+        MemberDto memberDto = Member.fromEntity(product.getSeller());
+        // 팔로우 수
+        int followCount = followService.getFollowCount(product.getSeller());
+        memberDto.setFollowCount(followCount);
+        // 팔로우 여부
+        boolean isFollowed = followService.isFollowed(product.getSeller(), 로그인한계정);
+        memberDto.setFollowState(isFollowed);
+        map.put("member", memberDto);
+
+        // 상품 이미지 테이블 조회
+        // 프론트에서 값을 꺼낼 때 리스트로 꺼내면 더 간단하기 때문에 image 도메인을 리스트로 변환
+        List<String> imageList = Image.fromImage(product.getImage());
+        map.put("imageList", imageList);
+
+        return map;
+    }
+
+    // 상품 업로드
+    public String uploadProduct(ProductDto productDto, Member 내계정) {
+        return null;
+    /*
+    File[] files = new File[];
         ImageDto imageDto = null;
         List<File> fileList = Arrays.stream(files).toList();
         for (int i = 0; i < fileList.size(); i++) {
@@ -45,66 +97,24 @@ public class ProductService {
         }
         //imageDto >> image
         //imageRepository.save(image);
+     */
     }
 
-    // 검색키워드로 상품 조회
-    public List<ProductDto> getProductList(String searchWord) {
-        List<ProductDto> productDtoList = new ArrayList<>();
-        List<Product> productList
-                = productRepository
-                .findAllByDescriptionContainingIgnoreCaseOrProductNameContainingIgnoreCase(
-                        searchWord, searchWord
-                );
-        productList.forEach(product -> {
-            // 엔티티 >> dto 변환
-        });
-        return productDtoList;
+    // 좋아요 저장 , 삭제
+    public boolean like(int productId, Member 내계정) {
+        Product product = getProduct(productId);
+        return likeService.saveLike(product, 내계정);
+    }
+    public int unlike(int productId, Member 내계정) {
+        Product product = getProduct(productId);
+        return likeService.deleteLike(product, 내계정);
     }
 
-
-    // 상품 상세 화면 >> 상품 정보 (+찜여부, 찜개수), 판매자 정보(이름, 판매자 프로필사진 등 (+팔로우 여부, 팔로우 수))
-    // 추후 매개변수에 custom detail 유저로 수정
-    public Map<String, Object> getProductDetail(int productId, Member 로그인한계정) {
-        Map<String, Object> map = new HashMap<>();
-
-        Product product;
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-        if (optionalProduct.isPresent()) product = optionalProduct.get();
-        else return null;
-
-        // product >> dto 변환
-        ProductDto productDto = new ProductDto();
-
-        // 상품에 대한 찜 개수
-        int likeCount = likeService.getLikeCount(productId);
-        productDto.setLikeCount(likeCount);
-
-        // 내가 찜했는지 여부
-        int isLiked
-                = likeService.isLiked(로그인한계정, productId);
-        productDto.likeState(isLiked);
-
-        // 프로덕트 dto 담기
-        map.put("product", productDto);
-
-        // 판매자 계정 dto
-        MemberDto memberDto = Member.fromEntity(product.getMember());
-
-        // 판매자 팔로우 수
-        int followCount = followService.getFollowerCount(product.getMember());
-        memberDto.setFollowCount(followCount);
-
-        // 팔로우 여부
-        int isFollowed =
-                followService.isFollowed(product.getMember(), 로그인한계정);
-        memberDto.setFollowState(isFollowed);
-
-        map.put("member", memberDto);
-
-        return map;
+    // 판매자 OR 내 물건 리스트 조회 (상점 안의 상품리스트 or 상품리스트 관리 페이지)
+    public List<ProductDto> getSellerProducts(Member seller) {
+        List<ProductDto> productDtos = new ArrayList<>();
+        List<Product> products = productRepository.findAllBySeller(seller);
+        products.forEach(product -> productDtos.add(Product.fromEntity(product)));
+        return productDtos;
     }
-
-    // 업로드 메서드
-
-    // 판매상태
 }
