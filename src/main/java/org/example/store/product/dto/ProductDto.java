@@ -1,12 +1,12 @@
 package org.example.store.product.dto;
 
 import lombok.*;
-import org.example.store_project.chatRoom.ChatRoomDto;
-import org.example.store_project.like_product.LikeProductDto;
-import org.example.store_project.member.MemberDto;
-import org.example.store_project.memberReview.ReviewDto;
-import org.example.store_project.payment.PaymentDto;
-import org.example.store_project.product.entity.Product;
+import org.example.store.chatRoom.ChatRoomDto;
+import org.example.store.like_product.LikeProductDto;
+import org.example.store.member.dto.MemberDto;
+import org.example.store.memberReview.ReviewDto;
+import org.example.store.payment.PaymentDto;
+import org.example.store.product.entity.Product;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
