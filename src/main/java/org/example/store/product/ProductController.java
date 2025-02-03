@@ -3,15 +3,12 @@ package org.example.store.product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.Member;
-import org.example.store.product.dto.ImageDto;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -59,12 +56,12 @@ public class ProductController {
     }
 
     @PostMapping("/upload")
-    public String uploadProduct(ProductDto productDto, ImageDto imageDto) {
+    public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files) {
         // 밸리데이션 추가 !!!!!
         Member 내계정 = null; // 작성자 아이디는 어센틱어쩌구 이용
-        String productId = productService.uploadProduct(productDto, 내계정);
+        int productId = productService.uploadProduct(productDto, files, 내계정);
         // 저장이 되었다면 상세화면으로 넘어가기
-        if (productId != null) return "redirect:" + prefix + "/detail/" + productId;
+        if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
         else return prefix + "/upload";
     }
 

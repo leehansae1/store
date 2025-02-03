@@ -1,4 +1,4 @@
-package org.example.store.product;
+package org.example.store.product.repository;
 
 import jakarta.validation.constraints.NotNull;
 import org.example.store.member.Member;
