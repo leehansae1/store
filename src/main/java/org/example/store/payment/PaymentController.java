@@ -17,7 +17,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -33,31 +36,35 @@ public class PaymentController {
     // 구매화면 진입
     @GetMapping("/payment/widget/checkout")
     public String checkout(Model model) {
-        model.addAttribute("orderId", UUID.randomUUID().toString());
+        model.addAttribute(
+                "orderId", UUID.randomUUID().toString().substring(0, 8)
+        );
         return prefix + "/widget/checkout";
     }
 
     // 결제버튼 클릭 시 임시저장 ajax 처리
     @PostMapping("/payment/temporary-save")
     @ResponseBody
-    public Map<String, String> temporarySave(@RequestBody SaveDto saveDto, HttpSession session) {
-        Map<String, String> map = new HashMap<>();
-        map.put("데이터보내졌을까", "오케이.");
-        // 로그인 계정까지
-        log.info(saveDto.toString());
-        session.setAttribute("saveDto", saveDto); //세션은 성공 or 실패 시에
-        return map;
+    public Map<String, String> temporarySave(@RequestBody SaveDto saveDto,
+                                             HttpSession session) {
+        log.info(saveDto.toString()); //폼데이터를 통해서 상품아이디, 멤버아이디,이메일도 들어온다
+        session.setAttribute("saveDto", saveDto); //세션은 성공 or 실패 시에 삭제
+        return Map.of("데이터보내졌을까", "오케이.");
     }
 
     // 위젯에서 결제를 거치면 여기로 넘어옴
     @RequestMapping("/confirm/widget")
-    public ResponseEntity<JSONObject> confirmPayment(HttpServletRequest request, @RequestBody String jsonBody) throws Exception {
+    public ResponseEntity<JSONObject> confirmPayment(HttpServletRequest request,
+                                                     @RequestBody String jsonBody) throws Exception {
         log.info("여기는 컨펌 위젯, 컨펌 페이먼트");
         log.info("jsonBody: {}", jsonBody);
         //사실 우리는 widget 시크릿 키만 씀
         String secretKey = request.getRequestURI().contains("/confirm/payment") ? API_SECRET_KEY : WIDGET_SECRET_KEY;
         log.info("secretKey: {}", secretKey);
-        JSONObject response = sendRequest(parseRequestData(jsonBody), secretKey, "https://api.tosspayments.com/v1/payments/confirm");
+        JSONObject response
+                = sendRequest(
+                parseRequestData(jsonBody), secretKey, "https://api.tosspayments.com/v1/payments/confirm"
+        );
         int statusCode = response.containsKey("error") ? 400 : 200;
         return ResponseEntity.status(statusCode).body(response);
     }
@@ -75,7 +82,8 @@ public class PaymentController {
     }
 
     // 제이슨 데이터 보내기
-    private JSONObject sendRequest(JSONObject requestData, String secretKey, String urlString) throws IOException {
+    private JSONObject sendRequest(JSONObject requestData, String secretKey,
+                                   String urlString) throws IOException {
         log.info("센드 리퀘스트");
         log.info("requestData: {}", requestData);
         log.info("secretKey: {}", secretKey);
@@ -85,8 +93,10 @@ public class PaymentController {
             os.write(requestData.toString().getBytes(StandardCharsets.UTF_8));
         }
 
-        try (InputStream responseStream = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
-             Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
+        try (InputStream responseStream
+                     = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
+             Reader reader
+                     = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
             return (JSONObject) new JSONParser().parse(reader);
         } catch (Exception e) {
             log.error("Error reading response", e);
@@ -103,7 +113,10 @@ public class PaymentController {
         log.info("urlString: {}", urlString);
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8)));
+        connection.setRequestProperty(
+                "Authorization", "Basic " + Base64.getEncoder().encodeToString((secretKey + ":")
+                        .getBytes(StandardCharsets.UTF_8))
+        );
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
@@ -122,36 +135,33 @@ public class PaymentController {
     // 결제 성공, 실패 내역 저장
     @PostMapping("/payment/resultSave")
     @ResponseBody
-    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto, HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        //임시저장 값 가져오기
-        SaveDto saveDto = (SaveDto) session.getAttribute("saveDto");
-        log.info("saveDto userId : {}",saveDto.getCustomerId());
-        if (paymentService.resultSave(paymentDto, saveDto)) result.put("success", true);
-        else result.put("success", false);
-        session.removeAttribute("saveDto");
-        return result;
+    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto,
+                                              HttpSession session) {
+        SaveDto saveDto = (SaveDto) session.getAttribute("saveDto"); //임시저장 값 가져오기
+        log.info("saveDto userId : {}", saveDto.getCustomerId());
+        session.removeAttribute("saveDto"); //가져오면 세션삭제
+        return paymentService.resultSave(paymentDto, saveDto)
+                ? Map.of("save", true) : Map.of("save", false);
     }
 
-    // 나중에 바꿀거임 어센틱 어쩌구로
-    // 결제 내역 (뿌릴 때 성공 실패에 따라 값 다르게 주기) ex) 결제 실패한 내역만 "결제실패" 빨간색텍스트 처리 등
-    @GetMapping("/payment/getPayments/{userId}")
-    public List<PaymentDto> getPayments(@PathVariable String userId) {
-        Member member = Member.builder().build();
-        return paymentService.getPayments(member);
+    // 나중에 바꿀거임 어센틱 어쩌구로 // 결제 실패 내역
+    @GetMapping("/payment/getPayments")
+    public List<PaymentDto> getFailPayments() {
+        Member 내계정 = null;
+        return paymentService.getFailPaymentList(내계정);
     }
 
-    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 판매 내역 받아오기
-    @GetMapping("/payment/sellHistory/{userId}")
-    public List<PaymentDto> getSellPayments(@PathVariable String userId) {
-        Member member = Member.builder().build();
-        return paymentService.getSellPayments(member);
+    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 판매 내역
+    @GetMapping("/payment/sellHistory")
+    public List<PaymentDto> getSellPayments() {
+        Member 내계정 = Member.builder().build();
+        return paymentService.getSellPayments(내계정);
     }
 
-    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 구매 내역 받아오기
-    @GetMapping("/payment/buyHistory/{userId}")
-    public List<PaymentDto> getBuyPayments(@PathVariable String userId) {
-        Member member = Member.builder().build();
-        return paymentService.getBuyPayments(member);
+    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 구매 내역
+    @GetMapping("/payment/buyHistory")
+    public List<PaymentDto> getBuyPayments() {
+        Member 내계정 = Member.builder().build();
+        return paymentService.getBuyPayments(내계정);
     }
 }

@@ -12,9 +12,9 @@ public class SaveDto {
 
     private String orderId;
 
-    private String customerEmail;
-
     private int amount;
+
+    private String customerEmail;
 
     //로그인 계정의 아이디
     private String customerId;

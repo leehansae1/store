@@ -47,6 +47,7 @@ public class PaymentDto {
                 .errorCode(paymentDto.getErrorCode())
                 .errorMessage(paymentDto.getErrorMessage())
 
+                .product(ProductDto.toEntity(paymentDto.getProductDto()))
                 .customer(MemberDto.toEntity(paymentDto.getCustomer()))
                 .build();
     }

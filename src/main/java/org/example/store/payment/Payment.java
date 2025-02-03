@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.example.store.member.Member;
 import org.example.store.product.entity.Product;
 
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -55,6 +54,7 @@ public class Payment {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
 
+        this.product = product;
         this.customer = customer;
     }
 
@@ -70,6 +70,7 @@ public class Payment {
                 .errorCode(payment.getErrorCode())
                 .errorMessage(payment.getErrorMessage())
 
+                .productDto(Product.fromEntity(payment.getProduct()))
                 .customer(Member.fromEntity(payment.getCustomer()))
                 .build();
     }
