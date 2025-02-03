@@ -20,7 +20,7 @@ public class Payment {
 
     private int totalAmount; //금액
 
-    private String method; //결제방법
+    private String method; //결제방법 앙 웅앵 웅
 
     private String requestedAt; //결제시작
 
