@@ -4,6 +4,9 @@ import lombok.*;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -50,5 +53,11 @@ public class PaymentDto {
                 .product(ProductDto.toEntity(paymentDto.getProductDto()))
                 .customer(MemberDto.toEntity(paymentDto.getCustomer()))
                 .build();
+    }
+
+    public static List<Payment> toEntityList(List<PaymentDto> paymentDtoList) {
+        List<Payment> payments = new ArrayList<>();
+        paymentDtoList.forEach(paymentDto -> payments.add(toEntity(paymentDto)));
+        return payments;
     }
 }
