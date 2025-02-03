@@ -10,6 +10,8 @@ import org.example.store.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -62,5 +64,11 @@ public class Review {
                 .seller(Member.fromEntity(review.getSeller()))
                 .productDto(Product.fromEntity(review.getProduct()))
                 .build();
+    }
+
+    public static List<ReviewDto> fromEntityList(List<Review> reviews) {
+        List<ReviewDto> reviewDtoList = new ArrayList<>();
+        reviews.forEach(review -> reviewDtoList.add(fromEntity(review)));
+        return reviewDtoList;
     }
 }

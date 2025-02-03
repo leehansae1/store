@@ -5,6 +5,8 @@ import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Getter
@@ -38,5 +40,11 @@ public class ReviewDto {
                 .seller(MemberDto.toEntity(reviewDto.getSeller()))
                 .product(ProductDto.toEntity(reviewDto.getProductDto()))
                 .build();
+    }
+
+    public static List<Review> toEntityList(List<ReviewDto> reviewDtoList) {
+        List<Review> reviews = new ArrayList<>();
+        reviewDtoList.forEach(reviewDto -> reviews.add(toEntity(reviewDto)));
+        return reviews;
     }
 }
