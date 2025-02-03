@@ -12,6 +12,7 @@ import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.entity.Member;
 import org.example.store.memberReview.Review;
+import org.example.store.memberReview.ReviewDto;
 import org.example.store.payment.PaymentDto;
 import org.example.store.product.dto.ProductDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -126,7 +127,7 @@ public class MemberDto {
                 .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
                 .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
                 .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
-                .reviewList(Review.toEntityList(memberDto.getReviewDtoList()))
+                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
                 .build();
     }
 
