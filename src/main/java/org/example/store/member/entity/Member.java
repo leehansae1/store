@@ -58,10 +58,15 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
 
+  private int followCount;
+
+  private boolean followState;
+
 
   @Builder
   public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String addr01,
-                String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce, MemberStatus status) {
+                String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce,
+                MemberStatus status) {
     this.userId = userId;
     this.userPw = userPw;
     this.userName = userName;
@@ -74,8 +79,8 @@ public class Member {
     this.role = role;
     this.regDate = regDate;
     this.introduce = introduce;
-    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정            
-               }
+    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정           
+    }
 
 
   public void updateInfo(ModifyDto modifyDto) {

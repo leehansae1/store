@@ -38,6 +38,8 @@ public class MemberDto {
     private LocalDateTime regDate;
     private String introduce;
     private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
+    private int followCount;
+    private boolean followState;
   
   
     private List<FaqDto> faqDtoList;
