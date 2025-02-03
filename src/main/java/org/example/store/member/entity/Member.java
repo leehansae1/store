@@ -4,6 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
+import org.example.store.chat.Chat;
+import org.example.store.chatRoom.ChatRoom;
+import org.example.store.faq.Faq;
+import org.example.store.follow.Follow;
+import org.example.store.like_product.LikeProduct;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.MemberDto;
@@ -13,6 +18,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.store.memberReview.Review;
+import org.example.store.payment.Payment;
+import org.example.store.product.entity.Product;
 
 @Getter
 @Entity

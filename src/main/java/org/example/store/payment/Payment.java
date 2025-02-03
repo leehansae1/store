@@ -78,7 +78,7 @@ public class Payment {
                 .build();
     }
 
-    public static List<PaymentDto> fromEnitityList(List<Payment> payments) {
+    public static List<PaymentDto> fromEntityList(List<Payment> payments) {
         List<PaymentDto> paymentDtos = new ArrayList<>();
         payments.forEach(payment -> paymentDtos.add(fromEntity(payment)));
         return paymentDtos;

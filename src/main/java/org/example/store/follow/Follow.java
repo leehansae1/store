@@ -42,7 +42,7 @@ public class Follow {
                 .build();
     }
 
-    public static List<FollowDto> fromEnitityList(List<Follow> follows) {
+    public static List<FollowDto> fromEntityList(List<Follow> follows) {
         List<FollowDto> followDtos = new ArrayList<>();
         follows.forEach(follow -> followDtos.add(fromEntity(follow)));
         return followDtos;
