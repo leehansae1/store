@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.social;
+package org.example.store.member.social;
 
 import java.util.Map;
 

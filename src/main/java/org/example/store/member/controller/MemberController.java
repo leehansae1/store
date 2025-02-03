@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.controller;
+package org.example.store.member.controller;
 
 
 
@@ -18,18 +18,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.dragontiger.prjectwave.member.dto.LoginDto;
-import com.dragontiger.prjectwave.member.dto.ModifyDto;
-import com.dragontiger.prjectwave.member.dto.SignupDto;
-import com.dragontiger.prjectwave.member.entity.Member;
-import com.dragontiger.prjectwave.member.service.IMemberService;
+import java.util.Map;
+
+import org.example.store.member.dto.LoginDto;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
+import org.example.store.member.service.IMemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @Controller
@@ -39,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
   private final IMemberService memberService;
-
+  private final MemberRepository memberRepository;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   private String prefix = "/member";
@@ -69,6 +75,15 @@ public class MemberController {
     }
     return prefix + "/signup";
   }
+
+  // 아이디 중복 확인
+  @PostMapping("/check-duplicate")
+  @ResponseBody
+  public boolean checkDuplicateId(@RequestBody Map<String, String> requset) {     
+    String userId = requset.get("userId");
+    return memberRepository.existsByUserId(userId);
+  }
+  
   
   // 로그인 화면
   @GetMapping("/login")

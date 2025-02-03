@@ -1,10 +1,10 @@
-package com.dragontiger.prjectwave.member.entity;
+package org.example.store.member.entity;
 
 import java.time.LocalDateTime;
 
-import com.dragontiger.prjectwave.member.constant.MemberStatus;
-import com.dragontiger.prjectwave.member.constant.Role;
-import com.dragontiger.prjectwave.member.dto.ModifyDto;
+import org.example.store.member.constant.MemberStatus;
+import org.example.store.member.constant.Role;
+import org.example.store.member.dto.ModifyDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

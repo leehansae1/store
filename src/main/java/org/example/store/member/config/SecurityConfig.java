@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.config;
+package org.example.store.member.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.dragontiger.prjectwave.member.service.OAuth2DetailService;
+import org.example.store.member.service.OAuth2DetailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,7 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
     httpSecurity.authorizeHttpRequests(
     (auth) -> auth // 허용된 패턴들은 인증 없이 접근 가능 나머지 모든 요청은 인증을 요구
-      .requestMatchers("/","/member/**","/css/**","/js/**", "/images/**") // 허용된 URL 패턴들
+      .requestMatchers("/","/member/**","/mail/**","/css/**","/js/**", "/images/**") // 허용된 URL 패턴들
       .permitAll()
       .anyRequest()
       .authenticated()

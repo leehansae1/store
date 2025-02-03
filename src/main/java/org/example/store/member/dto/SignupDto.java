@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.dto;
+package org.example.store.member.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 

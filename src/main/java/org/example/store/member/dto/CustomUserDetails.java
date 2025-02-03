@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.dto;
+package org.example.store.member.dto;
 
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.dragontiger.prjectwave.member.entity.Member;
+import org.example.store.member.entity.Member;
 
 import lombok.Getter;
 import lombok.ToString;

@@ -1,4 +1,4 @@
-package com.dragontiger.prjectwave.member.service;
+package org.example.store.member.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dragontiger.prjectwave.member.constant.MemberStatus;
-import com.dragontiger.prjectwave.member.constant.Role;
-import com.dragontiger.prjectwave.member.dto.ModifyDto;
-import com.dragontiger.prjectwave.member.dto.SignupDto;
-import com.dragontiger.prjectwave.member.entity.Member;
-import com.dragontiger.prjectwave.member.repository.MemberRepository;
+import org.example.store.member.constant.MemberStatus;
+import org.example.store.member.constant.Role;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
