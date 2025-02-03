@@ -3,7 +3,7 @@ package org.example.store.memberReview;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chatRoom.ChatRoomService;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
