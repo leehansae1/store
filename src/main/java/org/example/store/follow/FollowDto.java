@@ -3,6 +3,9 @@ package org.example.store.follow;
 import lombok.*;
 import org.example.store.member.entity.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -22,6 +25,11 @@ public class FollowDto {
                 .seller(followDto.getSeller())
                 .follower(followDto.getFollower())
                 .build();
+    }
 
+    public static List<Follow> toEntityList(List<FollowDto> followDtoList) {
+        List<Follow> follows = new ArrayList<>();
+        followDtoList.forEach(followDto -> follows.add(toEntity(followDto)));
+        return follows;
     }
 }

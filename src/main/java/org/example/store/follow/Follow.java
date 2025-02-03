@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.store.member.entity.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,5 +40,11 @@ public class Follow {
                 .seller(follow.getSeller())
                 .follower(follow.getFollower())
                 .build();
+    }
+
+    public static List<FollowDto> fromEnitityList(List<Follow> follows) {
+        List<FollowDto> followDtos = new ArrayList<>();
+        follows.forEach(follow -> followDtos.add(fromEntity(follow)));
+        return followDtos;
     }
 }
