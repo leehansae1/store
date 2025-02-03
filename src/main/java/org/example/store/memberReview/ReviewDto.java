@@ -1,7 +1,7 @@
 package org.example.store.memberReview;
 
 import lombok.*;
-import org.example.store.member.MemberDto;
+import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
 import java.time.LocalDateTime;
