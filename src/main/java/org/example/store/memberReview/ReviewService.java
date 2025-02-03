@@ -3,7 +3,6 @@ package org.example.store.memberReview;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.Member;
-import org.example.store.member.MemberService;
 import org.example.store.product.ProductService;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
@@ -21,26 +20,22 @@ public class ReviewService {
 
     private final ProductService productService;
 
-    private final MemberService memberService;
-
-    public boolean writeReview(ReviewDto reviewDto, int productId, String userId) {
+    public boolean writeReview(ReviewDto reviewDto, int productId, Member 내계정) {
         //리뷰하는 상품
         Product product = productService.getProduct(productId);
         reviewDto.setProductDto(Product.fromEntity(product));
-        reviewDto.setSeller(Member.fromEntity(product.getMember())); //판매자
+        reviewDto.setSeller(Member.fromEntity(product.getSeller())); //판매자
 
         //구매자
-        Member member = memberService.getMember(userId);
-        reviewDto.setReviewer(Member.fromEntity(member));
+        reviewDto.setReviewer(Member.fromEntity(내계정));
 
         Review review = reviewRepository.save(ReviewDto.toEntity(reviewDto));
         return Review.fromEntity(review) != null;
     }
 
-    public List<ReviewDto> getReviewList(String userId) {
+    public List<ReviewDto> getReviewList(Member 내계정) {
         List<ReviewDto> reviewDtoList = new ArrayList<>();
-
-        List<Review> reviewList = reviewRepository.findAllBySeller_UserId(userId);
+        List<Review> reviewList = reviewRepository.findAllBySeller(내계정);
         reviewList.forEach(review ->
                 reviewDtoList.add(Review.fromEntity(review))
         );
