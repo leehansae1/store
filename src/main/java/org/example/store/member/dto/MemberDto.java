@@ -120,7 +120,7 @@ public class MemberDto {
                 .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
                 .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
                 .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
-                .reviewList(Review.toEntityList(memberDto.getReviewDtoList()))
+                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
                 .build();
     }
 
