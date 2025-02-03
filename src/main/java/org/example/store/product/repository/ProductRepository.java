@@ -1,8 +1,8 @@
 package org.example.store.product.repository;
 
 import jakarta.validation.constraints.NotNull;
-import org.example.store_project.member.Member;
-import org.example.store_project.product.entity.Product;
+import org.example.store.member.entity.Member;
+import org.example.store.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

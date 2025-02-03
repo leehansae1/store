@@ -2,7 +2,7 @@ package org.example.store.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.store_project.product.dto.ImageDto;
+import org.example.store.product.dto.ImageDto;
 
 
 // 썸네일 컬럼, 곧 대표사진 포함 올릴 수 있는 이미지는 7개로 제한
