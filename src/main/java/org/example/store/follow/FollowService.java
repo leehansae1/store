@@ -3,12 +3,11 @@ package org.example.store.follow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.Member;
-import org.example.store.member.MemberService;
+import org.example.store.member.MemberDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -17,11 +16,8 @@ public class FollowService {
 
     private final FollowRepository followRepository;
 
-    private final MemberService memberService;
-
-    // 팔로우 저장
-    public boolean save(String sellerId, Member 내계정) {
-        Member seller = memberService.getMember(sellerId);
+    // 팔로우 저장 / 삭제
+    public boolean follow(Member seller, Member 내계정) {
         Follow follow = Follow.builder()
                 .seller(seller)
                 .follower(내계정)
@@ -29,49 +25,36 @@ public class FollowService {
         Follow savedfollow = followRepository.save(follow);
         return Follow.fromEntity(savedfollow) != null;
     }
-
-    // 팔로우 취소
-    public int unfollow(int followId) {
-        return followRepository.deleteFollowById(followId);
+    public int unfollow(Member seller, Member 내계정) {
+        return followRepository.deleteBySellerAndFollower(seller, 내계정);
     }
 
     // 구독 여부 (상점 정보 조회 시 & 상품 상세 열람 시 필요)
-    public int isFollowed(Member seller, Member member) {
-        Follow follow;
-        Optional<Follow> optionalFollow = followRepository.findBySellerAndFollower(seller, member);
-        if (optionalFollow.isPresent()) {
-            follow = optionalFollow.get();
-            return follow.getFollowId();
-        }
-        else return 0;
+    public boolean isFollowed(Member seller, Member member) {
+        return followRepository.existsBySellerAndFollower(seller, member);
     }
-
     // 팔로워 수
-    public int getFollowerCount(Member seller) {
+    public int getFollowCount(Member seller) {
         return followRepository.countBySeller(seller);
     }
 
-
-    // 밑에 두가지 >> 팔로워 내역 + 팔로잉 내역은 내 상점 조회 & 내 계정 조회 시 필요함
+    // 밑에 두가지 메서드 >> 팔로워 내역 + 팔로잉 내역은 내 상점 조회 & 내 계정 조회 시 필요함
     // 나를 구독한
-    public List<FollowDto> getAllFollowers(String myId) {
-        List<FollowDto> followDtoList = new ArrayList<>();
-
-        List<Follow> followList = followRepository.findAllBySeller_UserId(myId);
+    public List<MemberDto> getAllFollowers(Member 내계정) {
+        List<MemberDto> memberDtoList = new ArrayList<>();
+        List<Follow> followList = followRepository.findAllBySeller(내계정);
         followList.forEach(follow ->
-                followDtoList.add(Follow.fromEntity(follow))
+                memberDtoList.add(Member.fromEntity(follow.getFollower()))
         );
-        return followDtoList;
+        return memberDtoList;
     }
-
     // 내가 구독한
-    public List<FollowDto> getAllFollowed(String myId) {
-        List<FollowDto> followDtoList = new ArrayList<>();
-
-        List<Follow> followList = followRepository.findAllByFollower_UserId(myId);
+    public List<MemberDto> getAllSeller(Member 내계정) {
+        List<MemberDto> memberDtoList = new ArrayList<>();
+        List<Follow> followList = followRepository.findAllByFollower(내계정);
         followList.forEach(follow ->
-                followDtoList.add(Follow.fromEntity(follow))
+                memberDtoList.add(Member.fromEntity(follow.getFollower()))
         );
-        return followDtoList;
+        return memberDtoList;
     }
 }

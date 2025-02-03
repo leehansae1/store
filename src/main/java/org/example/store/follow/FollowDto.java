@@ -3,8 +3,6 @@ package org.example.store.follow;
 import lombok.*;
 import org.example.store.member.Member;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
@@ -18,14 +16,12 @@ public class FollowDto {
 
     private Member follower;
 
-    private LocalDateTime followAt;
-
     public static Follow toEntity(FollowDto followDto) {
         return Follow.builder()
                 .followId(followDto.getFollowId())
                 .seller(followDto.getSeller())
                 .follower(followDto.getFollower())
-                .followAt(followDto.getFollowAt())
                 .build();
+
     }
 }
