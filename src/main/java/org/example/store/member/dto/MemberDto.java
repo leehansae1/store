@@ -25,7 +25,7 @@ import lombok.ToString;
 @Builder
 public class MemberDto {
 
-    private String userId; 
+    private String userId;
     private String userPw;
     private String userName;
     private String userProfile;
@@ -40,55 +40,61 @@ public class MemberDto {
     private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
     private int followCount;
     private boolean followState;
-  
-  
+
+
     private List<FaqDto> faqDtoList;
-  
+
     private List<ChatDto> chatDtoList;
-  
+
     private List<ChatRoomDto> chatRoomDtoList;
-  
+
     private List<ProductDto> productDtoList;
-  
+
     private List<FollowDto> followDtoList;
-  
+
     private List<LikeProductDto> likeProductDtoList;
-  
+
     private List<ReviewDto> reviewDtoList;
-  
+
     private List<PaymentDto> paymentDtoList;
-  
-      @Builder
-      public MemberDto(String userId, String userPw, String userName, String userProfile,
-                       String userEmail, String addr01, String addr02, String zipcode, Role role, String tel, LocalDateTime regDate,
-                       String introduce, MemberStatus status, int followCount, boolean followState,
-                       List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
-                       List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList) {
-          this.userId = userId;
-          this.userPw = userPw;
-          this.userName = userName;
-          this.userProfile = userProfile;
-          this.userEmail = userEmail;
-          this.addr01 = addr01;
-          this.addr02 = addr02;
-          this.zipcode = zipcode;
-          this.tel = tel;
-          this.role = role;
-          this.regDate = regDate;
-          this.introduce = introduce;
-          this.status = status != null ? status : MemberStatus.STATUS_ACTIVE;  // 기본 값 설정            
-          this.followCount = followCount;
-          this.followState = followState;
-  
-          this.faqDtoList = faqDtoList;
-          this.chatDtoList = chatDtoList;
-          this.chatRoomDtoList = chatRoomDtoList;
-          this.productDtoList = productDtoList;
-      }
-  
-      public static Member toEntity(MemberDto memberDto, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        
-          return Member.builder()
+
+    @Builder
+    public MemberDto(String userId, String userPw, String userName, String userProfile,
+                     String userEmail, String addr01, String addr02, String zipcode, Role role, String tel, LocalDateTime regDate,
+                     String introduce, MemberStatus status, int followCount, boolean followState,
+                     List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
+                     List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList,
+                     List<LikeProductDto> likeProductDtoList, List<FollowDto> followDtoList,
+                     List<ReviewDto> reviewDtoList, List<PaymentDto> paymentDtoList) {
+        this.userId = userId;
+        this.userPw = userPw;
+        this.userName = userName;
+        this.userProfile = userProfile;
+        this.userEmail = userEmail;
+        this.addr01 = addr01;
+        this.addr02 = addr02;
+        this.zipcode = zipcode;
+        this.tel = tel;
+        this.role = role;
+        this.regDate = regDate;
+        this.introduce = introduce;
+        this.status = status != null ? status : MemberStatus.STATUS_ACTIVE;  // 기본 값 설정
+        this.followCount = followCount;
+        this.followState = followState;
+
+        this.faqDtoList = faqDtoList;
+        this.chatDtoList = chatDtoList;
+        this.chatRoomDtoList = chatRoomDtoList;
+        this.productDtoList = productDtoList;
+        this.likeProductDtoList = likeProductDtoList;
+        this.followDtoList = followDtoList;
+        this.reviewDtoList = reviewDtoList;
+        this.paymentDtoList = paymentDtoList;
+    }
+
+    public static Member toEntity(MemberDto memberDto, BCryptPasswordEncoder bCryptPasswordEncoder) {
+
+        return Member.builder()
                 .userId(memberDto.getUserId())
                 .userPw(bCryptPasswordEncoder.encode(memberDto.getUserPw())) // 암호화된 패스워드 저장
                 .userName(memberDto.getUserName())
@@ -107,7 +113,11 @@ public class MemberDto {
                 .faqList(FaqDto.toEntityList(memberDto.getFaqDtoList()))
                 .chatList(ChatDto.toEntityList(memberDto.getChatDtoList()))
                 .chatRoomList(ChatRoomDto.toEntityList(memberDto.getChatRoomDtoList()))
-                .build();   
+                .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
+                .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
+                .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
+                .reviewList(Review.toEntityList(memberDto.getReviewDtoList()))
+                .build();
     }
 
 }

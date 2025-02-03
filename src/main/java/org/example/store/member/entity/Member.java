@@ -1,19 +1,14 @@
 package org.example.store.member.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.*;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.dto.ModifyDto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,15 +53,41 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
 
-  private int followCount;
+  // 맵핑
+  @OneToMany(mappedBy = "member")
+  private List<Faq> faqList;
 
-  private boolean followState;
+  @OneToMany(mappedBy = "writer")
+  @OrderBy("chatDate desc")
+  private List<Chat> chatList;
 
+  @OneToMany(mappedBy = "toUser")
+  private List<ChatRoom> chatRoomList;
+
+  @OneToMany(mappedBy = "seller")
+  private List<Product> productList;
+
+  @OneToMany(mappedBy = "follower")
+  private List<Follow> followList;
+
+  @OneToMany(mappedBy = "liker")
+  private List<LikeProduct> likeProductList;
+
+  @OneToMany(mappedBy = "reviewer")
+  private List<Review> reviewList;
+
+  @OneToMany(mappedBy = "customer")
+  private List<Payment> paymentList;
 
   @Builder
   public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String addr01,
                 String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce,
-                MemberStatus status) {
+                MemberStatus status
+          ,
+                List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
+                List<Follow> followList, List<LikeProduct> likeProductList, List<Review> reviewList,
+                List<Payment> paymentList
+                ) {
     this.userId = userId;
     this.userPw = userPw;
     this.userName = userName;
@@ -79,7 +100,16 @@ public class Member {
     this.role = role;
     this.regDate = regDate;
     this.introduce = introduce;
-    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정           
+    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정
+
+    this.faqList = faqList;
+    this.chatList = chatList;
+    this.chatRoomList = chatRoomList;
+    this.productList = productList;
+    this.followList = followList;
+    this.likeProductList = likeProductList;
+    this.reviewList = reviewList;
+    this.paymentList = paymentList;
     }
 
 
@@ -129,6 +159,10 @@ public static MemberDto fromEntity(Member member) {
                 .faqDtoList(Faq.fromEntityList(member.getFaqList()))
                 .chatDtoList(Chat.fromEntityList(member.getChatList()))
                 .chatRoomDtoList(ChatRoom.fromEntityList(member.getChatRoomList()))
+                .followDtoList(Follow.fromEntityList(member.getFollowList()))
+                .likeProductDtoList(LikeProduct.fromEntityList(member.getLikeProductList()))
+                .paymentDtoList(Payment.fromEntityList(member.getPaymentList()))
+                .reviewDtoList(Review.fromEntityList(member.getReviewList()))
                 .build();
     }
 
