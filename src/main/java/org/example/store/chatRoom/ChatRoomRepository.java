@@ -1,5 +1,6 @@
 package org.example.store.chatRoom;
 
+import org.example.store.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,4 +19,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Integer> {
             "or (toUser_Id = :fromUserId and fromUser_Id = :toUserId)"
             , nativeQuery = true)
     ChatRoom findChatRoomByUsers(String fromUserId, String toUserId);
+
+    ChatRoom findByProduct_ProductIdAndToUserOrFromUser(int productProductId, Member toUser, Member fromUser);
 }

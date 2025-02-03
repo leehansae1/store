@@ -1,10 +1,7 @@
 package org.example.store.chatRoom;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.store.chat.Chat;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.Member;
@@ -15,6 +12,7 @@ import java.util.List;
 
 // chatRoom 통해 채팅리스트를 가져오기
 @Entity
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom {
@@ -31,15 +29,16 @@ public class ChatRoom {
     @JoinColumn(name = "TOUSER_ID")
     private Member toUser;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToMany
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Chat> chatList;
 
     @Builder
-    public ChatRoom(int roomId, List<Chat> chatList, Member fromUser, Member toUser, Product product) {
+    public ChatRoom(int roomId, List<Chat> chatList,
+                    Member fromUser, Member toUser, Product product) {
         this.roomId = roomId;
         this.fromUser = fromUser;
         this.toUser = toUser;

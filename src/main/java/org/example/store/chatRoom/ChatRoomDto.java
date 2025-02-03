@@ -9,6 +9,7 @@ import org.example.store.chat.ChatDto;
 import org.example.store.member.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -50,11 +51,11 @@ public class ChatRoomDto {
                 .build();
     }
 
-//    public static List<ChatRoom> toEntityList(List<ChatRoomDto> chatRoomDtos) {
-//        List<ChatRoom> chatRooms = new ArrayList<>();
-//        chatRoomDtos.forEach(chatRoomDto ->
-//                chatRooms.add(toEntity(chatRoomDto))
-//        );
-//        return chatRooms;
-//    }
+    public static List<ChatRoom> toEntityList(List<ChatRoomDto> chatRoomDtos) {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+        chatRoomDtos.forEach(chatRoomDto ->
+                chatRooms.add(toEntity(chatRoomDto))
+        );
+        return chatRooms;
+    }
 }
