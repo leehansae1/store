@@ -1,4 +1,4 @@
-package org.example.store.member.config;
+//package org.example.store.member.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
