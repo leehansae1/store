@@ -19,15 +19,15 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int roomId; //방번호
+    private int roomId;
 
     @ManyToOne
     @JoinColumn(name = "FROMUSER_ID")
-    private Member fromUser; //채팅을 건 사람
+    private Member fromUser;
 
     @ManyToOne
     @JoinColumn(name = "TOUSER_ID")
-    private Member toUser; //채팅을 받은 사람
+    private Member toUser;
 
     @OneToOne
     @JoinColumn(name = "product_id")
