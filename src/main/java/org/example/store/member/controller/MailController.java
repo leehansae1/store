@@ -1,19 +1,16 @@
 package org.example.store.member.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.example.store.member.dto.EmailDto;
+import org.example.store.member.service.MailService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import org.example.store.member.dto.EmailDto;
-import org.example.store.member.service.MailService;
 
 
 @Controller

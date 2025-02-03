@@ -1,7 +1,15 @@
 package org.example.store.member.controller;
 
 
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.dto.LoginDto;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
 import org.example.store.member.service.MemberService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -18,18 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
-
-import org.example.store.member.dto.LoginDto;
-import org.example.store.member.dto.ModifyDto;
-import org.example.store.member.dto.SignupDto;
-import org.example.store.member.entity.Member;
-import org.example.store.member.repository.MemberRepository;
-import org.example.store.member.service.IMemberService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 
 @Controller

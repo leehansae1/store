@@ -1,8 +1,9 @@
 package org.example.store.member.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.example.store.chat.ChatDto;
 import org.example.store.chatRoom.ChatRoomDto;
 import org.example.store.faq.FaqDto;
@@ -15,18 +16,9 @@ import org.example.store.memberReview.Review;
 import org.example.store.memberReview.ReviewDto;
 import org.example.store.payment.PaymentDto;
 import org.example.store.product.dto.ProductDto;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.mail.Multipart;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -56,6 +48,7 @@ public class MemberDto {
     private List<ChatDto> chatDtoList;
 
     private List<ChatRoomDto> chatRoomDtoList;
+
 
     private List<ProductDto> productDtoList;
 
@@ -103,11 +96,11 @@ public class MemberDto {
         this.paymentDtoList = paymentDtoList;
     }
 
-    public static Member toEntity(MemberDto memberDto, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public static Member toEntity(MemberDto memberDto) {
 
         return Member.builder()
                 .userId(memberDto.getUserId())
-                .userPw(bCryptPasswordEncoder.encode(memberDto.getUserPw())) // 암호화된 패스워드 저장
+                .userPw(memberDto.getUserPw()) // 암호화 제거, 서비스에서 처리
                 .userName(memberDto.getUserName())
                 .userProfile(memberDto.getUserProfile()) // 프로필 경로 그대로 사용
                 .userEmail(memberDto.getUserEmail())
@@ -127,7 +120,7 @@ public class MemberDto {
                 .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
                 .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
                 .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
-                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
+                .reviewList(Review.toEntityList(memberDto.getReviewDtoList()))
                 .build();
     }
 

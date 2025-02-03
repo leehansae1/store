@@ -1,10 +1,10 @@
 package org.example.store.member.service;
 
-import java.util.List;
-
 import org.example.store.member.dto.ModifyDto;
 import org.example.store.member.dto.SignupDto;
 import org.example.store.member.entity.Member;
+
+import java.util.List;
 
 public interface IMemberService {
   public Member signup(SignupDto signupDto);                   // 회원 가입 정보 dto

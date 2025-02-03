@@ -1,18 +1,16 @@
 package org.example.store.member.dto;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
+import lombok.Getter;
+import lombok.ToString;
+import org.example.store.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import org.example.store.member.entity.Member;
-
-import lombok.Getter;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 @Getter
 @ToString

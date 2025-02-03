@@ -1,28 +1,27 @@
 package org.example.store.member.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.store.follow.FollowService;
+import org.example.store.member.constant.MemberStatus;
+import org.example.store.member.constant.Role;
+import org.example.store.member.dto.MemberDto;
+import org.example.store.member.dto.ModifyDto;
+import org.example.store.member.dto.SignupDto;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.example.store.member.constant.MemberStatus;
-import org.example.store.member.constant.Role;
-import org.example.store.member.dto.ModifyDto;
-import org.example.store.member.dto.SignupDto;
-import org.example.store.member.entity.Member;
-import org.example.store.member.repository.MemberRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,10 +49,13 @@ public class MemberService implements IMemberService {
             }
         }
 
-        // 2. 엔티티 생성
-        Member savedMember = Member.builder()
+        // 2. 패스워드 암호화 처리
+        String encodePassword = bCryptPasswordEncoder.encode(signupDto.getUserPw());
+
+        // 3. DTO를 엔티티로 변환 (암호화된 패스워드 적용)
+        MemberDto memberDto = MemberDto.builder()
                 .userId(signupDto.getUserId())
-                .userPw(bCryptPasswordEncoder.encode(signupDto.getUserPw()))
+                .userPw(encodePassword) // 암호화된 패스워드 전달
                 .userEmail(signupDto.getUserEmail())
                 .userName(signupDto.getUserName())
                 .userProfile(userProfilePath)
@@ -63,9 +65,13 @@ public class MemberService implements IMemberService {
                 .zipcode(signupDto.getZipcode())
                 .introduce(signupDto.getIntroduce())
                 .role(Role.ROLE_USER)
+                .status(MemberStatus.STATUS_ACTIVE)
                 .regDate(LocalDateTime.now())
                 .build();
-        return memberRepository.save(savedMember); // 3. DB에 저장
+        
+        // 4. 엔티티 저장
+        Member savedMember = MemberDto.toEntity(memberDto);
+        return memberRepository.save(savedMember);
     }
 
     private String handlerFileUpload(MultipartFile multipartFile) throws IOException {

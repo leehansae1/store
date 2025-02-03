@@ -1,9 +1,10 @@
 package org.example.store.member.entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.store.chat.Chat;
 import org.example.store.chatRoom.ChatRoom;
 import org.example.store.faq.Faq;
@@ -13,14 +14,12 @@ import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.dto.ModifyDto;
-
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.entity.Product;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity

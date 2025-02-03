@@ -1,20 +1,18 @@
 package org.example.store.member.service;
 
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.constant.MemberStatus;
+import org.example.store.member.dto.CustomUserDetails;
+import org.example.store.member.entity.Member;
+import org.example.store.member.repository.MemberRepository;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import org.example.store.member.constant.MemberStatus;
-import org.example.store.member.dto.CustomUserDetails;
-import org.example.store.member.entity.Member;
-import org.example.store.member.repository.MemberRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

@@ -1,8 +1,8 @@
 package org.example.store.member.social;
 
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class KakaoUserInfo implements SocialUserInfo{
