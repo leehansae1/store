@@ -2,6 +2,7 @@ package org.example.store.member.controller;
 
 
 
+import org.example.store.member.service.MemberService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -37,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 
-  private final IMemberService memberService;
+  private final MemberService memberService;
   private final MemberRepository memberRepository;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
