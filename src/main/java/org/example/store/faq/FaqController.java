@@ -2,12 +2,12 @@ package org.example.store.faq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.Member;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,10 +41,11 @@ public class FaqController {
         return prefix + "/write";
     }
 
-    // adminId >> 어센틱 어쩌구로 바꾸기
-    @PostMapping("/write/{adminId}")
-    public String write(FaqDto faqDto, @PathVariable String adminId) {
-        FaqDto resultDto = faqService.writeFaq(faqDto, adminId);
+    // 내계정 >> 어센틱 어쩌구로 바꾸기
+    @PostMapping("/write")
+    public String write(FaqDto faqDto) {
+        Member 내계정 = null;
+        FaqDto resultDto = faqService.writeFaq(faqDto, 내계정);
         if (resultDto != null) return prefix + "/list";
         return prefix + "/write";
     }
@@ -69,14 +70,13 @@ public class FaqController {
     }
 
     // ajax 처리 = ex) question 컬럼에 해당하는 곳에 data-id 값을 faqId로 설정
-    @PostMapping("/addViews/{faqId}/{adminId}")
-    public Map<String, Object> addViews(@PathVariable int faqId, @PathVariable String adminId) {
-        Map<String, Object> result = new HashMap<>();
-        int views = faqService.addViews(faqId, adminId);
-        if (views > 0) {
-            result.put("success", true);
-            result.put("views", views);
-        } else result.put("success", false);
-        return result;
+    @PostMapping("/addViews/{faqId}")
+    public Map<String, Object> addViews(@PathVariable int faqId) {
+        Member 내계정 = null;
+        int views = faqService.addViews(faqId, 내계정);
+
+        return views > 0
+                ? Map.of("success", true, "views", views)
+                : Map.of("success", false);
     }
 }

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.example.store.member.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -49,5 +52,13 @@ public class Faq {
                 .faqViews(faq.getFaqViews())
                 .memberDto(Member.fromEntity(faq.getMember()))
                 .build();
+    }
+
+    public static List<FaqDto> fromEntityList(List<Faq> faqs) {
+        List<FaqDto> faqDtoList = new ArrayList<>();
+        faqs.forEach(faq ->
+            faqDtoList.add(fromEntity(faq))
+        );
+        return faqDtoList;
     }
 }

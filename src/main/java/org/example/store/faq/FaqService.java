@@ -3,7 +3,6 @@ package org.example.store.faq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.Member;
-import org.example.store.member.MemberService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,59 +16,43 @@ public class FaqService {
 
     private final FaqRepository faqRepository;
 
-    private final MemberService memberService;
-
+    // FAQ 페이지 접근
     public List<FaqDto> getFaqList() {
         List<Faq> faqList = faqRepository.findAll();
         List<FaqDto> faqDtoList = new ArrayList<>();
 
-        faqList.forEach(faq -> {
-                    FaqDto faqDto = FaqDto.builder()
-                            .memberDto(Member.fromEntity(faq.getMember()))
-                            .faqId(faq.getFaqId())
-                            .faqCategory(faq.getFaqCategory())
-                            .question(faq.getQuestion())
-                            .answer(faq.getAnswer())
-                            .faqViews(faq.getFaqViews())
-                            .build();
-                    faqDtoList.add(faqDto);
-                }
-        );
+        faqList.forEach(faq -> faqDtoList.add(Faq.fromEntity(faq)));
         return faqDtoList;
     }
 
-    // 관리자가 자주묻는 질문을 작성한다
-    public FaqDto writeFaq(FaqDto faqDto, String adminId) {
-        Member member = memberService.getMember(adminId);
-        faqDto.setMemberDto(Member.fromEntity(member));
+    // 관리자가 FAQ 작성
+    public FaqDto writeFaq(FaqDto faqDto, Member 내계정) {
+        faqDto.setMemberDto(Member.fromEntity(내계정));
         Faq resultFaq = faqRepository.save(FaqDto.toEntity(faqDto));
         return Faq.fromEntity(resultFaq);
     }
 
-    // 문답 수정 시 데이터 긁어오기
+    // FAQ 수정 시 기존 글 긁어오기
     public FaqDto getFaq(int faqId) {
         Faq faq = faqRepository.findById(faqId).orElse(null);
-        log.info("서비스의 faq == {}", faq);
-        if (faq == null) return null;
-        return Faq.fromEntity(faq);
+        return faq == null ? null : Faq.fromEntity(faq);
     }
 
+    // FAQ 삭제
     public boolean deleteFaq(int faqId) {
         faqRepository.deleteById(faqId);
-        // db에 해당 데이터가 존재하지 않으면 true
         return !faqRepository.existsById(faqId);
     }
 
-    public int addViews(int faqId, String adminId) {
-        Member member = memberService.getMember(adminId);
-        if (member.getRole().equals("role_admin")) return 0;
-
+    // 조회수 올리기
+    public int addViews(int faqId, Member 내계정) {
+//        if (내계정.getRole().equals("role_admin")) return 0;
         FaqDto faqDto;
         Optional<Faq> optionalFaq = faqRepository.findById(faqId);
         if (optionalFaq.isPresent()) {
             faqDto = Faq.fromEntity(optionalFaq.get());
             faqDto.setFaqViews(faqDto.getFaqViews() + 1);
-        } else return -1; //admin 이면 0, faq 가 없으면 -1 반환
-        return faqRepository.save(FaqDto.toEntity(faqDto)).getFaqViews();
+            return faqRepository.save(FaqDto.toEntity(faqDto)).getFaqViews();
+        } else return -1; // FAQ 질문 접근자가 admin 이면 0, faq 가 없으면 -1 반환
     }
 }

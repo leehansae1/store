@@ -3,6 +3,9 @@ package org.example.store.faq;
 import lombok.*;
 import org.example.store.member.MemberDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +36,13 @@ public class FaqDto {
                 .answer(faqDto.getAnswer())
                 .faqViews(faqDto.getFaqViews())
                 .build();
+    }
+
+    public static List<Faq> toEntityList(List<FaqDto> faqDtoList) {
+        List<Faq> faqList = new ArrayList<>();
+        faqDtoList.forEach(faqDto ->
+                faqList.add(FaqDto.toEntity(faqDto))
+        );
+        return faqList;
     }
 }
