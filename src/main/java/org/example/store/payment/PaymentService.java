@@ -2,8 +2,8 @@ package org.example.store.payment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.member.Member;
-import org.example.store.member.MemberService;
+import org.example.store.member.entity.Member;
+import org.example.store.member.service.MemberService;
 import org.example.store.product.ProductService;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
