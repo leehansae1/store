@@ -1,6 +1,6 @@
 package org.example.store.follow;
 
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

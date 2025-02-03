@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 
 @Entity
 @Getter

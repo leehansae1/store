@@ -1,7 +1,7 @@
 package org.example.store.follow;
 
 import lombok.*;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 
 @Getter
 @Setter
