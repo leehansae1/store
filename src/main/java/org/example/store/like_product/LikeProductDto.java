@@ -1,7 +1,7 @@
 package org.example.store.like_product;
 
 import lombok.*;
-import org.example.store.member.MemberDto;
+import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
 import java.util.ArrayList;

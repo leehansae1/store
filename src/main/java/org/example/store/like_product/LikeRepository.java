@@ -1,6 +1,6 @@
 package org.example.store.like_product;
 
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
