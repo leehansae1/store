@@ -2,7 +2,7 @@ package org.example.store.like_product;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
