@@ -13,12 +13,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
@@ -34,8 +29,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 
 @Controller
@@ -188,5 +181,23 @@ public class MemberController {
   public String deletedMembers(Model model) {
     model.addAttribute("deletedMembers", memberService.getDeletedMembers());
     return "/admin/deleted-members"; // 관리자 전용 화면 
+  }
+
+  // 구독 & 취소 처리
+  @PostMapping("/follow/{sellerId}")
+  //내계정 >> @AuthenticationPrincipal CustomUserDetails customUserDetails 변경
+  public Map<String, Boolean> follow(@PathVariable String sellerId, Member 내계정) {
+    log.info("PostMapping");
+
+    return memberService.follow(sellerId, 내계정)
+            ? Map.of("is saved", true) : Map.of("is saved", false);
+  }
+  @DeleteMapping("/follow/{sellerId}")
+  //내계정 >> @AuthenticationPrincipal CustomUserDetails customUserDetails 변경
+  public Map<String, Boolean> unFollow(@PathVariable String sellerId, Member 내계정) {
+    log.info("DeleteMapping");
+    int deleteResult = memberService.unfollow(sellerId, 내계정);
+    return deleteResult > 0
+            ? Map.of("is delete", true) : Map.of("is delete", false);
   }
 }
