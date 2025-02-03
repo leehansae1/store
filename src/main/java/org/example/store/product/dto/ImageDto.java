@@ -1,8 +1,8 @@
 package org.example.store.product.dto;
 
 import lombok.*;
-import org.example.store_project.product.entity.Image;
-import org.example.store_project.product.entity.Product;
+import org.example.store.product.entity.Image;
+import org.example.store.product.entity.Product;
 
 import java.util.ArrayList;
 import java.util.List;
