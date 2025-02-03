@@ -54,6 +54,8 @@ public class MemberDto {
 
     private List<LikeProductDto> likeProductDtoList;
 
+
+
     private List<ReviewDto> reviewDtoList;
 
     private List<PaymentDto> paymentDtoList;

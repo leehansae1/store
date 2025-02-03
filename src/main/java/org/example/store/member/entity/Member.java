@@ -167,8 +167,4 @@ public static MemberDto fromEntity(Member member) {
     }
 
 
-
-
-  
-
 }
