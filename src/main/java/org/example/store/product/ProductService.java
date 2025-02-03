@@ -2,16 +2,16 @@ package org.example.store.product;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store_project.follow.FollowService;
-import org.example.store_project.like_product.LikeService;
-import org.example.store_project.member.Member;
-import org.example.store_project.member.MemberDto;
-import org.example.store_project.product.dto.ImageDto;
-import org.example.store_project.product.dto.ProductDto;
-import org.example.store_project.product.entity.Image;
-import org.example.store_project.product.entity.Product;
-import org.example.store_project.product.repository.ImageRepository;
-import org.example.store_project.product.repository.ProductRepository;
+import org.example.store.follow.FollowService;
+import org.example.store.like_product.LikeService;
+import org.example.store.member.entity.Member;
+import org.example.store.member.dto.MemberDto;
+import org.example.store.product.dto.ImageDto;
+import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Image;
+import org.example.store.product.entity.Product;
+import org.example.store.product.repository.ImageRepository;
+import org.example.store.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
