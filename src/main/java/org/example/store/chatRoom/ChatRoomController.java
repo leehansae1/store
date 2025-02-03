@@ -3,7 +3,7 @@ package org.example.store.chatRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chat.ChatDto;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 

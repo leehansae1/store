@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.store.chat.Chat;
 import org.example.store.chat.ChatDto;
-import org.example.store.member.Member;
+import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 
 import java.util.ArrayList;
