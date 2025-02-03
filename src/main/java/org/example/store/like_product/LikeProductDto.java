@@ -4,7 +4,8 @@ import lombok.*;
 import org.example.store.member.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,15 +21,17 @@ public class LikeProductDto {
 
     private ProductDto productDto;
 
-    private LocalDateTime likeAt;
-
     public static LikeProduct toEntity(LikeProductDto dto) {
         return LikeProduct.builder()
                 .id(dto.getId())
-                .likeAt(dto.getLikeAt())
 
                 .liker(MemberDto.toEntity(dto.getLiker()))
-                //.product(dto.getProductDto())
+                .product(ProductDto.toEntity(dto.getProductDto()))
                 .build();
+    }
+    public static List<LikeProduct> toEntityList(List<LikeProductDto> likeDtoList) {
+        List<LikeProduct> likeProductList = new ArrayList<>();
+        likeDtoList.forEach(likeDto -> likeProductList.add(toEntity(likeDto)));
+        return likeProductList;
     }
 }

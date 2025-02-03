@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.store.member.Member;
 import org.example.store.product.entity.Product;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -31,23 +31,24 @@ public class LikeProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @LastModifiedDate
-    private LocalDateTime likeAt;
-
     @Builder
-    public LikeProduct(Member liker, Product product, LocalDateTime likeAt, int id) {
+    public LikeProduct(Member liker, Product product, int id) {
         this.liker = liker;
         this.product = product;
-        this.likeAt = likeAt;
         this.id = id;
     }
 
-    public static LikeProductDto fromEntity(LikeProduct likeProduct){
+    public static LikeProductDto fromEntity(LikeProduct likeProduct) {
         return LikeProductDto.builder()
-                .likeAt(likeProduct.getLikeAt())
                 .id(likeProduct.getId())
-                //.productDto(likeProduct.getProduct())
+                .productDto(Product.fromEntity(likeProduct.getProduct()))
                 .liker(Member.fromEntity(likeProduct.getLiker()))
                 .build();
+    }
+
+    public static List<LikeProductDto> fromEntityList(List<LikeProduct> likeList) {
+        List<LikeProductDto> likeProductDtoList = new ArrayList<>();
+        likeList.forEach(likeProduct -> likeProductDtoList.add(fromEntity(likeProduct)));
+        return likeProductDtoList;
     }
 }
