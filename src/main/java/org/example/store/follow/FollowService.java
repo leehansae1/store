@@ -2,8 +2,8 @@ package org.example.store.follow;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.member.entity.Member;
 import org.example.store.member.dto.MemberDto;
+import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
