@@ -39,16 +39,16 @@ spring:
 
     open-in-view: false
 
-  #  security:
-  #    user:
-  #      name: 1234
-  #      password: 1234
+    security:
+      user:
+        name: 1234
+        password: 1234
 
   mail:
     host: smtp.naver.com
     port: 465
-    username:
-    password:
+    username: test9876test@naver.com
+    password: q0w9e182ieow3#$
     properties:
       debug: true
       mail:

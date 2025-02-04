@@ -12,7 +12,6 @@ import org.example.store.like_product.LikeProductDto;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.entity.Member;
-import org.example.store.memberReview.Review;
 import org.example.store.memberReview.ReviewDto;
 import org.example.store.payment.PaymentDto;
 import org.example.store.product.dto.ProductDto;
