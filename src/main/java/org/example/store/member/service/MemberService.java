@@ -69,7 +69,7 @@ public class MemberService implements IMemberService {
                 .status(MemberStatus.STATUS_ACTIVE)
                 .regDate(LocalDateTime.now())
                 .build();
-
+        
         // 4. 엔티티 저장
         Member savedMember = MemberDto.toEntity(memberDto);
         return memberRepository.save(savedMember);

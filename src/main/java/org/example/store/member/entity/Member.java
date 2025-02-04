@@ -5,12 +5,21 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.store.chat.Chat;
+import org.example.store.chatRoom.ChatRoom;
+import org.example.store.faq.Faq;
+import org.example.store.follow.Follow;
+import org.example.store.like_product.LikeProduct;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.dto.ModifyDto;
+import org.example.store.memberReview.Review;
+import org.example.store.payment.Payment;
+import org.example.store.product.entity.Product;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -52,39 +61,39 @@ public class Member {
   private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
 
   // 맵핑
-//  @OneToMany(mappedBy = "member")
-//  private List<Faq> faqList;
-//
-//  @OneToMany(mappedBy = "writer")
-//  @OrderBy("chatDate desc")
-//  private List<Chat> chatList;
-//
-//  @OneToMany(mappedBy = "toUser")
-//  private List<ChatRoom> chatRoomList;
-//
-//  @OneToMany(mappedBy = "seller")
-//  private List<Product> productList;
-//
-//  @OneToMany(mappedBy = "follower")
-//  private List<Follow> followList;
-//
-//  @OneToMany(mappedBy = "liker")
-//  private List<LikeProduct> likeProductList;
-//
-//  @OneToMany(mappedBy = "reviewer")
-//  private List<Review> reviewList;
-//
-//  @OneToMany(mappedBy = "customer")
-//  private List<Payment> paymentList;
+  @OneToMany(mappedBy = "member")
+  private List<Faq> faqList;
+
+  @OneToMany(mappedBy = "writer")
+  @OrderBy("chatDate desc")
+  private List<Chat> chatList;
+
+  @OneToMany(mappedBy = "toUser")
+  private List<ChatRoom> chatRoomList;
+
+  @OneToMany(mappedBy = "seller")
+  private List<Product> productList;
+
+  @OneToMany(mappedBy = "follower")
+  private List<Follow> followList;
+
+  @OneToMany(mappedBy = "liker")
+  private List<LikeProduct> likeProductList;
+
+  @OneToMany(mappedBy = "reviewer")
+  private List<Review> reviewList;
+
+  @OneToMany(mappedBy = "customer")
+  private List<Payment> paymentList;
 
   @Builder
   public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String addr01,
                 String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce,
                 MemberStatus status
           
-//                , List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
-//                List<Follow> followList, List<LikeProduct> likeProductList, List<Review> reviewList,
-//                List<Payment> paymentList
+                , List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
+                List<Follow> followList, List<LikeProduct> likeProductList, List<Review> reviewList,
+                List<Payment> paymentList
                 ) {
     this.userId = userId;
     this.userPw = userPw;
@@ -100,14 +109,14 @@ public class Member {
     this.introduce = introduce;
     this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정
 
-//    this.faqList = faqList;
-//    this.chatList = chatList;
-//    this.chatRoomList = chatRoomList;
-//    this.productList = productList;
-//    this.followList = followList;
-//    this.likeProductList = likeProductList;
-//    this.reviewList = reviewList;
-//    this.paymentList = paymentList;
+    this.faqList = faqList;
+    this.chatList = chatList;
+    this.chatRoomList = chatRoomList;
+    this.productList = productList;
+    this.followList = followList;
+    this.likeProductList = likeProductList;
+    this.reviewList = reviewList;
+    this.paymentList = paymentList;
     }
 
 
@@ -153,14 +162,14 @@ public static MemberDto fromEntity(Member member) {
                 .regDate(member.getRegDate())
                 .status(member.getStatus())
 
-//                .productDtoList(Product.fromEntityList(member.getProductList()))
-//                .faqDtoList(Faq.fromEntityList(member.getFaqList()))
-//                .chatDtoList(Chat.fromEntityList(member.getChatList()))
-//                .chatRoomDtoList(ChatRoom.fromEntityList(member.getChatRoomList()))
-//                .followDtoList(Follow.fromEntityList(member.getFollowList()))
-//                .likeProductDtoList(LikeProduct.fromEntityList(member.getLikeProductList()))
-//                .paymentDtoList(Payment.fromEntityList(member.getPaymentList()))
-//                .reviewDtoList(Review.fromEntityList(member.getReviewList()))
+                .productDtoList(Product.fromEntityList(member.getProductList()))
+                .faqDtoList(Faq.fromEntityList(member.getFaqList()))
+                .chatDtoList(Chat.fromEntityList(member.getChatList()))
+                .chatRoomDtoList(ChatRoom.fromEntityList(member.getChatRoomList()))
+                .followDtoList(Follow.fromEntityList(member.getFollowList()))
+                .likeProductDtoList(LikeProduct.fromEntityList(member.getLikeProductList()))
+                .paymentDtoList(Payment.fromEntityList(member.getPaymentList()))
+                .reviewDtoList(Review.fromEntityList(member.getReviewList()))
                 .build();
     }
 
