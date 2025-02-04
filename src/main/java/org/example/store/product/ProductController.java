@@ -3,7 +3,6 @@ package org.example.store.product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
-import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

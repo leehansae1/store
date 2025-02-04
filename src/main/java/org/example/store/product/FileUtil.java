@@ -1,6 +1,7 @@
 package org.example.store.product;
 
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,9 @@ public class FileUtil {
     private static String FOLDER_PATH;
 
     public static String saveAndRenameFile(MultipartFile file) {
+        file.getSize();
+
+        // 파일 이름 바꾸기
         String onlyFileName
                 = file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
         String extension
@@ -30,7 +34,7 @@ public class FileUtil {
         DateTimeFormatter folderFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
         String folderName = LocalDateTime.now().format(folderFormat);
 
-        // folderPath == 파일을 저장할 절대경로, 즉 서버 저장경로
+        // folderPath == 파일을 저장할 절대경로 == 서버 저장경로
         Path folderPath = Paths.get(FOLDER_PATH + "product/" + folderName);
         try {
             if (Files.notExists(folderPath)) {
@@ -39,12 +43,12 @@ public class FileUtil {
 
             // Paths.get() 의 파라미터는 스트링, 곧 파일이나 폴더의 경로 이름
             Path targetFile = Paths.get(folderPath + "/" + renameFileName);
-            // transferTo 를 통해 설정한 경로로 파일을 옮김 !!
+            // transferTo 를 통해 설정한 경로로 파일을 옮김
             file.transferTo(targetFile);
-//
-//            Thumbnails.of(targetFile.toFile())
-//                    .size(300, 300)
-//                    .toFile(targetFile.toFile());
+
+            Thumbnails.of(targetFile.toFile())
+                    .size(300, 300)
+                    .toFile(targetFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
