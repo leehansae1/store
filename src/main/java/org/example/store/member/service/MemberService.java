@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.follow.FollowService;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.dto.ModifyDto;
 import org.example.store.member.dto.SignupDto;
@@ -201,14 +202,14 @@ public class MemberService implements IMemberService {
     }
 
     // 팔로우 & 언팔
-    public boolean follow(String sellerId, Member 내계정) {
+    public boolean follow(String sellerId, CustomUserDetails user) {
         Member seller = getMember(sellerId);
-        return followService.follow(seller, 내계정);
+        return followService.follow(seller, user.getLoggedMember());
     }
 
-    public int unfollow(String sellerId, Member 내계정) {
+    public int unfollow(String sellerId, CustomUserDetails user) {
         Member seller = getMember(sellerId);
-        return followService.unfollow(seller, 내계정);
+        return followService.unfollow(seller, user.getLoggedMember());
     }
 
 }

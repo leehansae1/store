@@ -65,11 +65,12 @@ public class MemberDto {
     @Builder
     public MemberDto(String userId, String userPw, String userName, String userProfile,
                      String userEmail, String addr01, String addr02, String zipcode, Role role, String tel, LocalDateTime regDate,
-                     String introduce, MemberStatus status, int followCount, boolean followState,
-                     List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
+                     String introduce, MemberStatus status , int followCount, boolean followState
+                     , List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
                      List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList,
                      List<LikeProductDto> likeProductDtoList, List<FollowDto> followDtoList,
-                     List<ReviewDto> reviewDtoList, List<PaymentDto> paymentDtoList) {
+                     List<ReviewDto> reviewDtoList, List<PaymentDto> paymentDtoList
+                     ) {
         this.userId = userId;
         this.userPw = userPw;
         this.userName = userName;
@@ -109,10 +110,10 @@ public class MemberDto {
                 .zipcode(memberDto.getZipcode())
                 .tel(memberDto.getTel())
                 .introduce(memberDto.getIntroduce())
-                .role(Role.ROLE_USER)
+                .role(memberDto.getRole())
                 .regDate(memberDto.getRegDate())
                 .status(memberDto.getStatus() != null ? memberDto.getStatus() : MemberStatus.STATUS_ACTIVE)
-
+                
                 .productList(ProductDto.toEntityList(memberDto.getProductDtoList()))
                 .faqList(FaqDto.toEntityList(memberDto.getFaqDtoList()))
                 .chatList(ChatDto.toEntityList(memberDto.getChatDtoList()))
