@@ -2,7 +2,7 @@ package org.example.store.chat;
 
 import lombok.*;
 import org.example.store.chatRoom.ChatRoomDto;
-import org.example.store.member.entity.MemberDto;
+import org.example.store.member.dto.MemberDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
