@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: store
+  profiles:
+    include:
+      oauth
 
   output:
     ansi:
@@ -36,16 +39,16 @@ spring:
 
     open-in-view: false
 
-  #  security:
-  #    user:
-  #      name: 1234
-  #      password: 1234
+    security:
+      user:
+        name: 1234
+        password: 1234
 
   mail:
     host: smtp.naver.com
     port: 465
-    username:
-    password:
+    username: test9876test@naver.com
+    password: q0w9e182ieow3#$
     properties:
       debug: true
       mail:
@@ -64,3 +67,6 @@ logging:
 
 api:
   key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+
+file:
+  path: C:\upload\
