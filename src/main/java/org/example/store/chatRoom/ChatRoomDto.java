@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.example.store.chat.Chat;
 import org.example.store.chat.ChatDto;
-import org.example.store.member.entity.MemberDto;
+import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
 import java.util.ArrayList;
