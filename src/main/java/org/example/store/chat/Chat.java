@@ -27,8 +27,6 @@ public class Chat {
     @CreatedDate
     private LocalDateTime chatDate;
 
-    private int chatLevel;
-
     @ManyToOne
     @JoinColumn(name = "writer_id")
     private Member writer;
@@ -46,7 +44,6 @@ public class Chat {
         this.isRead = isRead;
         this.chatId = chatId;
         this.content = content;
-        this.chatLevel = chatLevel;
         this.chatDate = chatDate;
         this.writer = writer;
         this.chatRoom = chatRoom;
@@ -57,7 +54,6 @@ public class Chat {
                 .isRead(chat.isRead())
                 .chatId(chat.getChatId())
                 .content(chat.getContent())
-                .chatLevel(chat.getChatLevel())
                 .writer(Member.fromEntity(chat.getWriter()))
                 .chatRoomDto(ChatRoom.fromEntity(chat.getChatRoom()))
                 .chatDate(chat.getChatDate())

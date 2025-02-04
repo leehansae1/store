@@ -2,6 +2,7 @@ package org.example.store.memberReview;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.product.ProductService;
 import org.example.store.product.entity.Product;
@@ -20,22 +21,23 @@ public class ReviewService {
 
     private final ProductService productService;
 
-    public boolean writeReview(ReviewDto reviewDto, int productId, Member 내계정) {
+    public boolean writeReview(ReviewDto reviewDto, int productId,
+                               CustomUserDetails user) {
         //리뷰하는 상품
         Product product = productService.getProduct(productId);
         reviewDto.setProductDto(Product.fromEntity(product));
         reviewDto.setSeller(Member.fromEntity(product.getSeller())); //판매자
 
         //구매자
-        reviewDto.setReviewer(Member.fromEntity(내계정));
+        reviewDto.setReviewer(Member.fromEntity(user.getLoggedMember()));
 
         Review review = reviewRepository.save(ReviewDto.toEntity(reviewDto));
         return Review.fromEntity(review) != null;
     }
 
-    public List<ReviewDto> getReviewList(Member 내계정) {
+    public List<ReviewDto> getReviewList(Member seller) {
         List<ReviewDto> reviewDtoList = new ArrayList<>();
-        List<Review> reviewList = reviewRepository.findAllBySeller(내계정);
+        List<Review> reviewList = reviewRepository.findAllBySeller(seller);
         reviewList.forEach(review ->
                 reviewDtoList.add(Review.fromEntity(review))
         );

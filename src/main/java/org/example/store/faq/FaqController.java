@@ -2,7 +2,8 @@ package org.example.store.faq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.member.entity.Member;
+import org.example.store.member.dto.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Map;
 
-// 에러항목을 정해서 빈칸이면 들어갈 수 없게 자바스크립으로 제어
 @RequestMapping("/faq")
 @RequiredArgsConstructor
 @Slf4j
@@ -23,7 +23,6 @@ public class FaqController {
     private final String prefix = "/faq";
 
     // 클라이언트-어드민 모두 리스트로 조회
-    // 따로 항목마다 보는 페이지는 만들지 않을 예정 >> 추후 변경될 수 있음
     @GetMapping("/list")
     public String list(Model model) {
         List<FaqDto> faqDtoList = faqService.getFaqList();
@@ -34,18 +33,19 @@ public class FaqController {
         return prefix + "/list";
     }
 
-    // 관리자가 문답 추가
+    // 관리자가 문답 작성
     @GetMapping("/write")
     public String write(Model model) {
         model.addAttribute("faqList", new FaqDto());
         return prefix + "/write";
     }
 
-    // 내계정 >> 어센틱 어쩌구로 바꾸기
+    // 작성 된 문답 저장
     @PostMapping("/write")
-    public String write(FaqDto faqDto) {
-        Member 내계정 = null;
-        FaqDto resultDto = faqService.writeFaq(faqDto, 내계정);
+    public String write(FaqDto faqDto, @AuthenticationPrincipal CustomUserDetails user
+                        //밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ) {
+        FaqDto resultDto = faqService.writeFaq(faqDto, user);
         if (resultDto != null) return prefix + "/list";
         return prefix + "/write";
     }
@@ -70,11 +70,11 @@ public class FaqController {
     }
 
     // ajax 처리 = ex) question 컬럼에 해당하는 곳에 data-id 값을 faqId로 설정
+    // 로그인 사용자를 넣은 이유는 관리자라면 조회수 변동없게 하기 위함
     @PostMapping("/addViews/{faqId}")
-    public Map<String, Object> addViews(@PathVariable int faqId) {
-        Member 내계정 = null;
-        int views = faqService.addViews(faqId, 내계정);
-
+    public Map<String, Object> addViews(@PathVariable int faqId,
+                                        @AuthenticationPrincipal CustomUserDetails user) {
+        int views = faqService.addViews(faqId, user);
         return views > 0
                 ? Map.of("success", true, "views", views)
                 : Map.of("success", false);

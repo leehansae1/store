@@ -13,7 +13,6 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
 
-    // 아직 답글처럼 보이기 위한 level step 등은 하지 않음
     public ChatDto write(ChatDto chatDto) {
         //db 입력한 채팅을 화면에도 뿌려주기 위해 출력
         Chat chat = chatRepository.save(ChatDto.toEntity(chatDto));
@@ -36,5 +35,4 @@ public class ChatService {
         });
         return Chat.fromEntityList(chatList);
     }
-
 }

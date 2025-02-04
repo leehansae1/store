@@ -3,7 +3,9 @@ package org.example.store.memberReview;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chatRoom.ChatRoomService;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,23 +35,11 @@ public class ReviewController {
 
     @PostMapping("/write")
     //productId 는 히든 인풋으로 넘김
-    public String writeReview(ReviewDto reviewDto, int productId) {
-        Member 내계정 = null; //어센틱 어쩌구로 내계정 변경
-        chatRoomService.writePaymentResult(productId, 내계정); // 결제 되었다는 채팅 날리기
-        return reviewService.writeReview(reviewDto, productId, 내계정)
+    public String writeReview(ReviewDto reviewDto, int productId,
+                              @AuthenticationPrincipal CustomUserDetails user) {
+        chatRoomService.writePaymentResult(productId, user); // 결제 되었다는 채팅 날리기
+        return reviewService.writeReview(reviewDto, productId, user)
                 ? "/chatRoom/paymentResult/" + productId : prefix + "/write";
-    }
-
-    // 상점 후기 보기
-    @PostMapping("/list")
-    @ResponseBody
-    public Map<String, Object> getReviewList() {
-        Member 내계정 = null; //어센틱 어쩌구로 내계정 변경
-
-        List<ReviewDto> reviewDtoList = reviewService.getReviewList(내계정);
-        return reviewDtoList != null
-                ? Map.of("reviewList", reviewDtoList, "success", true)
-                : Map.of("success", false);
     }
 
     // /review/list/{userId} 화면에서 버튼으로 처리 >> 남의 상점에 들어갔는데 내 후기가 있는 상황

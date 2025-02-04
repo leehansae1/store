@@ -3,6 +3,7 @@ package org.example.store.shop;
 import lombok.RequiredArgsConstructor;
 import org.example.store.follow.FollowService;
 import org.example.store.like_product.LikeService;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.service.MemberService;
@@ -10,7 +11,9 @@ import org.example.store.memberReview.ReviewDto;
 import org.example.store.memberReview.ReviewService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,10 +39,10 @@ public class ShopController {
     // userId 를 어떻게 대체할 수 있을까 >> 7자리 난수 속성을 하나 만들자
 
     // 상품
-    @PostMapping("/products/{userId}")
-    public Map<String, Object> getSellerProducts(@PathVariable String userId) {
-        Member member = memberService.getMember(userId);
-        List<ProductDto> productDtoList = productService.getSellerProducts(member);
+    @GetMapping("/products")
+    public Map<String, Object> getSellerProducts(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<ProductDto> productDtoList
+                = productService.getSellerProducts(customUserDetails);
         return productDtoList != null
                 ? Map.of("productList", productDtoList, "isList", true)
                 : Map.of("isList", false);
@@ -48,18 +51,16 @@ public class ShopController {
     // 상점후기
     @PostMapping("/reviews/{userId}")
     public Map<String, Object> getReviews(@PathVariable String userId) {
-        Member member = memberService.getMember(userId);
-        List<ReviewDto> reviewDtoList = reviewService.getReviewList(member);
+        List<ReviewDto> reviewDtoList = reviewService.getReviewList(memberService.getMember(userId));
         return reviewDtoList != null
                 ? Map.of("reviewList", reviewDtoList, "isList", true)
                 : Map.of("isList", false);
     }
 
-    // 찜
-    @PostMapping("/favorites/{userId}")
-    public Map<String , Object> getFavorites(@PathVariable String userId){
-        Member member = memberService.getMember(userId);
-        List<ProductDto> productDtoList = likeService.getLikeProducts(member);
+    // 찜 >> 내 상점에서만 조회 가능
+    @PostMapping("/favorites")
+    public Map<String , Object> getFavorites(@AuthenticationPrincipal CustomUserDetails customUser){
+        List<ProductDto> productDtoList = likeService.getLikeProducts(customUser);
         return productDtoList != null
                 ? Map.of("productList", productDtoList, "isList", true)
                 : Map.of("isList", false);

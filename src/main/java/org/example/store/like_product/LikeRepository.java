@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface LikeRepository extends JpaRepository<LikeProduct, Integer> {
 
-    int countByLiker(Member liker);
-
     List<LikeProduct> findAllByLiker(Member liker);
 
     int deleteByProductAndLiker(Product product, Member liker);

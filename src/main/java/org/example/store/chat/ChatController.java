@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@RestController //ajax 처리 >> 추후 합칠 때 apiController 에 같이 넣어준다
+@RestController
 @RequiredArgsConstructor
 public class ChatController {
 

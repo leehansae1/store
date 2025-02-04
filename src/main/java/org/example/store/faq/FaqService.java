@@ -2,6 +2,8 @@ package org.example.store.faq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.constant.Role;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +21,12 @@ public class FaqService {
     // FAQ 페이지 접근
     public List<FaqDto> getFaqList() {
         List<Faq> faqList = faqRepository.findAll();
-        List<FaqDto> faqDtoList = new ArrayList<>();
-
-        faqList.forEach(faq -> faqDtoList.add(Faq.fromEntity(faq)));
-        return faqDtoList;
+        return Faq.fromEntityList(faqList);
     }
 
     // 관리자가 FAQ 작성
-    public FaqDto writeFaq(FaqDto faqDto, Member 내계정) {
-        faqDto.setMemberDto(Member.fromEntity(내계정));
+    public FaqDto writeFaq(FaqDto faqDto, CustomUserDetails user) {
+        faqDto.setMemberDto(Member.fromEntity(user.getLoggedMember()));
         Faq resultFaq = faqRepository.save(FaqDto.toEntity(faqDto));
         return Faq.fromEntity(resultFaq);
     }
@@ -44,9 +43,10 @@ public class FaqService {
         return !faqRepository.existsById(faqId);
     }
 
-    // 조회수 올리기
-    public int addViews(int faqId, Member 내계정) {
-//        if (내계정.getRole().equals("role_admin")) return 0;
+    // 클릭 시 조회수 올리기
+    public int addViews(int faqId, CustomUserDetails user) {
+        Role role = user.getLoggedMember().getRole();
+        if (role.name().equals("role_admin")) return 0;
         FaqDto faqDto;
         Optional<Faq> optionalFaq = faqRepository.findById(faqId);
         if (optionalFaq.isPresent()) {

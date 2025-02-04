@@ -2,9 +2,11 @@ package org.example.store.product;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Product;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,10 +58,10 @@ public class ProductController {
     }
 
     @PostMapping("/upload")
-    public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files) {
+    public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files,
+                                @AuthenticationPrincipal CustomUserDetails customUser) {
         // 밸리데이션 추가 !!!!!
-        Member 내계정 = null; // 작성자 아이디는 어센틱어쩌구 이용
-        int productId = productService.uploadProduct(productDto, files, 내계정);
+        int productId = productService.uploadProduct(productDto, files, customUser);
         // 저장이 되었다면 상세화면으로 넘어가기
         if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
         else return prefix + "/upload";
@@ -76,8 +78,9 @@ public class ProductController {
 
     // 상품 상세 페이지
     @GetMapping("/detail/{productId}")
-    public String getProduct(@PathVariable int productId, Model model, Member 로그인한계정) {
-        Map<String, Object> resultMap = productService.getProductDetail(productId, 로그인한계정);
+    public String getProduct(@PathVariable int productId, Model model,
+                             @AuthenticationPrincipal CustomUserDetails customUser) {
+        Map<String, Object> resultMap = productService.getProductDetail(productId, customUser);
         model.addAttribute("product", resultMap.get("product"));
         log.info("found {} product", resultMap.get("product"));
         return prefix + "/detail/" + productId;
@@ -85,8 +88,9 @@ public class ProductController {
 
     // 내 상품 관리 페이지
     @GetMapping("/manage")
-    public String getManagePage(Model model, Member 내계정) {
-        List<ProductDto> productDtoList = productService.getSellerProducts(내계정);
+    public String getManagePage(Model model,
+                                @AuthenticationPrincipal CustomUserDetails customUser) {
+        List<ProductDto> productDtoList = productService.getSellerProducts(customUser);
         model.addAttribute("productList", productDtoList);
         log.info("found {} products", productDtoList.size());
         return prefix + "/manage";
@@ -94,16 +98,16 @@ public class ProductController {
 
     // 좋아요 관련 로직
     @PostMapping("/product/like/{productId}")
-    public Map<String, Boolean> like(@PathVariable int productId) {
-        Member 내계정 = null; // 내계정 >> @어센티 어쩌구 어노테이션으로 변경하기
-        return productService.like(productId, 내계정)
+    public Map<String, Boolean> like(@PathVariable int productId,
+                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return productService.like(productId, customUserDetails)
                 ? Map.of("success", true) : Map.of("success", false);
     }
 
     @DeleteMapping("product/unlike/{productId}")
-    public Map<String, Boolean> unlike(@PathVariable int productId) {
-        Member 내계정 = null; // 내계정 >> @어센티 어쩌구 어노테이션으로 변경하기
-        return (productService.unlike(productId, 내계정) > 0)
+    public Map<String, Boolean> unlike(@PathVariable int productId,
+                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return (productService.unlike(productId, customUserDetails) > 0)
                 ? Map.of("success", true) : Map.of("success", false);
     }
 }

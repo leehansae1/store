@@ -20,8 +20,6 @@ public class ChatDto {
 
     private LocalDateTime chatDate;
 
-    private int chatLevel;
-
     private boolean isRead;
 
     private MemberDto writer;
@@ -29,13 +27,12 @@ public class ChatDto {
     private ChatRoomDto chatRoomDto;
 
     @Builder
-    public ChatDto(int chatId, String content, LocalDateTime chatDate, int chatLevel,
+    public ChatDto(int chatId, String content, LocalDateTime chatDate,
                    MemberDto writer, boolean isRead, ChatRoomDto chatRoomDto) {
         this.isRead = isRead;
         this.chatId = chatId;
         this.content = content;
         this.chatDate = chatDate;
-        this.chatLevel = chatLevel;
         this.writer = writer;
         this.chatRoomDto = chatRoomDto;
     }
@@ -45,7 +42,6 @@ public class ChatDto {
                 .chatId(chatDto.getChatId())
                 .content(chatDto.getContent())
                 .chatDate(chatDto.getChatDate())
-                .chatLevel(chatDto.getChatLevel())
                 .writer(MemberDto.toEntity(chatDto.getWriter()))
                 .chatRoom(ChatRoomDto.toEntity(chatDto.getChatRoomDto()))
                 .isRead(chatDto.isRead())

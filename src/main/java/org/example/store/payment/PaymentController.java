@@ -4,11 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.member.entity.Member;
+import org.example.store.member.dto.CustomUserDetails;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -144,24 +145,20 @@ public class PaymentController {
                 ? Map.of("save", true) : Map.of("save", false);
     }
 
-    // 나중에 바꿀거임 어센틱 어쩌구로 // 결제 실패 내역
+    // 결제 실패 내역
     @GetMapping("/payment/getPayments")
-    public List<PaymentDto> getFailPayments() {
-        Member 내계정 = null;
-        return paymentService.getFailPaymentList(내계정);
+    public List<PaymentDto> getFailPayments(@AuthenticationPrincipal CustomUserDetails user) {
+        return paymentService.getFailPaymentList(user);
     }
 
-    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 판매 내역
+    // 내 판매 내역
     @GetMapping("/payment/sellHistory")
-    public List<PaymentDto> getSellPayments() {
-        Member 내계정 = Member.builder().build();
-        return paymentService.getSellPayments(내계정);
+    public List<PaymentDto> getSellPayments(@AuthenticationPrincipal CustomUserDetails user) {
+        return paymentService.getSellPayments(user);
     }
-
-    // 나중에 바꿀거임 어센틱 어쩌구로 // 내 구매 내역
+    // 내 구매 내역
     @GetMapping("/payment/buyHistory")
-    public List<PaymentDto> getBuyPayments() {
-        Member 내계정 = Member.builder().build();
-        return paymentService.getBuyPayments(내계정);
+    public List<PaymentDto> getBuyPayments(@AuthenticationPrincipal CustomUserDetails user) {
+        return paymentService.getBuyPayments(user);
     }
 }

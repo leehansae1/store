@@ -2,6 +2,7 @@ package org.example.store.payment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.service.MemberService;
 import org.example.store.product.ProductService;
@@ -46,22 +47,24 @@ public class PaymentService {
         return Payment.fromEntity(payment) != null;
     }
 
-    // 결제실패내역 // 멤버는 커스텀디테일 유저
-    public List<PaymentDto> getFailPaymentList(Member 내계정) {
+    // 결제실패내역
+    public List<PaymentDto> getFailPaymentList(CustomUserDetails user) {
         List<PaymentDto> paymentDtos = new ArrayList<>();
         List<Payment> payments = paymentRepository
-                .findAllByCustomerOrProduct_SellerAndSuccess(내계정, 내계정, 0);
+                .findAllByCustomerOrProduct_SellerAndSuccess(
+                        user.getLoggedMember(), user.getLoggedMember(), 0
+                );
         payments.forEach(payment ->
                 paymentDtos.add(Payment.fromEntity(payment))
         );
         return paymentDtos;
     }
 
-    // 모든 구매내역 //멤버는 커스텀디테일 유저
-    public List<PaymentDto> getBuyPayments(Member 내계정) {
+    // 모든 구매내역
+    public List<PaymentDto> getBuyPayments(CustomUserDetails user) {
         List<PaymentDto> paymentDtos = new ArrayList<>();
         List<Payment> payments = paymentRepository
-                .findAllByCustomerAndSuccess(내계정, 1);
+                .findAllByCustomerAndSuccess(user.getLoggedMember(), 1);
         payments.forEach(payment ->
                 paymentDtos.add(Payment.fromEntity(payment))
         );
@@ -69,10 +72,10 @@ public class PaymentService {
     }
 
     // 모든 판매내역 //멤버는 커스텀디테일 유저
-    public List<PaymentDto> getSellPayments(Member 내계정) {
+    public List<PaymentDto> getSellPayments(CustomUserDetails user) {
         List<PaymentDto> paymentDtos = new ArrayList<>();
         List<Payment> payments = paymentRepository
-                .findAllByProduct_SellerAndSuccess(내계정, 0);
+                .findAllByProduct_SellerAndSuccess(user.getLoggedMember(), 0);
         payments.forEach(payment ->
                 paymentDtos.add(Payment.fromEntity(payment))
         );
@@ -80,16 +83,16 @@ public class PaymentService {
     }
 
     // 구매내역 하나만 필요할 때 >> 채팅창에서 or 구매내역에서 주문 내역 상세 확인할 때
-    public Payment getBuyPayment(Member 내계정, int productId) {
+    public Payment getBuyPayment(CustomUserDetails user, int productId) {
         Optional<Payment> optionalPayment = paymentRepository
-                .findByCustomerAndProduct_ProductId(내계정, productId);
+                .findByCustomerAndProduct_ProductId(user.getLoggedMember(), productId);
         return optionalPayment.orElse(null);
     }
 
     // 판매내역 하나만 필요할 때 >> 채팅창에서 or 구매내역에서 주문 내역 상세 확인할 때
-    public Payment getSellPayment(Member 내계정, int productId) {
+    public Payment getSellPayment(CustomUserDetails user, int productId) {
         Optional<Payment> optionalPayment = paymentRepository
-                .findByProduct_SellerAndProduct_ProductId(내계정, productId);
+                .findByProduct_SellerAndProduct_ProductId(user.getLoggedMember(), productId);
         return optionalPayment.orElse(null);
     }
 }
