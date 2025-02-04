@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -50,30 +51,33 @@ public class ProductController {
         return prefix + "/list";
     }
 
-    // 상품 판매글 작성페이지 및 저장
+    // 상품 판매글 작성페이지
     @GetMapping("/upload")
     public String getUploadPage(Model model) {
         model.addAttribute("product", new ProductDto());
         return prefix + "/upload";
     }
 
+    // 작성 후 저장
     @PostMapping("/upload")
     public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files,
-                                @AuthenticationPrincipal CustomUserDetails customUser) {
-        // 밸리데이션 추가 !!!!!
+                                @AuthenticationPrincipal CustomUserDetails customUser
+                                // 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ) {
         int productId = productService.uploadProduct(productDto, files, customUser);
         // 저장이 되었다면 상세화면으로 넘어가기
         if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
         else return prefix + "/upload";
     }
 
-    // 상품 수정 페이지 >> 업로드 페이지와 같음
+    // 상품 수정 페이지 >> 업로드 페이지로 기존 값 싣고 보내기
     @GetMapping("/modify/{productId}")
-    public String getModifyPage(Model model, @PathVariable int productId) {
+    public String getModifyPage(RedirectAttributes redirectAttributes, @PathVariable int productId) {
         ProductDto productDto = Product.fromEntity(productService.getProduct(productId));
-        model.addAttribute("product", productDto);
-        model.addAttribute("isSelect", productDto != null);
-        return prefix + "/modify"; // 꼭 수정해라 !!
+        redirectAttributes.addAttribute("product", productDto);
+        // isSelect 가 true 라면 업로드 페이지 문구를 수정에 맞게 바꾸기
+        redirectAttributes.addAttribute("isSelect", productDto != null);
+        return prefix + "redirect:/upload";
     }
 
     // 상품 상세 페이지
