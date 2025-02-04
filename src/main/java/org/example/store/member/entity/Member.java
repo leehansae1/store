@@ -90,8 +90,8 @@ public class Member {
   public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String addr01,
                 String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce,
                 MemberStatus status
-          ,
-                List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
+          
+                , List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
                 List<Follow> followList, List<LikeProduct> likeProductList, List<Review> reviewList,
                 List<Payment> paymentList
                 ) {
@@ -158,7 +158,7 @@ public static MemberDto fromEntity(Member member) {
                 .zipcode(member.getZipcode())
                 .tel(member.getTel())
                 .introduce(member.getIntroduce())
-                .role(Role.ROLE_USER)
+                .role(member.getRole())
                 .regDate(member.getRegDate())
                 .status(member.getStatus())
 

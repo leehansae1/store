@@ -36,7 +36,6 @@ public class MemberController {
 
   private final MemberService memberService;
   private final MemberRepository memberRepository;
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   private String prefix = "/member";
   
@@ -182,18 +181,16 @@ public class MemberController {
 
   // 구독 & 취소 처리
   @PostMapping("/follow/{sellerId}")
-  //내계정 >> @AuthenticationPrincipal CustomUserDetails customUserDetails 변경
-  public Map<String, Boolean> follow(@PathVariable String sellerId, Member 내계정) {
+  public Map<String, Boolean> follow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails user) {
     log.info("PostMapping");
 
-    return memberService.follow(sellerId, 내계정)
+    return memberService.follow(sellerId, user)
             ? Map.of("is saved", true) : Map.of("is saved", false);
   }
   @DeleteMapping("/follow/{sellerId}")
-  //내계정 >> @AuthenticationPrincipal CustomUserDetails customUserDetails 변경
-  public Map<String, Boolean> unFollow(@PathVariable String sellerId, Member 내계정) {
+  public Map<String, Boolean> unFollow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails user) {
     log.info("DeleteMapping");
-    int deleteResult = memberService.unfollow(sellerId, 내계정);
+    int deleteResult = memberService.unfollow(sellerId, user);
     return deleteResult > 0
             ? Map.of("is delete", true) : Map.of("is delete", false);
   }
