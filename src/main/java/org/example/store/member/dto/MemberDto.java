@@ -23,7 +23,6 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Builder
 public class MemberDto {
 
     private String userId;

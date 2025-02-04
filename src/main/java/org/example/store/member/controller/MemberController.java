@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.dto.LoginDto;
 import org.example.store.member.dto.ModifyDto;
 import org.example.store.member.dto.SignupDto;

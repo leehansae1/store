@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: store
+  profiles:
+    include:
+      oauth
 
   output:
     ansi:
@@ -64,3 +67,6 @@ logging:
 
 api:
   key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+
+file:
+  path: C:\upload\
