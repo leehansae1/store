@@ -4,26 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.example.store.chat.ChatDto;
-import org.example.store.chatRoom.ChatRoomDto;
-import org.example.store.faq.FaqDto;
-import org.example.store.follow.FollowDto;
-import org.example.store.like_product.LikeProductDto;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.entity.Member;
-import org.example.store.memberReview.Review;
-import org.example.store.memberReview.ReviewDto;
-import org.example.store.payment.PaymentDto;
-import org.example.store.product.dto.ProductDto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @ToString
-@Builder
 public class MemberDto {
 
     private String userId;
@@ -43,33 +32,33 @@ public class MemberDto {
     private boolean followState;
 
 
-    private List<FaqDto> faqDtoList;
-
-    private List<ChatDto> chatDtoList;
-
-    private List<ChatRoomDto> chatRoomDtoList;
-
-
-    private List<ProductDto> productDtoList;
-
-    private List<FollowDto> followDtoList;
-
-    private List<LikeProductDto> likeProductDtoList;
-
-
-
-    private List<ReviewDto> reviewDtoList;
-
-    private List<PaymentDto> paymentDtoList;
+//    private List<FaqDto> faqDtoList;
+//
+//    private List<ChatDto> chatDtoList;
+//
+//    private List<ChatRoomDto> chatRoomDtoList;
+//
+//
+//    private List<ProductDto> productDtoList;
+//
+//    private List<FollowDto> followDtoList;
+//
+//    private List<LikeProductDto> likeProductDtoList;
+//
+//
+//
+//    private List<ReviewDto> reviewDtoList;
+//
+//    private List<PaymentDto> paymentDtoList;
 
     @Builder
     public MemberDto(String userId, String userPw, String userName, String userProfile,
                      String userEmail, String addr01, String addr02, String zipcode, Role role, String tel, LocalDateTime regDate,
                      String introduce, MemberStatus status , int followCount, boolean followState
-                     , List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
-                     List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList,
-                     List<LikeProductDto> likeProductDtoList, List<FollowDto> followDtoList,
-                     List<ReviewDto> reviewDtoList, List<PaymentDto> paymentDtoList
+//                     , List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
+//                     List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList,
+//                     List<LikeProductDto> likeProductDtoList, List<FollowDto> followDtoList,
+//                     List<ReviewDto> reviewDtoList, List<PaymentDto> paymentDtoList
                      ) {
         this.userId = userId;
         this.userPw = userPw;
@@ -87,14 +76,14 @@ public class MemberDto {
         this.followCount = followCount;
         this.followState = followState;
 
-        this.faqDtoList = faqDtoList;
-        this.chatDtoList = chatDtoList;
-        this.chatRoomDtoList = chatRoomDtoList;
-        this.productDtoList = productDtoList;
-        this.likeProductDtoList = likeProductDtoList;
-        this.followDtoList = followDtoList;
-        this.reviewDtoList = reviewDtoList;
-        this.paymentDtoList = paymentDtoList;
+//        this.faqDtoList = faqDtoList;
+//        this.chatDtoList = chatDtoList;
+//        this.chatRoomDtoList = chatRoomDtoList;
+//        this.productDtoList = productDtoList;
+//        this.likeProductDtoList = likeProductDtoList;
+//        this.followDtoList = followDtoList;
+//        this.reviewDtoList = reviewDtoList;
+//        this.paymentDtoList = paymentDtoList;
     }
 
     public static Member toEntity(MemberDto memberDto) {
@@ -114,14 +103,14 @@ public class MemberDto {
                 .regDate(memberDto.getRegDate())
                 .status(memberDto.getStatus() != null ? memberDto.getStatus() : MemberStatus.STATUS_ACTIVE)
                 
-                .productList(ProductDto.toEntityList(memberDto.getProductDtoList()))
-                .faqList(FaqDto.toEntityList(memberDto.getFaqDtoList()))
-                .chatList(ChatDto.toEntityList(memberDto.getChatDtoList()))
-                .chatRoomList(ChatRoomDto.toEntityList(memberDto.getChatRoomDtoList()))
-                .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
-                .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
-                .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
-                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
+//                .productList(ProductDto.toEntityList(memberDto.getProductDtoList()))
+//                .faqList(FaqDto.toEntityList(memberDto.getFaqDtoList()))
+//                .chatList(ChatDto.toEntityList(memberDto.getChatDtoList()))
+//                .chatRoomList(ChatRoomDto.toEntityList(memberDto.getChatRoomDtoList()))
+//                .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
+//                .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
+//                .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
+//                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
                 .build();
     }
 

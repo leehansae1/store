@@ -5,25 +5,29 @@ import org.example.store.member.service.OAuth2DetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
   private final OAuth2DetailService oAuth2DetailService;
 
-  // @Bean
-  // public AuthenticationFailureHandler failureHandler() {
-  //   return new ForwardAuthenticationFailureHandler("/member/login"); // 실패 시 로그인 페이지로 리다이렉트
-  // }
+   @Bean
+   public AuthenticationFailureHandler failureHandler() {
+     return new ForwardAuthenticationFailureHandler("/member/login"); // 실패 시 로그인 페이지로 리다이렉트
+   }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
     httpSecurity.authorizeHttpRequests(
     (auth) -> auth // 허용된 패턴들은 인증 없이 접근 가능 나머지 모든 요청은 인증을 요구
-      .requestMatchers("/","/member/**","/mail/**","/css/**","/js/**", "/images/**") // 허용된 URL 패턴들
+      .requestMatchers("/","/member/**","/mail/**","/css/**","/js/**", "/images/**", "/list" ,"/list/**") // 허용된 URL 패턴들
       .permitAll()
       .anyRequest()
       .authenticated()
