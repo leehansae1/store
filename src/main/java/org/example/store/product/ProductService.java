@@ -1,5 +1,6 @@
 package org.example.store.product;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.follow.FollowService;
@@ -87,11 +88,12 @@ public class ProductService {
     // 상품 업로드 >> 이미지, 프로덕트 테이블 채우기
     public int uploadProduct(ProductDto productDto, List<MultipartFile> files,
                              CustomUserDetails user) {
-        //= 파일 이름 바꿔준다, 파일 규격화한다, 파일 폴더에저장한다 fileList.get(i) >> 요 로직만 만들면 됨
+        // 파일 저장 및 이름바꿔서 저장
         List<String> imageUrlList = new ArrayList<>();
         files.forEach(multipartFile -> {
-            imageUrlList.add(multipartFile.getOriginalFilename());
-        }); //요런 느낌
+            String renamedFile = FileUtil.saveAndRenameFile(multipartFile);
+            imageUrlList.add(renamedFile);
+        });
 
         productDto.setThumbnailUrl(imageUrlList.getFirst());
         imageUrlList.removeFirst();

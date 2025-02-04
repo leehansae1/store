@@ -61,10 +61,10 @@ public class ProductController {
     // 작성 후 저장
     @PostMapping("/upload")
     public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files,
-                                @AuthenticationPrincipal CustomUserDetails customUser
+                                @AuthenticationPrincipal CustomUserDetails user
                                 // 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ) {
-        int productId = productService.uploadProduct(productDto, files, customUser);
+        int productId = productService.uploadProduct(productDto, files, user);
         // 저장이 되었다면 상세화면으로 넘어가기
         if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
         else return prefix + "/upload";
