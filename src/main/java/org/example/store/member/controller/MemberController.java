@@ -97,7 +97,7 @@ public class MemberController {
       log.info("로그인 실패 === {}",bindingResult.getAllErrors());
       return prefix + "/login";
     }
-    return "/index/index";
+    return "/index";
   }
 
   // 정보 화면
