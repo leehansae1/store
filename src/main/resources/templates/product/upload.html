@@ -1,10 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <title>상품업로드</title>
 </head>
 <body>
+  <header th:replace="~{fragments/header :: header}"></header>
 
+  <main>
+
+
+
+<form action="/product/upload" method="post" enctype="multipart/form-data">
+<div class="product-table">
+
+
+  <div class="table-subtitle">상품정보</div>
+
+
+<hr>
+
+<div class="product-subtable">
+<div class="table-key"><p>상품정보</p></div>
+<div class="table-value">
+  <div class="img-upload">
+    <div><img th:src="@{/img/svg/camera.svg}"></div>
+    <div><p>이미지 등록</p></div>
+  </div>
+</div>
+</div>
+
+<!-- name="imageFiles"-->
+
+<div class="product-subtable">
+  <div class="table-key" name="productName">상품명</div>
+  <div class="table-value"><input type="text"></div>
+</div>
+
+<div class="product-subtable">
+  <div class="table-key" name="category"><p>카테고리</p></div>
+  <!-- 2 번째 category 겹치는 부분은 1번째 같이-->
+  <div class="table-value"> 카테고리고르는칸 </div>
+</div>
+
+<div class="product-subtable">
+  <div class="table-key"></div>
+  <div class="table-value"></div>
+</div>
+
+<div class="product-subtable">
+  <div class="table-key">상품상태</div>
+  <div class="table-value table-column">
+    <label>
+      <input type="radio" name="productStatus" value="0">
+      새상품 ~ 미사용 (사용하지 않은 새 상품)
+  </label>
+  <br>
+  <label>
+      <input type="radio" name="productStatus" value="1">
+      사용감 없음 (사용은 했지만 눈에 띄는 흔적이나 얼룩이 없음)
+  </label>
+  <br>
+  <label>
+      <input type="radio" name="productStatus" value="2">
+      사용감 적음 (눈에 띄는 흔적이나 얼룩이 약간 있음)
+  </label>
+  <br>
+  <label>
+      <input type="radio" name="productStatus" value="3">
+      사용감 많음 (눈에 띄는 흔적이나 얼룩이 많이 있음)
+  </label>
+  </div>
+</div>
+
+<div class="product-subtable">
+  <div class="table-key">설명</div>
+  <div class="table-value" ><input type="text" name="description"></div>
+</div>
+
+<div class="product-subtable">
+  <div class="table-key">태그</div>
+  <div class="table-value table-column"><input type="text" name="tag">
+    <!-- 사용자 입력 받기 -->
+    <ul>
+      <li>태그는 띄어쓰기로 구분되며 최대 9자까지 입력할 수 있어요</li>
+      <li>내 상품을 다양한 태그로 표현해 보세요</li>
+      <li>사람들이 내 상품을 더 잘 찾을 수 있어요</li>
+      <li>상품과 관련없는 태그를 입력 할 경우 판매에 제제를 받을 수 있어요</li>
+    </ul></div>
+</div>
+
+
+  <div class="table-subtitle">가격</div>
+
+
+<hr>
+
+<div class="product-subtable">
+<div class="table-key">가격</div>
+<div class="table-value"><input type="text" name="price"></div>
+</div>
+
+
+  <div class="table-subtitle">추가정보</div>
+
+
+<hr>
+
+<div class="product-subtable">
+<div class="table-key">직거래</div>
+<div class="table-value"><label>
+  <input type="radio" name="if-direct" value="0">
+  가능
+</label>
+<br>
+<label>
+  <input type="radio" name="if-direct" value="1">
+  불가
+</label></div></div>
+
+<div class="product-subtable">
+<div class="table-key">거래희망장소</div>
+<div class="table-value"> 주소 api / or / member dto 중 주소</div>
+</div>
+
+
+<button class="product-submit"> 상품 등록 ! </button>
+
+</form>
+
+  </main>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

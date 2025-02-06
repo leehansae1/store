@@ -1,0 +1,364 @@
+/* default */
+*{ margin : 0 ; padding : 0; list-style-type: none;}
+body { background-color: #f8f8f8; }
+a { text-decoration: none; color:#86b7fe; }
+a:hover { color: #fe86a4; }
+
+/* header */
+
+.top {
+  margin : 0 20%;
+
+  border: 2px , solid , #86b7fe;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+
+  /* background-color: #4287f5; */
+  /* color: white; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  
+}
+
+.login-box ul { list-style-type: none; display: flex; gap: 15px; }
+.login-box ul li { display: inline; }
+
+/* nav */
+
+.profile-button {
+  position: fixed;
+  right:30px;
+  top:10px;
+  max-width: 50px;
+  max-height: 50px;
+ 
+
+  border-radius: 50%;
+  overflow: hidden;
+
+
+}
+.profile-img {
+  width: 100%;
+  height: 100%;
+ 
+}
+
+.category-button {
+  /* position: fixed; */
+  /* top: 50px; */
+  /* left: 20px; */
+  /* background-color: #333; */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  
+}
+
+.category-button:hover {
+  background-color: #86b7fe;
+}
+
+/* category-bar 슬라이드와 hover 효과 추가 */
+
+
+/* category-bar */
+.category-bar {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  height: 100%;
+  /* width: 150px; */
+  background-color: rgba(85, 85, 85, 0.7);
+  font-size: 14px;
+  color: white;
+  overflow-y: auto;
+  transform: translateX(-100%); /* 기본적으로 숨기기 */
+  transition: transform 0.3s ease;
+  display : flex;
+}
+
+.category-bar.show {
+  transform: translateX(0); /* 사이드바 표시 */
+}
+
+/* Main category list 기본 스타일 */
+.category-bar .mc {
+  list-style-type: none;
+  padding: 10px;
+}
+
+/* category-bar .mc li hover 시 하위 카테고리 표시 */
+.category-bar .mc li {
+  
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.category-bar .mc li:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Subcategory 기본 숨김 상태 */
+.category-bar .sc {
+  display: none;
+  /* position: absolute; */
+  top: 0;
+  left: 150px;
+  background-color: rgba(60, 60, 60, 0.9);
+  width: 200px;
+  height: 100%;
+  padding: 10px;
+  
+}
+
+/* .active 클래스를 추가할 때만 서브 카테고리를 표시 */
+.category-bar .sc.active {  
+  display: block;
+}
+
+.category-bar .mc li:hover + .sc {
+  list-style-type: none;
+  display: block; /* hover한 항목에 해당하는 서브 카테고리만 보이게 함 */
+}
+
+
+nav {
+  margin :10px 20%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.search-box {
+  
+  width: 50%;
+  border: 2px solid #4287f5;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.search-box > form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  
+}
+
+.search-box input {  
+  border: none;
+  outline: none;
+  padding: 5px;
+  flex: 1;
+}
+
+.search-box button {
+  border: none;
+  background-color: none;
+  cursor: pointer;
+}
+
+
+
+
+
+/* main */
+
+main {
+  margin: 0 20%;
+  padding: 20px;
+  text-align: center;
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+.product {
+  min-width: 200px;
+  width: calc(20% - 20px);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.2s ease;
+}
+
+.product:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.product img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-price {
+color: #666;
+font-size: 22px;
+}
+
+.product-date {
+  color : #aaa;
+  font-size: 14px;
+  justify-self: end;
+  padding : 10px
+}
+
+
+/* 회원가입 박스 */
+.signup-box {
+  width: 40%;
+  margin: 0 auto;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 폼 스타일 */
+.input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.invalid-feedback {
+  margin-left: 10px;
+  margin-top : 5px;
+  color:red;
+  font-size: 14px;
+}
+
+/* 기본 입력 필드 */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #e9ecef;
+}
+
+
+
+.detail-box {
+  display: flex;
+  margin : 0 10%;
+  gap : 5%
+}
+
+.scription-title {
+  font-size: 30px;
+}
+.scription-price { font-size: 40px;}
+
+.scription-svgbox {display: inline;}
+
+.scription-svgbox > img{
+  position: relative;  
+  top : 5px;
+}
+.scription-svgbox > span {font-size: 20px;}
+
+.scription-info {
+  font-size: 24px;
+}
+
+.detail-buttonbox {
+
+  display: flex;
+  justify-content: space-evenly;
+  
+}
+
+.detail-buttonbox button {
+  width: 100%;
+  margin : 0 5px;
+}
+
+
+/* 푸터 스타일 */
+footer {
+  background-color: #4287f5;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+
+/* info-bar */
+
+/* 오른쪽 슬라이드 메뉴 숨김 상태 */
+.info-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 300px;
+  max-width: 15%;
+  background-color: #333;
+  color: #fff;
+  transform: translateX(100%); /* 초기 상태에서 숨기기 */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000; /* 메뉴가 항상 위에 표시되도록 */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+/* 슬라이드 메뉴 표시 상태 */
+.info-bar.show {
+  transform: translateX(0);
+}
+
+.info-bar .info-buttonbox {
+  margin-top: 20px;
+}
+
+.info-bar button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.info-bar button:hover {
+  background-color: #555;
+}

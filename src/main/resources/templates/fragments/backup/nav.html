@@ -1,0 +1,27 @@
+<!-- nav -->
+<nav th:fragment="nav">  
+   
+  <div><button class="category-button"><img th:src="@{img/svg/menu.svg}" alt="Menu"></button></div>
+   
+  <div class="search-box">
+     <form action="">
+       <!-- <select>
+         <option value="" disabled selected>--카테고리--</option>          
+         <option value="">여성의류</option>
+         <option value="">남성의류</option>
+         <option value="">신발</option>
+         <option value="">가방/지갑</option>
+         <option value="">시계</option>
+       </select> -->
+       <input type="text" placeholder=" 상품명 검색">
+       <button><img th:src="@{img/svg/search.svg}" alt=""></button>
+     </form>
+  </div>
+
+  <div class="store-menubox">      
+      <a href="/"><img th:src="@{img/svg/unarchive.svg}" alt=""></span><span>팜매하기</a>
+      <a href="/"><img th:src="@{img/svg/store.svg}" alt=""></span> <span>내상점</a>
+      <a href="/"><img th:src="@{img/svg/sms.svg}" alt=""></span><span>wave톡</a>
+  </div>
+
+</nav>

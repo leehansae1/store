@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main>
+
+    <div class="detail-box">
+      <div class="detail-img">
+        <img th:src="@{/img/product/sample01.jpg}" alt="" />
+      </div>
+
+    <div class="detail-scription">
+
+        <div class="dsbox-1">
+        <p class="scription-title">지뢰계 핑크 블라우스</p>
+        <span class="scription-price">60000</span><span>원</span>
+      </div>
+        <hr />
+        
+          <div class="dsbox-2">
+            <div class="scription-svgbox">
+              <img th:src="@{/img/svg/heart.svg}" alt="" />
+              <span>100</span>
+              <img th:src="@{/img/svg/visibility.svg}" alt="" />
+              <span>200</span>
+              <img th:src="@{/img/svg/schedule.svg}" alt="" />
+              <span>어제</span>
+            </div>
+
+            <div class="dsbox-temp"></div>
+
+            <div class="detail-optionbox">
+              <ul>
+                <li>상품 상태 : 좋음</li>
+                <li>&nbsp;</li>
+                <li>상품 스타일 : 이쁨</li>
+                <li>&nbsp;</li>
+                <li>상품 가격 : 착함</li>
+              </ul>
+            </div>
+          </div>
+    <div class="dsbox-temp"></div>
+          <div class="dsbox-3">
+            <div class="detail-buttonbox">
+              <button class="zim-button"><span><img th:src="@{/img/svg/heart.svg}" alt=""></span> <span>찜</span> </button>
+              <a href="/member/talk"><button class="talk-button"><span><img th:src="@{/img/svg/sms.svg}" alt=""></span> <span>톡</span> </button></a>
+              <a href="/payment/widget/checkout"><button class="buy-button"><span><img th:src="@{/img/svg/add_shopping_cart.svg}" alt=""></span><span>구매</span> </button></a>
+            </div>
+          </div>
+    </div>    
+    </div>
+
+    <hr>
+    <div class="detail-userbox">
+      <p class="scription-info">시착만 해봤습니다 네고 안되용</p>
+    </div>
+  </main>
+  <div th:replace="~{fragments/footer :: footer}"></div>
+
+  </body>
+</html>
+
+<!-- 상품 img / sctription 영역 div 5:5 로  -->

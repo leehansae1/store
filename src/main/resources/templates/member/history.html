@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <title>Document</title>
+</head>
+
+<body>
+
+  <header th:replace="~{fragments/header :: header}"></header>
+
+  <main>
+
+    <div class="history-box">
+
+      <div class="history-title">
+        <div>
+          <p>구매내역</p>
+        </div>
+        <div>
+          <p>판매내역</p>
+        </div>
+        <div>
+          <p>거래실패내역</p>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <div class="history-contents">
+
+      <!-- <div class="history-subtitle">
+        <div></div>
+        <div>이름</div>
+        <div>날짜</div>
+        <div>상태</div>
+      </div> -->
+
+      <div>
+
+        <hr><br>
+
+        <div class="product-style02">
+
+          <div class="img-style02">
+            <a href="/product/detail">
+              <img th:src="@{/img/product/sample01.jpg}" alt=""></a>
+          </div>
+
+          <div>
+            <p>시착만 해봤...</p>
+          </div>
+
+          <div>
+            <p>2020-01-01</p>
+          </div>
+
+          <div>
+            <p>구매완료</p>
+          </div>
+
+        </div>
+
+        <hr><br>
+
+        <div class="product-style02">
+
+          <div class="img-style02">
+            <a href="/product/detail">
+              <img th:src="@{/img/product/sample01.jpg}" alt=""></a>
+          </div>
+
+          <div>
+            <p>sample01</p>
+          </div>
+
+          <div>
+            <p>2020-01-01</p>
+          </div>
+
+          <div>
+            <p>입금완료</p>
+          </div>
+
+        </div>
+
+
+
+      </div>
+
+
+    </div>
+
+
+
+  </main>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

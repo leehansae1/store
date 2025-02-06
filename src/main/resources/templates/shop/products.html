@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <title>store</title>
+</head>
+<body>
+  <header th:replace="~{fragments/header :: header}"></header>
+
+  <main>
+
+    <div class="store-box">
+    
+      <div class="store-top">
+        <div class="store-img">
+          <img th:src="@{/img/svg/store.svg}" alt="" />
+        <button><a href="/product/manage">상점관리</a></button>
+        </div>
+
+        <div class="store-scription">
+          
+           <div><p>상점 123호</p></div>
+
+           <hr>
+
+            <div class="store-buttonbox">
+
+            <div>
+              <img th:src="@{/img/svg/store_sell.svg}">
+              <span>상점오픈일</span>
+            </div> 
+
+            <div>
+              <img th:src="@{/img/svg/accessibility.svg}">
+              <span>상점방문수</span>
+            </div>
+
+            <div>
+              <img th:src="@{/img/svg/shopping_basket.svg}">
+              <span>상품판매</span>
+            </div>
+
+            </div>
+
+            <hr>
+
+        </div>  
+
+      </div>
+
+      <hr>
+
+      <div class="store-nav">            
+        <div>상품</div>
+        <div>상점후기</div>
+        <div>찜</div>
+        <div>팔로잉</div>
+        <div>팔로워</div>
+      </div>
+
+      <div class="store-contents">
+
+        <div class="product">
+          <a href="/product/detail">
+          <img th:src="@{/img/product/sample01.jpg}" alt="">
+          <p>sample01</p>
+          <p class="product-price"><span>60000</span><span>원</span></p>
+          <p class="product-date">일 전</p>
+        </a>
+        </div>
+
+        <hr>
+
+        <div class="product">
+          <a href="/product/detail">
+          <img th:src="@{/img/product/sample01.jpg}" alt="">
+          <p>sample01</p>
+          <p class="product-price"><span>60000</span><span>원</span></p>
+          <p class="product-date">일 전</p>
+        </a>
+        </div>
+
+        <hr>
+
+        <div class="product">
+          <a href="/product/detail">
+          <img th:src="@{/img/product/sample01.jpg}" alt="">
+          <p>sample01</p>
+          <p class="product-price"><span>60000</span><span>원</span></p>
+          <p class="product-date">일 전</p>
+        </a>
+        </div>
+
+      </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

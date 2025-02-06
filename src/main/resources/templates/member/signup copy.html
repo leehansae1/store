@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <div class="signup-box">
+    <form class="was-validated input-form">
+
+      <div class="form-div"><input class="form-control is-invalid" id="validationTextarea" placeholder="ID를 입력해주세요" type="text" required></div>
+      <div class="invalid-feedback">ID는 필수입니다.</div>
+
+      <div class="form-div"><input class="form-control is-invalid" id="validationTextarea" placeholder="PW를 입력해주세요"  type="password" required></input></div>
+      <div class="invalid-feedback">PW는 필수입니다.</div>
+
+      <div class="form-div"><input class="form-control is-invalid" id="validationTextarea" placeholder="Pw를 입력해주세요" required></input></div>
+      <div class="invalid-feedback">PW는 필수입니다.</div>
+
+      <div class="form-div"><input class="form-control is-invalid" id="validationTextarea" placeholder="EMAIL을 입력해주세요" type="EMAIL" required></input></div>
+      <div class="invalid-feedback">EMAIL은 필수입니다.</div>
+
+      <!--
+      <div class="frm-ipt-box frm-email-ipt-box">
+              <div class="frm-ipt-line">
+                <h3 class="ipt-tit frm-required">
+                  이메일
+                </h3>
+                <div class="ipt-smallbox email-line">
+                  <div class="front">
+                    <input type="text" name="email[0]" class="n-ipt" required maxlength="30">
+                    <span>@</span>
+                  </div>
+                  <div class="back" id="email_back">
+                    <select name="email[1]" id="email_1" required class="n-ipt">
+                      <option value="naver.com">naver.com</option>
+                      <option value="hanmail.net">hanmail.net</option>
+                      <option value="hotmail.com">hotmail.com</option>
+                      <option value="nate.com">nate.com</option>
+                      <option value="yahoo.co.kr">yahoo.co.kr</option>
+                      <option value="empas.com">empas.com</option>
+                      <option value="dreamwiz.com">dreamwiz.com</option>
+                      <option value="freechal.com">freechal.com</option>
+                      <option value="lycos.co.kr">lycos.co.kr</option>
+                      <option value="korea.com">korea.com</option>
+                      <option value="gmail.com">gmail.com</option>
+                      <option value="hanmir.com">hanmir.com</option>
+                      <option value="paran.com">paran.com</option>
+                      <option value="text">직접입력</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+      -->
+
+      <div class="form-div"><input class="form-control is-invalid" id="validationTextarea" placeholder="NAME을 입력해주세요" required></input></div>
+      <div class="invalid-feedback">NAME은 필수입니다.</div>
+
+      <div class="form-check form-div">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="validationFormCheck1"
+          required
+        />
+        <label class="form-check-label" for="validationFormCheck1"
+          >Check this checkbox</label
+        >
+        <div class="invalid-feedback">Example invalid feedback text</div>
+      </div>
+
+      <div class="form-check">
+        <input
+          type="radio"
+          class="form-check-input"
+          id="validationFormCheck2"
+          name="radio-stacked"
+          required
+        />
+        <label class="form-check-label" for="validationFormCheck2"
+          >Toggle this radio</label
+        >
+      </div>
+      <div class="form-check mb-3">
+        <input
+          type="radio"
+          class="form-check-input"
+          id="validationFormCheck3"
+          name="radio-stacked"
+          required
+        />
+        <label class="form-check-label" for="validationFormCheck3"
+          >Or toggle this other radio</label
+        >
+        <div class="invalid-feedback">More example invalid feedback text</div>
+      </div>
+
+      <div class="mb-3">
+        <select class="form-select" required aria-label="select example">
+          <option value="">Open this select menu</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+        <div class="invalid-feedback">Example invalid select feedback</div>
+      </div>
+
+      <div class="mb-3">
+        <input
+          type="file"
+          class="form-control"
+          aria-label="file example"
+          required
+        />
+        <div class="invalid-feedback">Example invalid form file feedback</div>
+      </div>
+
+      <div class="mb-3">
+        <button class="btn btn-primary" type="submit" disabled>
+          Submit form
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div>
+    <input type="text" id="sample4_postcode" placeholder="우편번호" />
+    <input
+      type="button"
+      onclick="sample4_execDaumPostcode()"
+      value="우편번호 찾기"
+    /><br />
+    <input type="text" id="sample4_roadAddress" placeholder="도로명주소" />
+    <input type="text" id="sample4_jibunAddress" placeholder="지번주소" />
+    <span id="guide" style="color: #999; display: none"></span>
+    <input type="text" id="sample4_detailAddress" placeholder="상세주소" />
+    <input type="text" id="sample4_extraAddress" placeholder="참고항목" />
+  </div>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+
+  </body>
+</html>

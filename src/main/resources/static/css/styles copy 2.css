@@ -1,0 +1,134 @@
+/* 스타일 기본값 */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+}
+
+/* 헤더 스타일 */
+header {
+  background-color: #4287f5;
+  color: white;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  margin-left: 20px;
+}
+
+.login-box ul {
+  list-style-type: none;
+  padding: 0;
+  margin-right: 20px;
+}
+
+.login-box ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+.login-box ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+/* 사이드바 스타일 */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px;
+  background-color: #333;
+  color: white;
+  overflow-y: auto;
+  transform: translateX(-100%); /* 기본적으로 숨기기 */
+  transition: transform 0.3s ease;
+}
+
+.sidebar.show {
+  transform: translateX(0); /* show 클래스가 붙으면 보이게 */
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 10px 20px;
+  border-bottom: 1px solid #444;
+}
+
+.sidebar li:hover {
+  background-color: #555;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+}
+
+/* 하위 메뉴 스타일 - 기본적으로 숨기기 */
+.sidebar li > ul {
+  display: none;
+  padding-left: 20px; /* 하위 메뉴 들여쓰기 */
+  transform: translateX(-100%); /* 하위 메뉴 기본적으로 왼쪽으로 숨기기 */
+  transition: transform 0.3s ease; /* 슬라이드 애니메이션 */
+}
+
+/* 상위 메뉴 hover 시 하위 메뉴가 슬라이드 되며 보이기 */
+.sidebar li:hover > ul {
+  display: block; /* hover 시 하위 메뉴 보이게 */
+  transform: translateX(0); /* 하위 메뉴가 오른쪽에서 슬라이드 되며 보이기 */
+}
+
+/* 메뉴 토글 버튼 스타일 */
+.toggle-btn, .sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 1000; /* 버튼이 다른 요소 뒤에 가려지지 않도록 */
+}
+
+.toggle-btn {
+  left: 20px;
+}
+
+.sidebar-toggle {
+  left: 270px; /* 사이드바 바로 옆에 위치 */
+}
+
+.toggle-btn:hover, .sidebar-toggle:hover {
+  background-color: #555;
+}
+
+/* 메인 스타일 */
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+/* 푸터 스타일 */
+footer {
+  background-color: #4287f5;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}

@@ -1,0 +1,59 @@
+/* src/main/resources/static/css/styles.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #4287f5;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 200px;
+  height: 50px;
+}
+
+header .logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.login-box ul {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.login-box ul li {
+  display: inline;
+  margin: 0 15px;
+}
+
+.login-box ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+footer {
+  background-color: #4287f5;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}

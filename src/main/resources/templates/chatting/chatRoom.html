@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <title>wave톡</title>
+</head>
+<body>
+  <header th:replace="~{fragments/header :: header}"></header>
+  
+
+<main>
+
+  <div class="talk-box">
+<div class="talkbox-1">전체 대화
+
+  <ul>
+    <li>손놈1</li>
+    <li>손놈2</li>
+    <li>손놈3</li>
+  </ul>
+
+</div>
+
+<div class="talkbox-2">  
+
+  <div>
+    <button><a href="/payment/widget/checkout">구매하기</a></button>
+  </div>
+
+<div class="talk-table">
+
+  <div class="bundle">
+    <div class="urtalk">나는 유얼토크입니다</div>
+    <div class="mytalk"></div>
+  </div>
+
+  <div class="bundle">
+    <div class="urtalk"></div>
+    <div class="mytalk">나는 마이토크입니다</div>
+  </div>
+
+  <div class="bundle">
+    <div class="urtalk">안녕 하세요</div>
+    <div></div>
+  </div>
+
+  <div class="bundle">
+    <div class="urtalk">마이토크님</div>
+    <div></div>
+  </div>
+
+  <div class="bundle">
+    <div class="urtalk"></div>
+    <div class="mytalk">반갑습니다 유얼토크님</div>
+  </div>
+
+</div>
+
+<div class="talk-form">
+<input type="text" placeholder="메시지를 입력하세요"> <button>보내기</button>
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
