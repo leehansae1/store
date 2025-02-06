@@ -29,9 +29,7 @@ public class MemberDto {
     private String userName;
     private String userProfile;
     private String userEmail;
-    private String addr01;
-    private String addr02;
-    private String zipcode;
+    private String address;
     private String tel;
     private Role role;
     private LocalDateTime regDate;
@@ -62,7 +60,7 @@ public class MemberDto {
 
     @Builder
     public MemberDto(String userId, String userPw, String userName, String userProfile,
-                     String userEmail, String addr01, String addr02, String zipcode, Role role, String tel, LocalDateTime regDate,
+                     String userEmail, String address, Role role, String tel, LocalDateTime regDate,
                      String introduce, MemberStatus status , int followCount, boolean followState
                      , List<FaqDto> faqDtoList, List<ChatDto> chatDtoList,
                      List<ChatRoomDto> chatRoomDtoList, List<ProductDto> productDtoList,
@@ -74,9 +72,7 @@ public class MemberDto {
         this.userName = userName;
         this.userProfile = userProfile;
         this.userEmail = userEmail;
-        this.addr01 = addr01;
-        this.addr02 = addr02;
-        this.zipcode = zipcode;
+        this.address = address;
         this.tel = tel;
         this.role = role;
         this.regDate = regDate;
@@ -103,9 +99,7 @@ public class MemberDto {
                 .userName(memberDto.getUserName())
                 .userProfile(memberDto.getUserProfile()) // 프로필 경로 그대로 사용
                 .userEmail(memberDto.getUserEmail())
-                .addr01(memberDto.getAddr01())
-                .addr02(memberDto.getAddr02())
-                .zipcode(memberDto.getZipcode())
+                .address(memberDto.getAddress())
                 .tel(memberDto.getTel())
                 .introduce(memberDto.getIntroduce())
                 .role(memberDto.getRole())
