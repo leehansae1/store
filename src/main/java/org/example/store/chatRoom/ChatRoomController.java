@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.dto.CustomUserDetails;
-import org.example.store.member.entity.Member;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 @Slf4j
 @RequiredArgsConstructor
 public class ChatRoomController {
@@ -24,14 +24,18 @@ public class ChatRoomController {
     @GetMapping("/chatRoom/{productId}") // productId 는 해당상품, 판매자 조회 시 필요
     public String getChatRoomList(@PathVariable int productId, Model model,
                                   @AuthenticationPrincipal CustomUserDetails user) {
-        List<ChatRoomDto> resultDtoList
+        Map<String, Object> resultMap
                 = chatRoomService.getChatRoomListAndExist(user, productId);
 
-        if (resultDtoList != null) {
-            model.addAttribute("chatRoomList", resultDtoList.getFirst());
-            if (resultDtoList.size() > 1) {
-                model.addAttribute("chatList", resultDtoList.getLast());
-            }
+        List<ChatRoomDto> chatRoomDtos = (List<ChatRoomDto>) resultMap.get("chatRoomList");
+        List<ChatDto> chatDtos = (List<ChatDto>) resultMap.get("chatList");
+        if (chatRoomDtos != null) {
+            chatRoomDtos.forEach(r -> log.info("chatRoomList 결과 값 {}", r));
+            model.addAttribute("chatRoomList", chatRoomDtos);
+        }
+        if (chatDtos != null) {
+            log.info("chatList === {}",chatDtos);
+            model.addAttribute("chatList", chatDtos);
         }
         return "/chatRoom";
     }
@@ -43,6 +47,10 @@ public class ChatRoomController {
                 = chatRoomService.getChatRoomList(user);
         if (chatRoomDtoList == null) model.addAttribute("isExist", false);
         // 채팅방 list 없으면 자바스크립트로 아예 접근 막거나 채팅이없다 이런 메시지를 채팅방 대신 띄우기
+        chatRoomDtoList.forEach(chatRoomDto -> {
+            log.info("chatRoomDto == {}", chatRoomDto);
+            log.info("안읽은 개수 {}", chatRoomDto.getUnreadCount());
+        });
         model.addAttribute("chatRoomList", chatRoomDtoList);
         return "/chatRoom";
     }
@@ -58,7 +66,7 @@ public class ChatRoomController {
                 : Map.of("success", false);
     }
 
-    // 결제 후 채팅으로 돌아가기 버튼 클릭 시 or 후기작성 완료 시
+    // 결제성공 후 채팅으로 돌아가기 버튼 클릭 시 or 후기작성 완료 시 채팅자동작성
     @GetMapping("/chatRoom/paymentResult/{productId}")
     public String writePaymentResult(@PathVariable int productId,
                                      @AuthenticationPrincipal CustomUserDetails user) {

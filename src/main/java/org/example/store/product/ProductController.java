@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.product.dto.ProductDto;
-import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/product")
 @Slf4j
 public class ProductController {
 
@@ -33,6 +33,9 @@ public class ProductController {
             model.addAttribute("productList", null);
         } else {
             log.info("found {} products", productDtoList.size());
+            productDtoList.forEach(pL ->
+                    log.info("product {}", pL)
+            );
             model.addAttribute("productList", productDtoList);
         }
         return prefix + "/list";
@@ -44,7 +47,10 @@ public class ProductController {
         List<ProductDto> productDtoList = productService.getProductList(searchWord);
         if (productDtoList.isEmpty()) log.info("no products found, search word");
         else {
-            log.info("found {} products to search", productDtoList.size());
+            log.info("search {} products", productDtoList.size());
+            productDtoList.forEach(pL ->
+                    log.info("product {}", pL)
+            );
             model.addAttribute("productList", productDtoList);
         }
         return prefix + "/list";
@@ -59,11 +65,11 @@ public class ProductController {
 
     // 작성 후 저장
     @PostMapping("/upload")
-    public String uploadProduct(ProductDto productDto, @RequestParam("imageFile") List<MultipartFile> files,
+    public String uploadProduct(ProductDto productDto, @RequestBody List<MultipartFile> imageFiles,
                                 @AuthenticationPrincipal CustomUserDetails user
-                                // 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                //// 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ) {
-        int productId = productService.uploadProduct(productDto, files, user);
+        int productId = productService.uploadProduct(productDto, imageFiles, user);
         // 저장이 되었다면 상세화면으로 넘어가기
         if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
         else return prefix + "/upload";
@@ -72,7 +78,8 @@ public class ProductController {
     // 상품 수정 페이지 >> 업로드 페이지로 기존 값 싣고 보내기
     @GetMapping("/modify/{productId}")
     public String getModifyPage(RedirectAttributes redirectAttributes, @PathVariable int productId) {
-        ProductDto productDto = Product.fromEntity(productService.getProduct(productId));
+        ProductDto productDto = productService.getProductDto(productId);
+        log.info("modify product {}", productDto);
         redirectAttributes.addAttribute("product", productDto);
         // isSelect 가 true 라면 업로드 페이지 문구를 수정에 맞게 바꾸기
         redirectAttributes.addAttribute("isSelect", productDto != null);
@@ -85,7 +92,15 @@ public class ProductController {
                              @AuthenticationPrincipal CustomUserDetails customUser) {
         Map<String, Object> resultMap = productService.getProductDetail(productId, customUser);
         model.addAttribute("product", resultMap.get("product"));
-        log.info("found {} product", resultMap.get("product"));
+        model.addAttribute("member", resultMap.get("member"));
+        model.addAttribute("imageList", resultMap.get("imageList"));
+        List<String> imageList = (List<String>) resultMap.get("imageList");
+        imageList.forEach(image -> {
+            log.info("image {}", image);
+        });
+        log.info("found {} ", resultMap.get("product"));
+        log.info("found {} ", resultMap.get("member"));
+        log.info("found {} image ", ((List<String>) resultMap.get("imageList")).size());
         return prefix + "/detail/" + productId;
     }
 
@@ -93,24 +108,23 @@ public class ProductController {
     @GetMapping("/manage")
     public String getManagePage(Model model,
                                 @AuthenticationPrincipal CustomUserDetails customUser) {
-        List<ProductDto> productDtoList = productService.getSellerProducts(customUser);
+        List<ProductDto> productDtoList = productService.getMyProducts(customUser);
         model.addAttribute("productList", productDtoList);
-        log.info("found {} products", productDtoList.size());
         return prefix + "/manage";
     }
 
     // 좋아요 관련 로직
-    @PostMapping("/product/like/{productId}")
+    @PostMapping("/like/{productId}")
     public Map<String, Boolean> like(@PathVariable int productId,
-                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return productService.like(productId, customUserDetails)
-                ? Map.of("success", true) : Map.of("success", false);
+                                     @AuthenticationPrincipal CustomUserDetails user) {
+        return productService.like(productId, user)
+                ? Map.of("like", true) : Map.of("like", false);
     }
 
-    @DeleteMapping("product/unlike/{productId}")
+    @DeleteMapping("/unlike/{productId}")
     public Map<String, Boolean> unlike(@PathVariable int productId,
-                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return (productService.unlike(productId, customUserDetails) > 0)
-                ? Map.of("success", true) : Map.of("success", false);
+                                       @AuthenticationPrincipal CustomUserDetails user) {
+        return (productService.unlike(productId, user) > 0)
+                ? Map.of("unlike", true) : Map.of("unlike", false);
     }
 }

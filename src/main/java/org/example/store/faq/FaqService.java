@@ -7,7 +7,6 @@ import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

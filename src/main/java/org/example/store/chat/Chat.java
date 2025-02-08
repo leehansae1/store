@@ -1,5 +1,6 @@
 package org.example.store.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.store.chatRoom.ChatRoom;
@@ -32,14 +33,14 @@ public class Chat {
     private Member writer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
     private boolean isRead;
 
     @Builder
-    public Chat(int chatId, String content, LocalDateTime chatDate,
-                int chatLevel, boolean isRead,
+    public Chat(int chatId, String content, LocalDateTime chatDate, boolean isRead,
                 Member writer, ChatRoom chatRoom) {
         this.isRead = isRead;
         this.chatId = chatId;

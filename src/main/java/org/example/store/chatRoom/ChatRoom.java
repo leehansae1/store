@@ -3,7 +3,6 @@ package org.example.store.chatRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.store.chat.Chat;
-import org.example.store.chat.ChatDto;
 import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 
@@ -29,7 +28,7 @@ public class ChatRoom {
     @JoinColumn(name = "TOUSER_ID")
     private Member toUser;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
@@ -47,14 +46,13 @@ public class ChatRoom {
     }
 
     public static ChatRoomDto fromEntity(ChatRoom chatRoom) {
-        List<ChatDto> chatDtos = Chat.fromEntityList(chatRoom.getChatList());
 
         return ChatRoomDto.builder()
                 .productDto(Product.fromEntity(chatRoom.getProduct()))
                 .roomId(chatRoom.getRoomId())
                 .toUser(Member.fromEntity(chatRoom.getToUser()))
                 .fromUser(Member.fromEntity(chatRoom.getFromUser()))
-                .chatDtoList(chatDtos)
+                .chatDtoList(new ArrayList<>())
                 .build();
     }
     public static List<ChatRoomDto> fromEntityList(List<ChatRoom> chatRooms) {

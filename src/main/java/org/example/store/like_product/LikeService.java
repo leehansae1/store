@@ -7,6 +7,7 @@ import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,10 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     // 로그인 계정과 상품아이디로 저장
-    public boolean saveLike(Product product, Member 내계정) {
+    public boolean saveLike(Product product, Member liker) {
         LikeProductDto likeProductDto = LikeProductDto.builder()
                 .productDto(Product.fromEntity(product))
-                .liker(Member.fromEntity(내계정))
+                .liker(Member.fromEntity(liker))
                 .build();
 
         LikeProduct likeProduct
@@ -31,8 +32,9 @@ public class LikeService {
     }
 
     // 로그인 계정과 상품아이디로 삭제
-    public int deleteLike(Product product, CustomUserDetails liker) {
-        return likeRepository.deleteByProductAndLiker(product, liker.getLoggedMember());
+    @Transactional
+    public int deleteLike(Product product, Member liker) {
+        return likeRepository.deleteByProductAndLiker(product, liker);
     }
 
     // 하나의 상품에 달린 좋아요 수 >> product service 에서 호출됨

@@ -12,7 +12,9 @@ import org.example.store.product.entity.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,11 +29,11 @@ public class ChatRoomService {
 
     //안읽은 메시지 세주는 함수
     private void getUnreadCount(List<ChatRoomDto> chatRoomDtoList, Member member) {
-        int count = 0;
         for (ChatRoomDto existedRoomDto : chatRoomDtoList) {
+            int count = 0;
             for (ChatDto unreadCountDto : existedRoomDto.getChatDtoList()) {
                 MemberDto writer = unreadCountDto.getWriter();
-                if (MemberDto.toEntity(writer).equals(member)) continue;
+                if (writer.getUserId().equals(member.getUserId())) continue;
                 if (!unreadCountDto.isRead()) count++;
             }
             existedRoomDto.setUnreadCount(count);
@@ -39,46 +41,59 @@ public class ChatRoomService {
     }
 
     // 판매자에게 채팅시도 때
-    public List<ChatRoomDto> getChatRoomListAndExist(CustomUserDetails user, int productId) {
-        Member member = user.getLoggedMember();
-        List<ChatRoomDto> resultRoomList = new ArrayList<>(); // 값을 돌려줄 채팅방 dto List
+    public Map<String, Object> getChatRoomListAndExist(CustomUserDetails user, int productId) {
+        Map<String, Object> result = new HashMap<>();
+        List<ChatRoomDto> existedRoomDtoList = getChatRoomList(user); //사용자 기존 채팅방 조회
 
-        List<ChatRoomDto> existedRoomDto = getChatRoomList(user); //사용자 기존 채팅방 조회
-        if (existedRoomDto != null) { //기존 채팅방이 없을 수도 있음
-            //각 채팅방 마다 사용자가 안읽은 수 세기 >> 위에 함수 참고
-            getUnreadCount(existedRoomDto, member);
-
-            //결과값에 기존 채팅방 List 추가
-            resultRoomList.addAll(existedRoomDto);
-        }
-
-        //productId 로 상품 & toUser 조회
+        // 내 계정 & productId로 상품 & toUser 조회
+        Member fromUser = user.getLoggedMember();
         Product product = productService.getProduct(productId);
         Member toUser = product.getSeller();
-        String fromUserId = member.getUserId();
+        String fromUserId = fromUser.getUserId();
 
-        ChatRoomDto resultRoomDto; // 결과 List 에 추가 될 채팅방 dto
-        ChatRoom existedChatRoom //둘이 거래한 채팅방 조회
-                = chatRoomRepository.findChatRoomByUsers(fromUserId, toUser.getUserId());
-        if (existedChatRoom != null) { //방이 있다면 채팅내역 추가
-            List<ChatDto> chatDtoList = chatService.getList(existedChatRoom.getRoomId());
-            resultRoomDto = ChatRoom.fromEntity(existedChatRoom);
-            resultRoomDto.setChatDtoList(chatDtoList);
-            resultRoomDto.setProductDto(Product.fromEntity(product)); // 거래 상품 교체
-        } else { //방이 없다면 만든다
-            ChatRoom insertChatRoom = ChatRoom.builder() //테이블에 저장할 값 빌드
-                    .fromUser(member).toUser(toUser).product(product)
-                    .build();
-            resultRoomDto = ChatRoom.fromEntity(
-                    chatRoomRepository.save(insertChatRoom)
-            );
+        if (!existedRoomDtoList.isEmpty()) { //기존 채팅방이 있다면
+
+            //기존 채팅방에서 둘이 거래한 방 조회
+            int resultNum = 0;
+            for (int i = 0; i < existedRoomDtoList.size(); i++) {
+                ChatRoomDto existedRoomDto = existedRoomDtoList.get(i);
+                String userId01 = existedRoomDto.getToUser().getUserId(); //기존 채팅방 유저01 아이디
+                String userId02 = existedRoomDto.getFromUser().getUserId(); //기존 채팅방 유저02 아이디
+
+                // fromUser toUser 어디든 구매자, 판매자 아이디가 같이 들어있으면 됨
+                if ((userId02.equals(fromUserId) && userId01.equals(toUser.getUserId()))
+                        || (userId01.equals(fromUserId) && userId02.equals(toUser.getUserId()))) {
+                    List<ChatDto> chatDtoList //채팅 내역 조회
+                            = chatService.getList(fromUser, existedRoomDtoList.get(i).getRoomId());
+                    if (chatDtoList != null) result.put("chatList", chatDtoList); //결과값에 채팅내역 저장
+                    existedRoomDtoList.get(i).setProductDto(Product.fromEntity(product)); //기존 리스트에서도 상품 변경
+                    chatRoomRepository //변경한 상품으로 수정
+                            .save(ChatRoomDto.toEntity(existedRoomDtoList.get(i)));
+                    resultNum = 1;
+                }
+            }
+            //없다면 만든다
+            if (resultNum == 0) {
+                ChatRoomDto chatRoomDto = makeChatRoomDto(fromUser, toUser, product);
+                existedRoomDtoList.add(chatRoomDto);
+            }
+        } else { //없다면 만든다
+            ChatRoomDto chatRoomDto = makeChatRoomDto(fromUser, toUser, product);
+            existedRoomDtoList.add(chatRoomDto);
         }
-        resultRoomList.add(resultRoomDto); //결과값에 판매자와 구매자의 채팅방 추가
+        result.put("chatRoomList", existedRoomDtoList); //결과값에 기존 or 새로만든 chatRoom List 추가
 
         //각 채팅방 마다 사용자가 안읽은 수 세기 >> 상단 함수참고
-        getUnreadCount(resultRoomList, member);
+        getUnreadCount((List<ChatRoomDto>) result.get("chatRoomList"), fromUser);
+        return result;
+    }
 
-        return resultRoomList;
+    // 새로운 채팅방 개설
+    private ChatRoomDto makeChatRoomDto(Member fromUser, Member toUser, Product product) {
+        ChatRoom insertChatRoom //테이블에 저장할 값 빌드
+                = ChatRoom.builder().fromUser(fromUser).toUser(toUser).product(product)
+                .build();
+        return ChatRoom.fromEntity(chatRoomRepository.save(insertChatRoom));
     }
 
     // 메인에서 채팅페이지로 넘어갈 때
@@ -86,14 +101,16 @@ public class ChatRoomService {
         Member member = user.getLoggedMember();
         // 내가 구매자이거나 판매자인 채팅방 찾기
         List<ChatRoom> chatRoomList = chatRoomRepository.findAllByUserId(member.getUserId());
-        if (!chatRoomList.isEmpty()) {
+        if (!chatRoomList.isEmpty()) { //비어있지 않다면 >> 기존 채팅방들이 있다면
             List<ChatRoomDto> chatRoomDtoList = ChatRoom.fromEntityList(chatRoomList);
-
+            chatRoomDtoList.forEach(chatRoomDto ->
+                    chatRoomDto.setChatDtoList(chatService.justCountUnread(chatRoomDto.getRoomId()))
+            );
             //각 채팅방 마다 사용자가 안읽은 수 세기 >> 상단 함수참고
             getUnreadCount(chatRoomDtoList, member);
             return chatRoomDtoList;
         }
-        return null; //채팅방이 없으면 null 던져준다
+        return new ArrayList<>(); //채팅방이 없으면 빈 리스트 하나 던져준다
     }
 
     // 채팅 쓰기
@@ -108,11 +125,11 @@ public class ChatRoomService {
         return null;
     }
 
-    // 결제 후 채팅으로 돌아가기 버튼 클릭 시
+    // 결제 성공 창에서 채팅으로 돌아가기 버튼 클릭 시
     public ChatDto writePaymentResult(int productId, CustomUserDetails user) {
         Member member = user.getLoggedMember();
         ChatRoom chatRoom = chatRoomRepository
-                .findByProduct_ProductIdAndToUserOrFromUser(productId, member, member);
+                .findByProductIdAndMember(productId, member.getUserId());
         if (chatRoom != null) {
             log.info("payment chatRoom");
             Product product = productService.getProduct(productId);
@@ -121,7 +138,7 @@ public class ChatRoomService {
                     .writer(Member.fromEntity(member))
                     .content(
                             "결제가 완료 되었습니다!\r\n" +
-                                    product.getProductName() + "\r\n" +
+                                    "상품명: " + product.getProductName() + "\r\n" +
                                     "결제 금액: " + product.getPrice() + "원"
                     )
                     .build();

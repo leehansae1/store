@@ -9,9 +9,11 @@ import org.example.store.member.entity.Member;
 import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.dto.ProductDto;
+import org.junit.Ignore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,9 +21,9 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@ToString
 public class Product {
 
     @Id
@@ -54,16 +56,17 @@ public class Product {
     private boolean display; //숨김 기능 구현
 
     @CreatedDate
-    @LastModifiedDate
     private LocalDateTime postDate;
 
+    @LastModifiedDate
+    private LocalDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member seller;
 
-    @OneToOne(mappedBy = "product")
-    private ChatRoom chatRoom;
+    @OneToMany(mappedBy = "product")
+    private List<ChatRoom> chatRoomList;
 
     @OneToMany(mappedBy = "product")
     List<LikeProduct> likeList;
@@ -74,14 +77,15 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private Payment payment;
 
-    @OneToOne(mappedBy = "product")
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
     @Builder
     public Product(int productId, int views, int price, boolean sellStatus, boolean display,
                    String productName, String description, String tag, String category,
-                   String productStatus, LocalDateTime postDate, String thumbnailUrl,
-                   Member seller, ChatRoom chatRoom, List<LikeProduct> likeList,
+                   String productStatus, LocalDateTime postDate, LocalDateTime updateDate,
+                   String thumbnailUrl, Member seller,
+                   List<ChatRoom> chatRoomList, List<LikeProduct> likeList,
                    Review review, Payment payment, Image image) {
         this.productId = productId;
         this.views = views;
@@ -92,12 +96,13 @@ public class Product {
         this.category = category;
         this.productStatus = productStatus;
         this.postDate = postDate;
+        this.updateDate = updateDate;
         this.thumbnailUrl = thumbnailUrl;
         this.sellStatus = sellStatus;
         this.display = display;
 
         this.seller = seller;
-        this.chatRoom = chatRoom;
+        this.chatRoomList = chatRoomList;
         this.likeList = likeList;
         this.review = review;
         this.payment = payment;
@@ -118,14 +123,9 @@ public class Product {
                 .postDate(product.getPostDate())
                 .display(product.isDisplay())
                 .sellStatus(product.isSellStatus())
-
-                .imageDto(Image.fromEntity(product.getImage()))
-
+                .updateDate(product.getUpdateDate())
+                //.imageDto(Image.fromEntity(product.getImage())) //image 는 fromEntity 에만 있음
                 .seller(Member.fromEntity(product.getSeller()))
-                .reviewDto(Review.fromEntity(product.getReview()))
-                .paymentDto(Payment.fromEntity(product.getPayment()))
-                .chatRoomDto(ChatRoom.fromEntity(product.getChatRoom()))
-                .likeDtoList(LikeProduct.fromEntityList(product.getLikeList()))
                 .build();
     }
 

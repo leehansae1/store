@@ -102,10 +102,11 @@
             console.log("saveAmount ==" + saveAmount);
             const sendData = {
                 orderId: customerKey,
-                customerEmail: "wojou9512@naver.com",
+                customerEmail: "crof672@naver.com",
                 amount: saveAmount,
-                productId: "1",
-                customerId: "1234"
+                productId: "2", //product 의 id
+                customerId: "crof672",
+                orderName: "프로덕트의 상품명"
             };
             //임시 저장해놓자(나중에 비교해볼거 + 멤버, 상품아이디)
             fetch("/payment/temporary-save", {
@@ -124,10 +125,10 @@
             //결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
             await widgets.requestPayment({
                 orderId: customerKey, //주문번호는 서버에서 뿌려준다(랜덤하고 고유한값이여야함 == uuid와 아이디로 할까,,)
-                orderName: "금거북이",
+                orderName: "금거북이", //prodcut의 상품명
                 successUrl: window.location.origin + "/payment/widget/success.html",
                 failUrl: window.location.origin + "/payment/fail.html",
-                customerEmail: "wojou9512@naver.com", //결제 성공 시에 여기로 주문내역을 토스가 보내줌
+                customerEmail: "crof672@naver.com", //결제 성공 시에 여기로 주문내역을 토스가 보내줌
                 customerName: "이한새", //토스에서 메일을 보낼때에 사용함 멤버 이름 뿌리기
                 customerMobilePhone: "01012341234", //가상계좌 안내, 퀵계좌이체 휴대폰 번호 자동 완성에 사용
             });

@@ -27,9 +27,10 @@ public class FaqController {
     public String list(Model model) {
         List<FaqDto> faqDtoList = faqService.getFaqList();
         model.addAttribute("faqDtoList", faqDtoList);
-        faqDtoList.forEach(faqDto ->
-                System.out.println("faqDto의 멤버디티오의 faqDto리스트의 개수 만큼 찍힙니다")
-        );
+        faqDtoList.forEach(faqDto -> {
+            System.out.println("faqDto의 멤버디티오의 faqDto리스트의 개수 만큼 찍힙니다");
+            log.info("faq Dto ==== {}", faqDto);
+        });
         return prefix + "/list";
     }
 
@@ -54,10 +55,10 @@ public class FaqController {
     @GetMapping("/modify/{faqId}")
     public String modify(@PathVariable int faqId, RedirectAttributes redirectAttributes) {
         FaqDto faqDto = faqService.getFaq(faqId);
-        redirectAttributes.addAttribute("faqDto", faqDto);
-        //if(isModify != null && isModify(==자체가 불린)) 이라면 페이지 타이틀, 문구 바꾸기
-        redirectAttributes.addAttribute("isModify", true);
         log.info("컨트롤러의 faqDto == {}", faqDto);
+        redirectAttributes.addAttribute("faqDto", faqDto);
+        // if(isModify != null && isModify(==자체가 불린)) 이라면 페이지 타이틀, 문구 바꾸기
+        redirectAttributes.addAttribute("isModify", true);
         return "redirect:" + prefix + "/write";
     }
 

@@ -1,8 +1,8 @@
 package org.example.store.product;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
-import org.springframework.beans.factory.annotation.Value;
+import org.example.store.product.entity.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,47 +11,66 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-@RequiredArgsConstructor
+@Slf4j
 public class FileUtil {
 
-    @Value("${file.path}")
-    private static String FOLDER_PATH;
+    public static String saveAndRenameFile(MultipartFile file, String folderPathStr) {
 
-    public static String saveAndRenameFile(MultipartFile file) {
-        file.getSize();
+        String originalFileName = file.getOriginalFilename(); //원본파일의 이름
+        if (originalFileName == null || originalFileName.isEmpty()) {
+            throw new IllegalArgumentException("파일 이름이 비어 있습니다.");
+        }
 
-        // 파일 이름 바꾸기
-        String onlyFileName
-                = file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
+        String onlyFileName //파일 확장자 분리
+                = file.getOriginalFilename().substring(0, originalFileName.lastIndexOf("."));
         String extension
-                = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                = file.getOriginalFilename().substring(originalFileName.lastIndexOf("."));
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmss"); //파일 이름 변경
         String writeTime = LocalDateTime.now().format(format);
         String renameFileName = onlyFileName + "_" + writeTime + extension;
 
-        // 폴더는 하루 단위로 생성
-        DateTimeFormatter folderFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter folderFormat = DateTimeFormatter.ofPattern("yyyyMMdd");  //폴더는 하루 단위로 생성
         String folderName = LocalDateTime.now().format(folderFormat);
 
-        // folderPath == 파일을 저장할 절대경로 == 서버 저장경로
-        Path folderPath = Paths.get(FOLDER_PATH + "product/" + folderName);
+        //파일 저장 경로 설정 (upload/product/날짜)
+        Path timeFolder = Paths.get(folderPathStr, "product", folderName);
         try {
-            if (Files.notExists(folderPath)) {
-                Files.createDirectory(folderPath);
+            if (Files.notExists(timeFolder)) { //날짜별 폴더가 없으면 생성 >> 하루에 한 번만 생성됨
+                Files.createDirectories(timeFolder);
+                System.out.println("새로운 날짜 폴더 생성: " + timeFolder);
             }
 
-            // Paths.get() 의 파라미터는 스트링, 곧 파일이나 폴더의 경로 이름
-            Path targetFile = Paths.get(folderPath + "/" + renameFileName);
-            // transferTo 를 통해 설정한 경로로 파일을 옮김
-            file.transferTo(targetFile);
+            Path targetFile = timeFolder.resolve(renameFileName); //경로설정
+            file.transferTo(targetFile); //transferTo를 통해 설정한 경로로 파일을 옮김
 
-            Thumbnails.of(targetFile.toFile())
+            Thumbnails.of(targetFile.toFile()) //썸네일레이터로 리사이징
                     .size(300, 300)
+                    .keepAspectRatio(true)
                     .toFile(targetFile.toFile());
+
+            System.gc(); //파일 잠김 해제 (Windows 대응)
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 중 오류 발생" + e);
+        }
+        return "/upload/product/" + folderName + "/" + renameFileName;
+    }
+
+    public static void deleteFile(Image image, String thumbnailPath) {
+        log.info("thumbnailPath: {}", thumbnailPath);
+        List<String> imageStrList = Image.toStrList(image);
+        log.info("imageStrList: {}", imageStrList);
+        try {
+            Files.deleteIfExists(Path.of("C:\\" + thumbnailPath));
+            for (String imageStr : imageStrList) {
+                Files.deleteIfExists(Path.of("C:\\" + imageStr)); //나머지도
+                log.info("이미지 파일 삭제");
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return renameFileName;
     }
 }

@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.example.store.chat.Chat;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
@@ -40,14 +39,13 @@ public class ChatRoomDto {
     }
 
     public static ChatRoom toEntity(ChatRoomDto chatRoomDto) {
-        List<Chat> chats = ChatDto.toEntityList(chatRoomDto.getChatDtoList());
 
         return ChatRoom.builder()
                 .product(ProductDto.toEntity(chatRoomDto.getProductDto()))
                 .toUser(MemberDto.toEntity(chatRoomDto.getToUser()))
                 .fromUser(MemberDto.toEntity(chatRoomDto.getFromUser()))
                 .roomId(chatRoomDto.getRoomId())
-                .chatList(chats)
+                .chatList(new ArrayList<>())
                 .build();
     }
 

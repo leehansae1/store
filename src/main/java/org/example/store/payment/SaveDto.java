@@ -12,6 +12,8 @@ public class SaveDto {
 
     private String orderId;
 
+    private String orderName;
+
     private int amount;
 
     private String customerEmail;

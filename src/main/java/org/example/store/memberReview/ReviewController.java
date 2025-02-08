@@ -4,17 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chatRoom.ChatRoomService;
 import org.example.store.member.dto.CustomUserDetails;
-import org.example.store.member.entity.Member;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/review")
@@ -42,7 +40,7 @@ public class ReviewController {
                 ? "/chatRoom/paymentResult/" + productId : prefix + "/write";
     }
 
-    // /review/list/{userId} 화면에서 버튼으로 처리 >> 남의 상점에 들어갔는데 내 후기가 있는 상황
+    // /review/list/{userId} 화면에서 버튼으로 처리 >> 남의 상점에 내 후기가 달려있고, 거기서 삭제 버튼
     @DeleteMapping("/delete/{reviewId}")
     public Map<String, Boolean> deleteReview(@PathVariable int reviewId) {
         return reviewService.deleteReview(reviewId)

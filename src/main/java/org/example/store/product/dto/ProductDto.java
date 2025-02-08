@@ -1,5 +1,6 @@
 package org.example.store.product.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.example.store.chatRoom.ChatRoomDto;
 import org.example.store.like_product.LikeProductDto;
@@ -16,8 +17,8 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductDto {
 
     private int productId;
@@ -36,6 +37,8 @@ public class ProductDto {
 
     private LocalDateTime postDate;
 
+    private LocalDateTime updateDate;
+
     private String tag;
 
     private String category;
@@ -43,7 +46,6 @@ public class ProductDto {
     private boolean sellStatus; //판매상태
 
     private boolean display; //숨김 기능 구현
-
 
     private MemberDto seller;
 
@@ -53,7 +55,7 @@ public class ProductDto {
 
     private PaymentDto paymentDto;
 
-    private ChatRoomDto chatRoomDto;
+    private List<ChatRoomDto> chatRoomDtoList;
 
     private List<LikeProductDto> likeDtoList;
 
@@ -76,14 +78,9 @@ public class ProductDto {
                 .category(productDto.getCategory())
                 .display(productDto.isDisplay())
                 .sellStatus(productDto.isSellStatus())
-
-                .image(ImageDto.toEntity(productDto.getImageDto()))
+                .updateDate(productDto.getUpdateDate())
 
                 .seller(MemberDto.toEntity(productDto.getSeller()))
-                .chatRoom(ChatRoomDto.toEntity(productDto.getChatRoomDto()))
-                .likeList(LikeProductDto.toEntityList(productDto.getLikeDtoList()))
-                .review(ReviewDto.toEntity(productDto.getReviewDto()))
-                .payment(PaymentDto.toEntity(productDto.getPaymentDto()))
                 .build();
     }
 

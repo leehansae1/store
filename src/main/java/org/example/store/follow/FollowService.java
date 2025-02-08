@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class FollowService {
         return Follow.fromEntity(savedfollow) != null;
     }
     // 삭제
+    @Transactional
     public int unfollow(Member seller, Member follower) {
         return followRepository.deleteBySellerAndFollower(seller, follower);
     }
