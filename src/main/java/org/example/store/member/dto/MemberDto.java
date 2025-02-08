@@ -106,14 +106,6 @@ public class MemberDto {
                 .regDate(memberDto.getRegDate())
                 .status(memberDto.getStatus() != null ? memberDto.getStatus() : MemberStatus.STATUS_ACTIVE)
                 
-                .productList(ProductDto.toEntityList(memberDto.getProductDtoList()))
-                .faqList(FaqDto.toEntityList(memberDto.getFaqDtoList()))
-                .chatList(ChatDto.toEntityList(memberDto.getChatDtoList()))
-                .chatRoomList(ChatRoomDto.toEntityList(memberDto.getChatRoomDtoList()))
-                .likeProductList(LikeProductDto.toEntityList(memberDto.getLikeProductDtoList()))
-                .paymentList(PaymentDto.toEntityList(memberDto.getPaymentDtoList()))
-                .followList(FollowDto.toEntityList(memberDto.getFollowDtoList()))
-                .reviewList(ReviewDto.toEntityList(memberDto.getReviewDtoList()))
                 .build();
     }
 

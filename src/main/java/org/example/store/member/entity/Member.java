@@ -152,14 +152,6 @@ public static MemberDto fromEntity(Member member) {
                 .regDate(member.getRegDate())
                 .status(member.getStatus())
 
-                .productDtoList(Product.fromEntityList(member.getProductList()))
-                .faqDtoList(Faq.fromEntityList(member.getFaqList()))
-                .chatDtoList(Chat.fromEntityList(member.getChatList()))
-                .chatRoomDtoList(ChatRoom.fromEntityList(member.getChatRoomList()))
-                .followDtoList(Follow.fromEntityList(member.getFollowList()))
-                .likeProductDtoList(LikeProduct.fromEntityList(member.getLikeProductList()))
-                .paymentDtoList(Payment.fromEntityList(member.getPaymentList()))
-                .reviewDtoList(Review.fromEntityList(member.getReviewList()))
                 .build();
     }
 
