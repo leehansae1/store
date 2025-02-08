@@ -29,11 +29,7 @@ public class ModifyDto {
   @NotBlank(message = "이름은 필수 입력 사항입니다.")
   private String userName;
 
-  private String addr01;
-
-  private String addr02;
-
-  private String zipcode;
+  private String address;
 
   private String tel;
 

@@ -42,11 +42,7 @@ public class Member {
 
   private String userEmail;
 
-  private String addr01;
-
-  private String addr02;
-
-  private String zipcode;
+  private String address;
 
   private String tel;
 
@@ -87,8 +83,8 @@ public class Member {
   private List<Payment> paymentList;
 
   @Builder
-  public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String addr01,
-                String addr02, String zipcode, String tel, Role role, LocalDateTime regDate, String introduce,
+  public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String address,
+                String tel, Role role, LocalDateTime regDate, String introduce,
                 MemberStatus status
           
                 , List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
@@ -100,9 +96,7 @@ public class Member {
     this.userName = userName;
     this.userProfile = userProfile;
     this.userEmail = userEmail;
-    this.addr01 = addr01;
-    this.addr02 = addr02;
-    this.zipcode = zipcode;
+    this.address = address;
     this.tel = tel;
     this.role = role;
     this.regDate = regDate;
@@ -124,9 +118,7 @@ public class Member {
     // 수정된 정보를 member 객체에 반영
     this.userName  = modifyDto.getUserName();
     this.userEmail = modifyDto.getUserEmail();
-    this.addr01    = modifyDto.getAddr01();
-    this.addr02    = modifyDto.getAddr02();
-    this.zipcode   = modifyDto.getZipcode();
+    this.address    = modifyDto.getAddress();
     this.tel       = modifyDto.getTel();
     this.introduce = modifyDto.getIntroduce();
   }
@@ -153,9 +145,7 @@ public static MemberDto fromEntity(Member member) {
                 .userName(member.getUserName())
                 .userProfile(member.getUserProfile())
                 .userEmail(member.getUserEmail())
-                .addr01(member.getAddr01())
-                .addr02(member.getAddr02())
-                .zipcode(member.getZipcode())
+                .address(member.getAddress())
                 .tel(member.getTel())
                 .introduce(member.getIntroduce())
                 .role(member.getRole())
