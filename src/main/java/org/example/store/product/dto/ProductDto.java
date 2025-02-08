@@ -1,6 +1,5 @@
 package org.example.store.product.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.example.store.chatRoom.ChatRoomDto;
 import org.example.store.like_product.LikeProductDto;
@@ -43,8 +42,6 @@ public class ProductDto {
 
     private String category;
 
-    private boolean sellStatus; //판매상태
-
     private boolean display; //숨김 기능 구현
 
     private MemberDto seller;
@@ -58,6 +55,8 @@ public class ProductDto {
     private List<ChatRoomDto> chatRoomDtoList;
 
     private List<LikeProductDto> likeDtoList;
+
+    private boolean sellStatus;
 
     // 아래 속성들은 실제 테이블엔 없음
     private boolean likeState;
@@ -77,7 +76,6 @@ public class ProductDto {
                 .tag(productDto.getTag())
                 .category(productDto.getCategory())
                 .display(productDto.isDisplay())
-                .sellStatus(productDto.isSellStatus())
                 .updateDate(productDto.getUpdateDate())
 
                 .seller(MemberDto.toEntity(productDto.getSeller()))

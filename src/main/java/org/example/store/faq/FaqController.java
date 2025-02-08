@@ -73,6 +73,7 @@ public class FaqController {
     // ajax 처리 = ex) question 컬럼에 해당하는 곳에 data-id 값을 faqId로 설정
     // 로그인 사용자를 넣은 이유는 관리자라면 조회수 변동없게 하기 위함
     @PostMapping("/addViews/{faqId}")
+    @ResponseBody
     public Map<String, Object> addViews(@PathVariable int faqId,
                                         @AuthenticationPrincipal CustomUserDetails user) {
         int views = faqService.addViews(faqId, user);

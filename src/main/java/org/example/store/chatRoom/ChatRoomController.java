@@ -57,6 +57,7 @@ public class ChatRoomController {
 
     // 채팅 쓰기
     @PostMapping("/chatRooom/writeChat/{roomId}")
+    @ResponseBody
     public Map<String, Object> write(@RequestBody ChatDto chatDto, @PathVariable int roomId,
                                      @AuthenticationPrincipal CustomUserDetails user) {
         ChatDto resultDto = chatRoomService.writeChat(chatDto, user, roomId);

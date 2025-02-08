@@ -23,6 +23,7 @@ public class ReviewService {
 
     public boolean writeReview(ReviewDto reviewDto, int productId,
                                CustomUserDetails user) {
+        log.info("Writing review");
         //리뷰하는 상품
         Product product = productService.getProduct(productId);
         reviewDto.setProductDto(Product.fromEntity(product));
@@ -44,6 +45,7 @@ public class ReviewService {
         return reviewDtoList;
     }
 
+    //@Transactional
     public boolean deleteReview(int reviewId) {
         return reviewRepository.deleteById(reviewId) > 0;
     }

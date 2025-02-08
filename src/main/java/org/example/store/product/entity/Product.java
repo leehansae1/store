@@ -9,11 +9,9 @@ import org.example.store.member.entity.Member;
 import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.dto.ProductDto;
-import org.junit.Ignore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,8 +49,6 @@ public class Product {
 
     private String category;
 
-    private boolean sellStatus; //판매상태
-
     private boolean display; //숨김 기능 구현
 
     @CreatedDate
@@ -74,19 +70,19 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private Review review;
 
-    @OneToOne(mappedBy = "product")
-    private Payment payment;
+    @OneToMany(mappedBy = "product")
+    private List<Payment> paymentList;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
     @Builder
-    public Product(int productId, int views, int price, boolean sellStatus, boolean display,
+    public Product(int productId, int views, int price, boolean display,
                    String productName, String description, String tag, String category,
                    String productStatus, LocalDateTime postDate, LocalDateTime updateDate,
                    String thumbnailUrl, Member seller,
                    List<ChatRoom> chatRoomList, List<LikeProduct> likeList,
-                   Review review, Payment payment, Image image) {
+                   Review review, List<Payment> paymentList, Image image) {
         this.productId = productId;
         this.views = views;
         this.price = price;
@@ -98,14 +94,13 @@ public class Product {
         this.postDate = postDate;
         this.updateDate = updateDate;
         this.thumbnailUrl = thumbnailUrl;
-        this.sellStatus = sellStatus;
         this.display = display;
 
         this.seller = seller;
         this.chatRoomList = chatRoomList;
         this.likeList = likeList;
         this.review = review;
-        this.payment = payment;
+        this.paymentList = paymentList;
         this.image = image;
     }
 
@@ -122,7 +117,6 @@ public class Product {
                 .views(product.getViews())
                 .postDate(product.getPostDate())
                 .display(product.isDisplay())
-                .sellStatus(product.isSellStatus())
                 .updateDate(product.getUpdateDate())
                 //.imageDto(Image.fromEntity(product.getImage())) //image 는 fromEntity 에만 있음
                 .seller(Member.fromEntity(product.getSeller()))

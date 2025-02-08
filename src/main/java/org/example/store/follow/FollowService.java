@@ -50,6 +50,8 @@ public class FollowService {
         followList.forEach(follow ->
                 memberDtoList.add(Member.fromEntity(follow.getFollower()))
         );
+        if (memberDtoList.isEmpty()) log.info("팔로워가 없어용,,,");
+        else memberDtoList.forEach(m -> log.info("memberList == {}", m));
         return memberDtoList;
     }
 
@@ -60,6 +62,9 @@ public class FollowService {
         followList.forEach(follow ->
                 memberDtoList.add(Member.fromEntity(follow.getFollower()))
         );
+
+        if (memberDtoList.isEmpty()) log.info("팔로잉이 없어용,,,");
+        else memberDtoList.forEach(m -> log.info("memberList == {}", m));
         return memberDtoList;
     }
 }

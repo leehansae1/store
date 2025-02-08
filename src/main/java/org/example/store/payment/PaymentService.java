@@ -7,6 +7,7 @@ import org.example.store.member.entity.Member;
 import org.example.store.member.service.MemberService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Image;
 import org.example.store.product.entity.Product;
 import org.example.store.product.repository.ProductRepository;
 import org.springframework.format.datetime.DateFormatter;
@@ -30,27 +31,19 @@ public class PaymentService {
 
     private final ProductService productService;
 
-    private final ProductRepository productRepository;
-
     public boolean resultSave(PaymentDto paymentDto, SaveDto saveDto) {
-
         Member member = memberService.getMember(saveDto.getCustomerId());
         paymentDto.setCustomer(Member.fromEntity(member));
 
         ProductDto productDto = productService.getProductDto(saveDto.getProductId());
         paymentDto.setProductDto(productDto);
-        log.info("payment : {}", paymentDto);
+        paymentDto.setOrderId(saveDto.getOrderId());
         // 실패 시 담아야하는 것들
-        if (paymentDto.getMethod() == null) {
+        if (paymentDto.getSuccess() < 1) {
             paymentDto.setOrderName(saveDto.getOrderName());
-            paymentDto.setOrderId(saveDto.getOrderId());
             paymentDto.setTotalAmount(saveDto.getAmount());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             paymentDto.setApprovedAt(LocalDateTime.now().format(formatter));
-        } else { // 성공 시에만 판매완료로 상태변경
-            productDto.setSellStatus(true);
-            Product product = productRepository.save(ProductDto.toEntity(productDto));
-            log.info("여기까지 온다면 성공 {}", Product.fromEntity(product) != null);
         }
         Payment payment = paymentRepository.save(PaymentDto.toEntity(paymentDto));
         return Payment.fromEntity(payment) != null;

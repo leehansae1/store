@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Table(name = "MEMBER_REVIEW")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Review {
 
     @Id

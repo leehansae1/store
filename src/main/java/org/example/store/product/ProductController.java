@@ -115,6 +115,7 @@ public class ProductController {
 
     // 좋아요 관련 로직
     @PostMapping("/like/{productId}")
+    @ResponseBody
     public Map<String, Boolean> like(@PathVariable int productId,
                                      @AuthenticationPrincipal CustomUserDetails user) {
         return productService.like(productId, user)
@@ -122,6 +123,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/unlike/{productId}")
+    @ResponseBody
     public Map<String, Boolean> unlike(@PathVariable int productId,
                                        @AuthenticationPrincipal CustomUserDetails user) {
         return (productService.unlike(productId, user) > 0)

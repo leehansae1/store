@@ -33,7 +33,7 @@ public class Payment {
     @JoinColumn(name = "customer_id")
     private Member customer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_Id")
     private Product product;
 

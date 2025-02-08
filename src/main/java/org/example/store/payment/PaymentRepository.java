@@ -1,6 +1,7 @@
 package org.example.store.payment;
 
 import org.example.store.member.entity.Member;
+import org.example.store.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     List<Payment> findAllByProduct_SellerAndSuccess(Member productSeller, int success);
 
     List<Payment> findAllByCustomerOrProduct_SellerAndSuccess(Member customer, Member productSeller, int success);
+
+    List<Payment> findByProductAndSuccess(Product product, int success);
 }

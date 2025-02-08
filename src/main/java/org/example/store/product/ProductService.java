@@ -7,6 +7,7 @@ import org.example.store.like_product.LikeService;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.dto.MemberDto;
+import org.example.store.payment.PaymentRepository;
 import org.example.store.product.dto.ImageDto;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Image;
@@ -35,6 +36,8 @@ public class ProductService {
     private final LikeService likeService;
 
     private final FollowService followService;
+
+    private final PaymentRepository paymentRepository;
 
     //product 가 필요할 때
     public Product getProduct(int productId) {
@@ -144,7 +147,13 @@ public class ProductService {
     // 내 물건 리스트 관리를 위한 조회 (상품리스트 관리 페이지)
     public List<ProductDto> getMyProducts(CustomUserDetails user) {
         List<Product> products = productRepository.findAllBySeller(user.getLoggedMember());
-        return Product.fromEntityList(products);
+        List<ProductDto> productDtoList = Product.fromEntityList(products);
+        productDtoList.forEach(productDto -> {
+            if (paymentRepository.findByProductAndSuccess(ProductDto.toEntity(productDto),1).isEmpty()){
+                productDto.setSellStatus(true);
+            }
+        });
+        return productDtoList;
     }
 
     // 판매자 물건 리스트 조회 (타인의 내 상점 안의 상품리스트)
