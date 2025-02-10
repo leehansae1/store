@@ -109,7 +109,9 @@
         }
 
         if (data.buildingName && data.apartment === "Y") {
-          extraRoadAddr += extraRoadAddr ? `, ${data.buildingName}` : data.buildingName;
+          extraRoadAddr += extraRoadAddr
+            ? `, ${data.buildingName}`
+            : data.buildingName;
         }
 
         if (extraRoadAddr) {
@@ -125,10 +127,7 @@
         // -----------------------------
         // 3) 화면에 최종 대입
         // -----------------------------
-        document.querySelector("#sample4_postcode").value = data.zonecode;
-        document.querySelector("#sample4_roadAddress").value = cleanRoadAddr;
-        document.querySelector("#sample4_jibunAddress").value = cleanJibunAddr;
-        document.querySelector("#sample4_extraAddress").value = cleanRoadAddr ? extraRoadAddr : "";
+        document.querySelector("#address").value = cleanJibunAddr;
 
         const guideTextBox = document.querySelector("#guide");
 
@@ -145,7 +144,6 @@
       },
     }).open();
   }
-
 </script>
 <script>
   let isAuth = false;
