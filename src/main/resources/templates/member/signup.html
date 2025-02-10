@@ -1,0 +1,265 @@
+<form action="/member/signup" method="post" enctype="multipart/form-data">
+  <div>
+    <label for="userId">USER ID</label>
+    <input
+      type="text"
+      id="userId"
+      name="userId"
+      placeholder="아이디"
+      required
+    />
+  </div>
+
+  <div>
+    <button id="btn-duplicate-id">아이디 중복 확인</button>
+  </div>
+
+  <div>
+    <label for="userPw">PASSWORD</label>
+    <input
+      type="password"
+      id="userPw"
+      name="userPw"
+      placeholder="비밀번호"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="userEmail">EMAIL</label>
+    <input
+      type="email"
+      id="user-email"
+      name="userEmail"
+      placeholder="email@example.com"
+      required
+    />
+    <button id="btn-send-email">인증번호 받기</button>
+  </div>
+
+  <div class="blind" id="email-confirm">
+    <input
+      type="text"
+      name="userEmailConfirm"
+      id="user-email-confirm"
+      placeholder="이메일 인증번호"
+    />
+    <div>
+      <button id="btn-email-confirm">이메일 인증</button>
+    </div>
+    <div id="timer" style="color: black; font-weight: bold"></div>
+    <!-- 타이머 표시 -->
+  </div>
+
+  <div>
+    <label for="userName">USER NAME</label>
+    <input
+      type="text"
+      id="userName"
+      name="userName"
+      placeholder="이름"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="address">ADDRESS</label>
+    <input
+      type="text"
+      id="address"
+      name="address"
+      placeholder="주소"
+      required
+    />
+  </div>
+
+  <div>
+    <label for="tel">전화번호</label>
+    <input type="text" id="tel" name="tel" placeholder="전화번호" />
+  </div>
+
+  <div>
+    <label for="introduce">자기소개</label>
+    <textarea id="introduce" name="introduce" placeholder="자기소개"></textarea>
+  </div>
+
+  <div>
+    <label for="userProfile">프로필 사진</label>
+    <input type="file" id="userProfile" name="userProfile" accept="image/*" />
+  </div>
+
+  <div>
+    <button id="btn-sign-up">회원가입</button>
+  </div>
+</form>
+<!--우편번호 api-->
+<script>
+  function sample4_execDaumPostcode() {
+    new daum.Postcode({
+      oncomplete: function (data) {
+        const roadAddr = data.roadAddress || ""; // 도로명 주소
+        const jibunAddr = data.jibunAddress || ""; // 지번 주소
+        let extraRoadAddr = ""; // 참고 항목
+
+        // -----------------------------
+        // 1) 동·가로 끝나는 법정동 명 처리
+        // -----------------------------
+        if (data.bname?.match(/[동|가]$/)) {
+          extraRoadAddr += data.bname;
+        }
+
+        if (data.buildingName && data.apartment === "Y") {
+          extraRoadAddr += extraRoadAddr ? `, ${data.buildingName}` : data.buildingName;
+        }
+
+        if (extraRoadAddr) {
+          extraRoadAddr = ` (${extraRoadAddr})`;
+        }
+
+        // -----------------------------
+        // 2) "뒷주소" (건물번호 등) 제거 처리 추가
+        // -----------------------------
+        const cleanRoadAddr = roadAddr.replace(/\s+\d+.*$/, ""); // 도로명 주소에서 숫자로 시작하는 부분 제거
+        const cleanJibunAddr = jibunAddr.replace(/\s+\d+.*$/, ""); // 지번 주소에서도 같은 처리
+
+        // -----------------------------
+        // 3) 화면에 최종 대입
+        // -----------------------------
+        document.querySelector("#sample4_postcode").value = data.zonecode;
+        document.querySelector("#sample4_roadAddress").value = cleanRoadAddr;
+        document.querySelector("#sample4_jibunAddress").value = cleanJibunAddr;
+        document.querySelector("#sample4_extraAddress").value = cleanRoadAddr ? extraRoadAddr : "";
+
+        const guideTextBox = document.querySelector("#guide");
+
+        if (data.autoRoadAddress) {
+          guideTextBox.textContent = `(예상 도로명 주소: ${data.autoRoadAddress}${extraRoadAddr})`;
+          guideTextBox.style.display = "block";
+        } else if (data.autoJibunAddress) {
+          guideTextBox.textContent = `(예상 지번 주소: ${data.autoJibunAddress})`;
+          guideTextBox.style.display = "block";
+        } else {
+          guideTextBox.textContent = "";
+          guideTextBox.style.display = "none";
+        }
+      },
+    }).open();
+  }
+
+</script>
+<script>
+  let isAuth = false;
+  let isIdChecked = false;
+  let timerInterval; // 타이머 인터벌 변수 선언
+
+  const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역
+  const btnDuplicateId = document.querySelector("#btn-duplicate-id"); // 아이디 중복 확인
+  const userIdInput = document.querySelector("#userId"); // 아이디 입력 필드
+  const btnSendEmail = document.querySelector("#btn-send-email"); // 인증번호 받기 버튼
+  const btnEmailConfirm = document.querySelector("#btn-email-confirm"); // 이메일 인증 버튼
+  const emailConfirm = document.querySelector("#email-confirm"); // 인증번호 입력 필드 영역
+  const userEmail = document.querySelector("#user-email"); // 이메일 입력 필드
+  const userEmailConfirm = document.querySelector("#user-email-confirm"); // 이메일 인증번호 입력 필드
+  const btnSignUp = document.querySelector("#btn-sign-up"); // 회원가입 버튼
+
+  // 아이디 중복 확인
+  btnDuplicateId.addEventListener("click", (e) => {
+    e.preventDefault();
+    const userId = userIdInput.value.trim();
+    if (!userId) {
+      alert("아이디를 입력해주세요.");
+      return;
+    }
+
+    fetch("/member/check-duplicate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    })
+      .then((response) => response.text())
+      .then((isDuplicate) => {
+        isDuplicate = isDuplicate === "true";
+        if (isDuplicate) {
+          alert("이미 사용 중인 아이디입니다.");
+          isIdChecked = false;
+        } else {
+          alert("사용 가능한 아이디입니다.");
+          isIdChecked = true;
+        }
+      })
+      .catch((error) => {
+        console.error("Error Occurred", error);
+        alert("서버 오류가 발생했습니다.");
+      });
+  });
+
+  // 타이머 시작 함수
+  function startTimer(duration) {
+    let timer = duration;
+    clearInterval(timerInterval); // 기존 타이머 초기화
+    timerInterval = setInterval(() => {
+      const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+      const seconds = String(timer % 60).padStart(2, "0");
+      timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+      if (--timer < 0) {
+        clearInterval(timerInterval);
+        timerDisplay.textContent = "인증 시간이 만료되었습니다.";
+        isAuth = false;
+        userEmailConfirm.disabled = true; // 만료 시 입력 필드 비활성화
+      }
+    }, 1000);
+  }
+
+  // 이메일 인증번호 요청
+  btnSendEmail.addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = userEmail.value.trim();
+    if (!email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+
+    fetch("../mail/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert("인증메일이 발송되었습니다.");
+        emailConfirm.classList.remove("blind");
+
+        userEmailConfirm.disabled = false; // 인증번호 입력 필드 활성화
+        startTimer(300); // 5분 타이머 시작
+
+        btnEmailConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (userEmailConfirm.value.trim() === data.confirmNumber) {
+            alert("인증되었습니다.");
+            isAuth = true;
+            clearInterval(timerInterval); // 인증 성공 시 타이머 중지
+            timerDisplay.textContent = "인증 완료되었습니다.";
+          } else {
+            alert("인증번호가 일치하지 않습니다.");
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error Occurred", error);
+        alert("인증번호 발송 중 오류가 발생했습니다.");
+      });
+  });
+
+  // 회원가입 버튼 클릭 시 유효성 검사
+  btnSignUp.addEventListener("click", (e) => {
+    if (!isIdChecked) {
+      e.preventDefault();
+      alert("아이디 중복 확인이 완료되지 않았습니다.");
+      return;
+    }
+    if (!isAuth) {
+      e.preventDefault();
+      alert("이메일 인증이 완료되지 않았습니다.");
+    }
+  });
+</script>

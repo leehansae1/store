@@ -91,7 +91,7 @@ public class MemberService implements IMemberService {
         String newFileName = uuid + extension;
 
         // 경로 연결 (C:\업로드\ + uuid.jpg 이런식으로 저장)
-        String fullPath = filePath + File.separator + newFileName;
+        String fullPath = filePath + "member"+File.separator + newFileName;
 
         // 실제 파일을 해당 경로에 저장
         File file = new File(fullPath);

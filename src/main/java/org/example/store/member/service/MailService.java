@@ -25,7 +25,7 @@ public class MailService {
   public String sendAuthMail(String userEmail) {
     MimeMessage message = javaMailSender.createMimeMessage();
       try {
-        message.setFrom("test9876test@naver.com"); // 보내는 사람
+        message.setFrom("dragont1ger@naver.com"); // 보내는 사람
         message.setRecipients(MimeMessage.RecipientType.TO, userEmail); // 받는 사람
         message.setSubject("이메일 인증 번호");
         String sendRandomNumber = makeRandomNumber();
