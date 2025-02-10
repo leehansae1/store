@@ -26,10 +26,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
-  // @Id
-  // @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  // private Integer id;
-
   @Column(unique = true)
   @Id
   private String userId; 

@@ -94,107 +94,92 @@
 </form>
 <script>
   let isAuth = false;
-  let isIdchecked = false;
+  let isIdChecked = false;
+  let timerInterval; // 타이머 인터벌 변수 선언
 
-  const timerDisplay = document.querySelector("timer"); // 타이머 표시 영역
-
+  const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역
   const btnDuplicateId = document.querySelector("#btn-duplicate-id"); // 아이디 중복 확인
   const userIdInput = document.querySelector("#userId"); // 아이디 입력 필드
-
   const btnSendEmail = document.querySelector("#btn-send-email"); // 인증번호 받기 버튼
   const btnEmailConfirm = document.querySelector("#btn-email-confirm"); // 이메일 인증 버튼
   const emailConfirm = document.querySelector("#email-confirm"); // 인증번호 입력 필드 영역
   const userEmail = document.querySelector("#user-email"); // 이메일 입력 필드
-  const userEmailConfirm = document.querySelector("#user-email-confirm"); // 이메일 인증번호
+  const userEmailConfirm = document.querySelector("#user-email-confirm"); // 이메일 인증번호 입력 필드
   const btnSignUp = document.querySelector("#btn-sign-up"); // 회원가입 버튼
 
-  // 1. 아이디 중복 확인
+  // 아이디 중복 확인
   btnDuplicateId.addEventListener("click", (e) => {
     e.preventDefault();
     const userId = userIdInput.value.trim();
-    if (userId === "") {
+    if (!userId) {
       alert("아이디를 입력해주세요.");
       return;
     }
 
     fetch("/member/check-duplicate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: userId }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
     })
-      .then((response) => response.text()) // boolean 값 반환 시 text로 처리
+      .then((response) => response.text())
       .then((isDuplicate) => {
-        isDuplicate = isDuplicate === "true"; // 문자열 true를 boolean으로 변환
+        isDuplicate = isDuplicate === "true";
         if (isDuplicate) {
           alert("이미 사용 중인 아이디입니다.");
-          isIdchecked = false;
+          isIdChecked = false;
         } else {
           alert("사용 가능한 아이디입니다.");
-          isIdchecked = true;
+          isIdChecked = true;
         }
       })
       .catch((error) => {
         console.error("Error Occurred", error);
-        alert("서버 오류가 발생했습니다");
+        alert("서버 오류가 발생했습니다.");
       });
-  }); // f12 네트워크 탭에서 응답이 200 OK 나오는지 확인.
+  });
 
   // 타이머 시작 함수
   function startTimer(duration) {
-    let timer = duration,
-      minutes,
-      seconds;
+    let timer = duration;
     clearInterval(timerInterval); // 기존 타이머 초기화
     timerInterval = setInterval(() => {
-      minutes = Math.floor(timer / 60); // 60으로 나눠서 분 단위로 변환 (소수점 내림 처리)
-      seconds = timer % 60; // 60초 미만의 초 단위 계산
-
-      minutes = minutes < 10 ? "0" + minutes : minutes; // 10보다 작으면  05:00로 표시
-      seconds = seconds < 10 ? "0" + seconds : seconds;
-
-      timerDisplay.textContent = `남은 시간 : ${minutes}:${seconds}`;
-
+      const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+      const seconds = String(timer % 60).padStart(2, "0");
+      timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
       if (--timer < 0) {
-        // (전위 감소) 1초마다 1씩 감소한 후 그 값을 반환. 0보다 작아지면 중지
         clearInterval(timerInterval);
         timerDisplay.textContent = "인증 시간이 만료되었습니다.";
-        isAuth = false; // 시간이 지나면 인증 실패 처리
+        isAuth = false;
         userEmailConfirm.disabled = true; // 만료 시 입력 필드 비활성화
       }
-    }, 1000); // 1초마다 함수 실행
+    }, 1000);
   }
 
-  // 2.이메일 인증번호 요청
+  // 이메일 인증번호 요청
   btnSendEmail.addEventListener("click", (e) => {
     e.preventDefault();
-    if (userEmail.value.trim() === "") {
-      // 공백이 있으면 실패할 수 있으므로 트림으로 처리
-      alert("이메일을 확인해주세요.");
+    const email = userEmail.value.trim();
+    if (!email) {
+      alert("이메일을 입력해주세요.");
       return;
     }
 
-    const sendData = { email: userEmail.value };
-
-    console.log(sendData);
     fetch("../mail/confirm", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json", // JSON 형식으로 데이터 전송
-      },
-      body: JSON.stringify(sendData), // 이메일을 JSON으로 변환하여 전송
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     })
-      .then((response) => response.json()) // 응답을 JSON으로 변환
-      .then((json) => {
+      .then((response) => response.json())
+      .then((data) => {
         alert("인증메일이 발송되었습니다.");
-        startTimer(300); // 300초(5분) 타이머 시작
-        userEmailConfirm.disabled = false; // 새 인증 요청 시 입력 필드 활성화
+        emailConfirm.classList.remove("blind");
+
+        userEmailConfirm.disabled = false; // 인증번호 입력 필드 활성화
+        startTimer(300); // 5분 타이머 시작
 
         btnEmailConfirm.addEventListener("click", (e) => {
           e.preventDefault();
-
-          if (userEmailConfirm.value.trim() === json.confirmNumber) {
+          if (userEmailConfirm.value.trim() === data.confirmNumber) {
             alert("인증되었습니다.");
             isAuth = true;
             clearInterval(timerInterval); // 인증 성공 시 타이머 중지
@@ -203,20 +188,22 @@
             alert("인증번호가 일치하지 않습니다.");
           }
         });
-        console.log(json);
+      })
+      .catch((error) => {
+        console.error("Error Occurred", error);
+        alert("인증번호 발송 중 오류가 발생했습니다.");
       });
-    emailConfirm.classList.remove("blind");
   });
 
-  // 3. 회원사입 버튼 클릭 시 아이디 중복 확인, 이메일 인증 여부 확인
+  // 회원가입 버튼 클릭 시 유효성 검사
   btnSignUp.addEventListener("click", (e) => {
-    if (!isIdchecked) {
-      e.preventDefault(); // 아이디 중복 확인이 안됐을 시 폼 제출 방지
+    if (!isIdChecked) {
+      e.preventDefault();
       alert("아이디 중복 확인이 완료되지 않았습니다.");
       return;
     }
     if (!isAuth) {
-      e.preventDefault(); // 이메일 인증이 안됐을 시 폼 제출 방지
+      e.preventDefault();
       alert("이메일 인증이 완료되지 않았습니다.");
     }
   });

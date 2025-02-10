@@ -27,7 +27,7 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
     httpSecurity.authorizeHttpRequests(
     (auth) -> auth // 허용된 패턴들은 인증 없이 접근 가능 나머지 모든 요청은 인증을 요구
-      .requestMatchers("/","/member/**","/mail/**","/css/**","/js/**", "/images/**", "/list/**", "/list") // 허용된 URL 패턴들
+      .requestMatchers("/","/member/**","/mail/**","/css/**","/js/**", "/img/**", "/list/**", "/list") // 허용된 URL 패턴들
       .permitAll()
       .anyRequest()
       .authenticated()
