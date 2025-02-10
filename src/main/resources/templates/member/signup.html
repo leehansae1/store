@@ -1,12 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <title>회원가입</title>
+</head>
+<body>
 <form action="/member/signup" method="post" enctype="multipart/form-data">
   <div>
     <label for="userId">USER ID</label>
     <input
-      type="text"
-      id="userId"
-      name="userId"
-      placeholder="아이디"
-      required
+            type="text"
+            id="userId"
+            name="userId"
+            placeholder="아이디"
+            required
     />
   </div>
 
@@ -17,32 +25,32 @@
   <div>
     <label for="userPw">PASSWORD</label>
     <input
-      type="password"
-      id="userPw"
-      name="userPw"
-      placeholder="비밀번호"
-      required
+            type="password"
+            id="userPw"
+            name="userPw"
+            placeholder="비밀번호"
+            required
     />
   </div>
 
   <div>
-    <label for="userEmail">EMAIL</label>
+    <label for="user-email">EMAIL</label>
     <input
-      type="email"
-      id="user-email"
-      name="userEmail"
-      placeholder="email@example.com"
-      required
+            type="email"
+            id="user-email"
+            name="userEmail"
+            placeholder="email@example.com"
+            required
     />
     <button id="btn-send-email">인증번호 받기</button>
   </div>
 
   <div class="blind" id="email-confirm">
     <input
-      type="text"
-      name="userEmailConfirm"
-      id="user-email-confirm"
-      placeholder="이메일 인증번호"
+            type="text"
+            name="userEmailConfirm"
+            id="user-email-confirm"
+            placeholder="이메일 인증번호"
     />
     <div>
       <button id="btn-email-confirm">이메일 인증</button>
@@ -54,28 +62,29 @@
   <div>
     <label for="userName">USER NAME</label>
     <input
-      type="text"
-      id="userName"
-      name="userName"
-      placeholder="이름"
-      required
+            type="text"
+            id="userName"
+            name="userName"
+            placeholder="이름"
+            required
     />
   </div>
 
   <div>
     <label for="address">ADDRESS</label>
     <input
-      type="text"
-      id="address"
-      name="address"
-      placeholder="주소"
-      required
+            type="text"
+            id="address"
+            name="address"
+            placeholder="주소"
+            required
     />
+    <button type="button" id="btn-address">우편번호 찾기</button>
   </div>
 
   <div>
     <label for="tel">전화번호</label>
-    <input type="text" id="tel" name="tel" placeholder="전화번호" />
+    <input type="text" id="tel" name="tel" placeholder="전화번호"/>
   </div>
 
   <div>
@@ -85,7 +94,7 @@
 
   <div>
     <label for="userProfile">프로필 사진</label>
-    <input type="file" id="userProfile" name="userProfile" accept="image/*" />
+    <input type="file" id="userProfile" name="userProfile" accept="image/*"/>
   </div>
 
   <div>
@@ -94,54 +103,20 @@
 </form>
 <!--우편번호 api-->
 <script>
-  function sample4_execDaumPostcode() {
+  document.querySelector("#btn-address").addEventListener("click", e=>{
+    e.preventDefault();
+    daumPostcode();
+  })
+  function daumPostcode() {
     new daum.Postcode({
       oncomplete: function (data) {
-        const roadAddr = data.roadAddress || ""; // 도로명 주소
         const jibunAddr = data.jibunAddress || ""; // 지번 주소
-        let extraRoadAddr = ""; // 참고 항목
-
-        // -----------------------------
-        // 1) 동·가로 끝나는 법정동 명 처리
-        // -----------------------------
-        if (data.bname?.match(/[동|가]$/)) {
-          extraRoadAddr += data.bname;
-        }
-
-        if (data.buildingName && data.apartment === "Y") {
-          extraRoadAddr += extraRoadAddr
-            ? `, ${data.buildingName}`
-            : data.buildingName;
-        }
-
-        if (extraRoadAddr) {
-          extraRoadAddr = ` (${extraRoadAddr})`;
-        }
-
         // -----------------------------
         // 2) "뒷주소" (건물번호 등) 제거 처리 추가
-        // -----------------------------
-        const cleanRoadAddr = roadAddr.replace(/\s+\d+.*$/, ""); // 도로명 주소에서 숫자로 시작하는 부분 제거
-        const cleanJibunAddr = jibunAddr.replace(/\s+\d+.*$/, ""); // 지번 주소에서도 같은 처리
-
-        // -----------------------------
         // 3) 화면에 최종 대입
         // -----------------------------
-        document.querySelector("#address").value = cleanJibunAddr;
-
-        const guideTextBox = document.querySelector("#guide");
-
-        if (data.autoRoadAddress) {
-          guideTextBox.textContent = `(예상 도로명 주소: ${data.autoRoadAddress}${extraRoadAddr})`;
-          guideTextBox.style.display = "block";
-        } else if (data.autoJibunAddress) {
-          guideTextBox.textContent = `(예상 지번 주소: ${data.autoJibunAddress})`;
-          guideTextBox.style.display = "block";
-        } else {
-          guideTextBox.textContent = "";
-          guideTextBox.style.display = "none";
-        }
-      },
+        document.querySelector("#address").value = jibunAddr.replace(/\s+\d+.*$/, "");
+      }
     }).open();
   }
 </script>
@@ -171,24 +146,24 @@
 
     fetch("/member/check-duplicate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({userId}),
     })
-      .then((response) => response.text())
-      .then((isDuplicate) => {
-        isDuplicate = isDuplicate === "true";
-        if (isDuplicate) {
-          alert("이미 사용 중인 아이디입니다.");
-          isIdChecked = false;
-        } else {
-          alert("사용 가능한 아이디입니다.");
-          isIdChecked = true;
-        }
-      })
-      .catch((error) => {
-        console.error("Error Occurred", error);
-        alert("서버 오류가 발생했습니다.");
-      });
+            .then((response) => response.text())
+            .then((isDuplicate) => {
+              isDuplicate = isDuplicate === "true";
+              if (isDuplicate) {
+                alert("이미 사용 중인 아이디입니다.");
+                isIdChecked = false;
+              } else {
+                alert("사용 가능한 아이디입니다.");
+                isIdChecked = true;
+              }
+            })
+            .catch((error) => {
+              console.error("Error Occurred", error);
+              alert("서버 오류가 발생했습니다.");
+            });
   });
 
   // 타이머 시작 함수
@@ -219,33 +194,33 @@
 
     fetch("../mail/confirm", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email}),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        alert("인증메일이 발송되었습니다.");
-        emailConfirm.classList.remove("blind");
+            .then((response) => response.json())
+            .then((data) => {
+              alert("인증메일이 발송되었습니다.");
+              emailConfirm.classList.remove("blind");
 
-        userEmailConfirm.disabled = false; // 인증번호 입력 필드 활성화
-        startTimer(300); // 5분 타이머 시작
+              userEmailConfirm.disabled = false; // 인증번호 입력 필드 활성화
+              startTimer(300); // 5분 타이머 시작
 
-        btnEmailConfirm.addEventListener("click", (e) => {
-          e.preventDefault();
-          if (userEmailConfirm.value.trim() === data.confirmNumber) {
-            alert("인증되었습니다.");
-            isAuth = true;
-            clearInterval(timerInterval); // 인증 성공 시 타이머 중지
-            timerDisplay.textContent = "인증 완료되었습니다.";
-          } else {
-            alert("인증번호가 일치하지 않습니다.");
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("Error Occurred", error);
-        alert("인증번호 발송 중 오류가 발생했습니다.");
-      });
+              btnEmailConfirm.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (userEmailConfirm.value.trim() === data.confirmNumber) {
+                  alert("인증되었습니다.");
+                  isAuth = true;
+                  clearInterval(timerInterval); // 인증 성공 시 타이머 중지
+                  timerDisplay.textContent = "인증 완료되었습니다.";
+                } else {
+                  alert("인증번호가 일치하지 않습니다.");
+                }
+              });
+            })
+            .catch((error) => {
+              console.error("Error Occurred", error);
+              alert("인증번호 발송 중 오류가 발생했습니다.");
+            });
   });
 
   // 회원가입 버튼 클릭 시 유효성 검사
@@ -261,3 +236,5 @@
     }
   });
 </script>
+</body>
+</html>
