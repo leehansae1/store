@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    
+  <!--css-->
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11.2.1/swiper-bundle.min.css" rel="stylesheet">
+
+  <title>오픈마켓</title>  
+</head>
+
+<body>
+  <header th:replace="~{fragments/header :: header}"></header>
+
+<main>
+
+  
+<div class="manage-menubox">
+
+<div><span>사진</span></div>
+
+<div><span>상품정보</span></div>
+<div><span>찜</span></div>
+<div><span>최근수정일</span></div>
+<div><span>기능</span></div>
+
+</div>
+<hr>
+
+<div class="manage-contentsbox">
+
+  <div class="product-style02">
+    <div class="img-style02">
+      <a href="/product/detail">
+        <img src="/img/product/sample01.jpg" alt=""></a>
+    </div>
+  </div>
+<div> <span>상품명</span>
+  <span>10000원</span></div>
+<div> <span>1</span> </div>
+<div> <span>2000-01-01</span> </div>
+<div>
+  <button>1</button>
+  <button>2</button>
+  <button>3</button>
+  <button>4</button>
+</div>
+
+  </div>
+
+
+
+</div>
+  
+</main>
+
+  <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+
+</html>

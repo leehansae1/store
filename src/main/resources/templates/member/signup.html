@@ -12,6 +12,7 @@
     <header th:replace="~{fragments/header :: header}"></header>
 
     <main>
+<div class="signup-p"><p>회원가입</p><hr></div>
 
       <div class="signup-box">
 
@@ -25,81 +26,76 @@
           <div><span>전화번호</span></div>
         </div>
 
-        <div class="signup-formbox">
+        <div>
           <form action="" class="signup-form">
-            <!-- id -->
-          <div>
-            <div> <input type="text"> </div>
-            <div> <button id="btn-duplicate-id">아이디 중복 확인</button> </div>
-          </div>
-            <!-- pw -->
-          <div><input type="password"></div>
-          <div><input type="password"></div>
-            <!-- email -->
-          <div class="email-box">
-      
-            <div class="front">
-              <input type="text" name="email[0]" class="n-ipt" required maxlength="30">    
-            </div>
-      
-            <div>@</div>
-      
-            <div class="back" id="email_back">
-              <select name="email[1]" id="email_1" required class="n-ipt">
-                <option value="naver.com">naver.com</option>
-                <option value="hanmail.net">hanmail.net</option>
-                <option value="hotmail.com">hotmail.com</option>
-                <option value="nate.com">nate.com</option>
-                <option value="yahoo.co.kr">yahoo.co.kr</option>
-                <option value="empas.com">empas.com</option>
-                <option value="dreamwiz.com">dreamwiz.com</option>
-                <option value="freechal.com">freechal.com</option>
-                <option value="lycos.co.kr">lycos.co.kr</option>
-                <option value="korea.com">korea.com</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="hanmir.com">hanmir.com</option>
-                <option value="paran.com">paran.com</option>
-                <option value="text">직접입력</option>
-              </select>
-            </div>
-      
-            <div> <button id="btn-send-email">인증번호 받기</button> </div>
-      
-            <div class="blind" id="email-confirm">
-              <input type="text" name="userEmailConfirm" id="user-email-confirm" placeholder="이메일 인증번호"/>
+          <div class="signup-formbox">
+          
+              <!-- id -->
             <div>
-              <button id="btn-email-confirm">이메일 인증</button>
+              <div> <input type="text"> </div>
+              <div> <button id="btn-duplicate-id">아이디 중복 확인</button> </div>
             </div>
-          </div> 
-        
-      </div>
-
-          <!-- name -->      
-      <div><input type="text"></div>
-
-          <!-- address -->
-      <div class="address-box">
-        
-        <div class="address-front">
-          <input type="text" id="sample4_postcode" placeholder="우편번호" />
-          <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기"/>
+              <!-- pw -->
+            <div><input type="password"></div>
+            <div><input type="password"></div>
+              <!-- email -->
+            <div class="email-box">
+          
+              <div class="email-input">
+                <div class="front">
+                  <input type="text" name="email[0]" class="n-ipt" required maxlength="30">
+                </div>
+                <div>@</div>
+                <div class="back" id="email_back">
+                  <select name="email[1]" id="email_1" required class="n-ipt">
+                    <option value="naver.com">naver.com</option>
+                    <option value="hanmail.net">hanmail.net</option>
+                    <option value="hotmail.com">hotmail.com</option>
+                    <option value="nate.com">nate.com</option>
+                    <option value="yahoo.co.kr">yahoo.co.kr</option>
+                    <option value="empas.com">empas.com</option>
+                    <option value="dreamwiz.com">dreamwiz.com</option>
+                    <option value="freechal.com">freechal.com</option>
+                    <option value="lycos.co.kr">lycos.co.kr</option>
+                    <option value="korea.com">korea.com</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="hanmir.com">hanmir.com</option>
+                    <option value="paran.com">paran.com</option>
+                    <option value="text">직접입력</option>
+                  </select>
+                </div>
+              </div>
+              <div class="email-button">
+              <input type="text">
+                <button id="btn-send-email">인증번호 받기</button>
+              </div>
+              <div class="blind" id="email-confirm">
+                <input type="text" name="userEmailConfirm" id="user-email-confirm" placeholder="이메일 인증번호"/>
+              <div>
+                <button id="btn-email-confirm">이메일 인증</button>
+              </div>
+            </div>
+          
+                </div>
+            <!-- name -->      
+                <div><input type="text"></div>
+            <!-- address -->
+                <div class="address-box">
+          <div class="address-front">
+            <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기"/>
+          </div>
+          <br/>
+          <div class="address-back">
+          <div><input type="text" id="sample4_roadAddress" placeholder="도로명주소" /></div>       
+                 </div>
+                
+                 </div>
+            <!-- tel -->
+                
+                <div><input type="text"></div>
+                
+              </div></form>
         </div>
-
-        <br/>
-
-        <div class="address-back">
-        <div><input type="text" id="sample4_roadAddress" placeholder="도로명주소" /></div>
-        <div><input type="text" id="sample4_detailAddress" placeholder="상세주소" /></div>
-        <div><input type="text" id="sample4_extraAddress" placeholder="참고항목" /></div>
-        </div>
-      </div>
-      
-      
-          <!-- tel -->
-      
-      <div><input type="text"></div>
-      
-      </form></div>
       
       </div>
     </main>

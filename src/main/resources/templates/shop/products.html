@@ -14,6 +14,7 @@
     <div class="store-box">
     
       <div class="store-top">
+        
         <div class="store-img">
           <img th:src="@{/img/svg/store.svg}" alt="" />
         <button><a href="/product/manage">상점관리</a></button>
@@ -53,43 +54,20 @@
       <hr>
 
       <div class="store-nav">            
-        <div>상품</div>
-        <div>상점후기</div>
-        <div>찜</div>
-        <div>팔로잉</div>
-        <div>팔로워</div>
+        <div id="load-products">상품</div>
+        <div id="load-reviews">상점후기</div>
+        <div id="load-zzims">찜</div>
+        <div id="load-followers">팔로잉</div>
+        <div id="load-follwings">팔로워</div>
       </div>
 
       <div class="store-contents">
 
-        <div class="product">
+        <div class="product-shopstyle">
           <a href="/product/detail">
-          <img th:src="@{/img/product/sample01.jpg}" alt="">
-          <p>sample01</p>
-          <p class="product-price"><span>60000</span><span>원</span></p>
-          <p class="product-date">일 전</p>
-        </a>
-        </div>
-
-        <hr>
-
-        <div class="product">
-          <a href="/product/detail">
-          <img th:src="@{/img/product/sample01.jpg}" alt="">
-          <p>sample01</p>
-          <p class="product-price"><span>60000</span><span>원</span></p>
-          <p class="product-date">일 전</p>
-        </a>
-        </div>
-
-        <hr>
-
-        <div class="product">
-          <a href="/product/detail">
-          <img th:src="@{/img/product/sample01.jpg}" alt="">
-          <p>sample01</p>
-          <p class="product-price"><span>60000</span><span>원</span></p>
-          <p class="product-date">일 전</p>
+          <img th:src="@{/img/product/sample06.jpg}" alt="">
+          <p>sample06</p>
+          <p class="product-price"><span>60000</span><span>원</span></p>          
         </a>
         </div>
 

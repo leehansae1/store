@@ -23,13 +23,25 @@
 <hr>
 
 <div class="product-subtable">
+
 <div class="table-key"><p>상품정보</p></div>
+
 <div class="table-value">
-  <div class="img-upload">
+
+  
+  <div class="img-upload" id="upload-box">
+    
     <div><img th:src="@{/img/svg/camera.svg}"></div>
-    <div><p>이미지 등록</p></div>
+    <div><p aria-readonly="true">이미지 등록</p></div>
+    
+    <input type="file" id="input-file" class="hide">
+
   </div>
+
+  <div class="preview-box" id="preview-box"></div>
+
 </div>
+
 </div>
 
 <!-- name="imageFiles"-->
@@ -55,22 +67,30 @@
   <div class="table-value table-column">
     <label>
       <input type="radio" name="productStatus" value="0">
-      새상품 ~ 미사용 (사용하지 않은 새 상품)
+        <div class="product-status-div">
+        <span>새상품</span> <span>미사용 (사용하지 않은 새 상품)</span>
+        </div>
   </label>
   <br>
   <label>
       <input type="radio" name="productStatus" value="1">
-      사용감 없음 (사용은 했지만 눈에 띄는 흔적이나 얼룩이 없음)
+        <div>
+        <span>사용감 없음</span> <span>(사용은 했지만 눈에 띄는 흔적이나 얼룩이 없음)</span>
+        </div>
   </label>
   <br>
   <label>
       <input type="radio" name="productStatus" value="2">
-      사용감 적음 (눈에 띄는 흔적이나 얼룩이 약간 있음)
+        <div class="product-status-div">
+        <span>사용감 적음</span> <span>(눈에 띄는 흔적이나 얼룩이 약간 있음)</span>
+        </div>
   </label>
   <br>
   <label>
       <input type="radio" name="productStatus" value="3">
-      사용감 많음 (눈에 띄는 흔적이나 얼룩이 많이 있음)
+        <div class="product-status-div">
+        <span>사용감 많음</span> <span>(눈에 띄는 흔적이나 얼룩이 많이 있음)</span>
+        </div>
   </label>
   </div>
 </div>

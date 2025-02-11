@@ -1,162 +1,172 @@
-// category-bar
-
 document.addEventListener("DOMContentLoaded", () => {
+  // Elements
   const categoryBar = document.querySelector(".category-bar");
   const categoryButton = document.querySelector(".category-button");
+  const infoButton = document.querySelector(".info-button");
+  const infoBar = document.querySelector(".info-bar");
+  const validationForm = document.getElementById("validationForm");
+  const resetButton = document.getElementById("resetButton");
+  const uploadBox = document.getElementById("upload-box");
+  const inputFile = document.getElementById("input-file");
 
-  // category bar toggle
+  const storeNavItems = document.querySelectorAll(".store-nav div");
+  const storeContents = document.getElementById("store-contents");
+  
+  // Category bar toggle (menu)
   categoryButton.addEventListener("click", () => {
     categoryBar.classList.toggle("show");
   });
 
-  // 메뉴 외부 클릭 시 메뉴 닫기
+  // Close category menu if clicked outside
   document.addEventListener("click", (event) => {
     if (!categoryBar.contains(event.target) && !categoryButton.contains(event.target)) {
       categoryBar.classList.remove("show");
     }
   });
 
-  // 카테고리 hover 처리
+  // Category hover handling (showing subcategories)
   const mainCategories = document.querySelectorAll(".mc div");
-  const subCategories = document.querySelectorAll(".sc div");
+  const subCategories = document.querySelectorAll(".subcategory");
 
   mainCategories.forEach((mainCategory, index) => {
     mainCategory.addEventListener("mouseenter", () => {
-      // 모든 하위 카테고리를 숨김
-      subCategories.forEach((subCategory) => subCategory.classList.remove("active"));
+      // Hide all subcategories first
+      subCategories.forEach(subCategory => subCategory.classList.remove("active"));
       
-      // 현재 인덱스에 해당하는 하위 카테고리만 표시
+      // Show the corresponding subcategory based on index
       if (subCategories[index]) {
         subCategories[index].classList.add("active");
       }
     });
-    
-//     mainCategory.addEventListener("mouseleave", () => {
-//       // 마우스가 빠져나가면 서브 카테고리 숨김
-//       subCategories.forEach((subCategory) => subCategory.classList.remove("active"));
-//     });
-//   });
-// });
-  
+  });
 
-  // 카테고리 전체에서 마우스가 벗어났을 때만 숨김
+  // Hide subcategories when mouse leaves the category bar
   categoryBar.addEventListener("mouseleave", () => {
-    subCategories.forEach((subCategory) => subCategory.classList.remove("active"));
-  });});});
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const mainCategories = document.querySelectorAll(".mc li");
-  const subCategories = document.querySelectorAll(".sc");
-
-  mainCategories.forEach((mainCategory, index) => {
-    mainCategory.addEventListener("mouseenter", () => {
-      // 모든 하위 카테고리를 숨김
-      subCategories.forEach((subCategory) => subCategory.classList.remove("active"));
-      
-      // 현재 인덱스에 해당하는 하위 카테고리만 표시
-      if (subCategories[index]) {
-        subCategories[index].classList.add("active");
-      }
-    });
-
-    mainCategory.addEventListener("mouseleave", () => {
-      // 마우스가 빠져나가면 서브 카테고리 숨김
-      subCategories.forEach((subCategory) => subCategory.classList.remove("active"));
-    });
+    subCategories.forEach(subCategory => subCategory.classList.remove("active"));
   });
 
-
-    
-
-  /*
-
-  // 사이드바 열기
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.add("show");
-  });
-
-  // 사이드바 닫기
-  sidebarToggle.addEventListener("click", () => {
-    sidebar.classList.remove("show");
-  });
-
-
-*/
- 
-});
-
-// info-bar
-
-document.addEventListener("DOMContentLoaded", () => {
-  const infoButton = document.querySelector(".info-button"); // 오른쪽 상단 버튼
-  const infoBar = document.querySelector(".info-bar"); // 오른쪽 메뉴
-
-  // 버튼 클릭 시 슬라이드 메뉴 표시/숨김 토글
+  // Info bar toggle (right menu)
   infoButton.addEventListener("click", () => {
     infoBar.classList.toggle("show");
   });
 
-  // 메뉴 외부 클릭 시 메뉴 닫기
+  // Close info bar if clicked outside
   document.addEventListener("click", (event) => {
     if (!infoBar.contains(event.target) && !infoButton.contains(event.target)) {
       infoBar.classList.remove("show");
     }
   });
-});
 
+  // Form validation
+  if (validationForm) {
+    validationForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent form submission
+      Array.from(validationForm.elements).forEach((element) => {
+        if (element.tagName === 'INPUT') {
+          validateField(element);
+        }
+      });
+    });
+  }
 
+  // Field validation function
+  function validateField(field) {
+    const isValid = field.checkValidity();
+    field.classList.toggle('is-valid', isValid);
+    field.classList.toggle('is-invalid', !isValid);
+  }
 
-// from controller
+  // Form reset functionality
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      validationForm.reset(); // Reset form
+      Array.from(validationForm.elements).forEach((element) => {
+        element.classList.remove('is-valid', 'is-invalid');
+      });
+    });
+  }
 
-document.getElementById('validationForm').addEventListener('submit', function (event) {
-  event.preventDefault(); // 폼 제출 방지
-  const form = event.target; // 현재 폼
-  
-  // 모든 입력 필드에 대해 유효성 검사 수행
-  Array.from(form.elements).forEach((element) => {
-    if (element.tagName === 'INPUT') {
-      validateField(element);
+  // Swiper initialization
+  if (document.querySelector('.swiper')) {
+    new Swiper('.swiper', {
+      direction: 'vertical',
+      loop: true,
+      scrollbar: {
+        el: '.swiper-scrollbar',
+      },
+    });
+  }
+
+ // File input click functionality
+if (uploadBox && inputFile) {
+  uploadBox.addEventListener("click", () => {
+    inputFile.click();
+  });
+
+  // Handle file selection and preview
+  inputFile.addEventListener("change", (event) => {
+    const files = event.target.files;
+    const previewBox = document.getElementById("preview-box"); 
+
+    if (!previewBox) {
+      console.error("no preview container!");
+      return;
+    }
+
+    if (files.length > 0) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          
+          const previewDiv = document.createElement("div");
+          previewDiv.classList.add("preview-item");
+          
+          const imgElement = document.createElement("img");
+          imgElement.src = e.target.result;
+          imgElement.classList.add("preview-image");
+
+           // delete button
+          const deleteBtn = document.createElement("button");
+          deleteBtn.innerHTML = "❌";
+          deleteBtn.classList.add("delete-btn");
+
+           // delete with div and form
+          deleteBtn.addEventListener("click", () => {
+            previewDiv.remove(); // div
+            removeFileFromForm(file); // form
+          });
+
+          // Create a new div for the preview
+          previewDiv.appendChild(imgElement);
+          previewDiv.appendChild(deleteBtn);
+          previewBox.appendChild(previewDiv);
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      inputFile.value = "";
     }
   });
-});
-
-// 필드 유효성 검사 함수
-function validateField(field) {
-  const isValid = field.checkValidity(); // 필드 유효성 확인
-  if (isValid) {
-    field.classList.remove('is-invalid'); // 유효하지 않은 클래스 제거
-    field.classList.add('is-valid'); // 유효한 클래스 추가
-  } else {
-    field.classList.remove('is-valid'); // 유효한 클래스 제거
-    field.classList.add('is-invalid'); // 유효하지 않은 클래스 추가
-  }
 }
 
-// form 리셋
+// form delete function
+function removeFileFromForm(fileToRemove) {
+  const dt = new DataTransfer();
+  const files = inputFile.files;
 
-document.getElementById('resetButton').addEventListener('click', function () {
-  const form = document.getElementById('validationForm');
-  form.reset(); // 폼 초기화
-  Array.from(form.elements).forEach((element) => {
-    element.classList.remove('is-valid', 'is-invalid');
+  Array.from(files).forEach((file) => {
+    if (file !== fileToRemove) {
+      dt.items.add(file);
+    }
   });
+
+  inputFile.files = dt.files;
+}
+
+
+ 
+
+ 
 });
-
-
-// swiper
-
-const swiper = new Swiper('.swiper', {
-  // Optional parameters
-  direction: 'vertical',
-  loop: true,
-
-
-
-  // And if we need scrollbar
-  scrollbar: {
-    el: '.swiper-scrollbar',
-  },
-});
-

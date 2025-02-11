@@ -1,15 +1,15 @@
 <header th:fragment="header">
   <div class="top">
     <div class="logo-box">
-      <a href="/" target="_blank">
+      <a href="/">
         <img th:src="@{/img/wave-logo.png}" alt="logo">
       </a>
     </div>
-    <div>wave</div>
+    <div><a href="/">wave</a></div>
     <div class="login-box">
       
         <li>
-          <a href="/login">로그인</a><span>/</span><a href="/signup">회원가입</a>
+          <a href="/member/login">로그인</a><span>/</span><a href="/member/signup">회원가입</a>
         </li>
         <li>
           <a href="/cart">
@@ -41,18 +41,24 @@
       </form>
     </div>
     <div class="storemenu-box">
+      <div>
       <a href="/product/upload">
         <img th:src="@{/img/svg/unarchive.svg}" alt="Upload">
         <span>판매하기</span>
       </a>
+    </div>
+    <div>
       <a href="/shop/products">
         <img th:src="@{/img/svg/store.svg}" alt="Store">
         <span>내상점</span>
       </a>
-      <a href="/member/talk">
+    </div>
+    <div>
+      <a href="/chat/chatroom">
         <img th:src="@{/img/svg/sms.svg}" alt="Talk">
         <span>wave톡</span>
       </a>
+    </div>
     </div>
   </nav>
 
@@ -63,25 +69,25 @@
     <div class="info-buttonbox">
       <button><a href="/member/store">내상점</a></button>
       <button><a href="/member/talk">내톡</a></button>
-      <button><a href="/member/store">내정보</a></button>
+      <button><a href="/member/info">내정보</a></button>
     </div>
   </div>
 
   <!-- Category bar -->
 
   
-
+<form action="/product/list">
   <div class="category-bar">
 
-    <div class="mc">
-      <div class="mc1">여성의류</div>
-      <div class="mc2">남성의류</div>
-      <div class="mc3">신발</div>
-      <div class="mc4">가방/지갑</div>
-      <div class="mc5">시계</div>
+    <div class="category-div mc">
+      <div class="mc1"><a href="/product/list?category=여성의류">여성의류</a></div>
+      <div class="mc2"><a href="">남성의류</a></div>
+      <div class="mc3"><a href="">신발</a></div>
+      <div class="mc4"><a href="">가방/지갑</a></div>
+      <div class="mc5"><a href="">시계</a></div>
     </div>
 
-    <div class="sc sc1">              
+    <div class="category-div subcategory">              
           <div><a href="">아우터</a></div>
           <div><a href="">상의</a></div>
           <div><a href="">바지</a></div>
@@ -93,7 +99,7 @@
           <div><a href="">테마/이벤트</a></div>        
       </div>
 
-      <div class="sc sc2">        
+      <div class="category-div subcategory">        
           <div><a href="">아우터</a></div>
           <div><a href="">상의</a></div>
           <div><a href="">바지</a></div>
@@ -103,14 +109,14 @@
           <div><a href="">테마/이벤트</a></div>        
       </div>
 
-      <div class="sc sc3">        
+      <div class="category-div subcategory">        
           <div><a href="">스니커즈</a></div>
           <div><a href="">남성화</a></div>
           <div><a href="">여성화</a></div>
           <div><a href="">스포츠화</a></div>        
       </div>
 
-      <div class="sc sc4">        
+      <div class="category-div subcategory">        
           <div><a href="">여성가방</a></div>
           <div><a href="">남성가방</a></div>
           <div><a href="">여행용 가방</a></div>
@@ -119,10 +125,20 @@
           <div><a href="">기타 지갑</a></div>        
       </div>
 
-      <div class="sc sc5">        
+      <div class="category-div subcategory">        
           <div><a href="">남성시계</a></div>
           <div><a href="">여성시계</a></div>
           <div><a href="">시계용품</a></div>        
       </div>         
- 
+    </form>
 </header>
+
+<!--
+
+ front 에서는 href에 query parameter 를 추가해서 server 로 넘김
+ server 에서는 @RequestParam("parameter") 로 받음
+
+front : <a href="/product/list?category=여성의류">여성의류</a>
+back  : @RequestParam("category")
+
+-->

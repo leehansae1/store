@@ -1,11 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  내 정보
-</body>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>회원 정보</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main>
+<div class="signup-p"><p>회원정보</p><hr></div>
+
+    <div>
+      <p>아이디: <span id="userId"></span></p>
+      <p>이름: <span id="userName"></span></p>
+      <p>이메일: <span id="userEmail"></span></p>
+      <p>
+        주소:
+        <span id="address"></span>
+      </p>
+      <p>전화번호: <span id="tel" ></span></p>
+      <p>소개: <span id="introduce" ></span></p>
+    </div>
+
+    <h2>정보 수정</h2>
+    <!-- 수정 버튼: userId를 쿼리 파라미터로 포함 -->
+    <a style="text-decoration: none; color: blue">수정하기</a>
+
+    <h2>회원 삭제</h2>
+    <!-- 회원 삭제 폼 -->
+    <form action="/member/delete" method="post">
+      <input type="hidden" name="userId"  />
+      <label for="userPw">패스워드 입력 : </label>
+      <input type="password" id="userPw" name="userPw" required />
+      <button type="submit">삭제</button>
+    </form>
+  </body>
 </html>
