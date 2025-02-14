@@ -1,0 +1,178 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, #e0f7fa, #ffffff); /* 메인페이지와 동일한 그라데이션 */
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 헤더 (PC 우선) */
+.wave-navbar {
+    width: 100vw;
+    background: rgba(0, 123, 255, 0.85);
+    backdrop-filter: blur(8px);
+    height: 80px;
+}
+
+/* 데스크탑용 검색창 */
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+#search-input {
+    width: 100%;
+    height: 50px;
+    padding-right: 50px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+}
+
+#search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.layout-box {
+    width: 100%;
+    max-width: 1200px;
+    padding: 1rem;
+    z-index: 99999;
+}
+
+/* 기존 container 대신 로그인 카드가 중앙에 딱 맞도록 최대 너비 설정 */
+.container {
+    width: 100vw;
+    height: 81vh;
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+}
+
+/* 로그인 카드: 약간 투명하게 하여 배경 영상이 살짝 보이도록 */
+.login-card {
+    background: rgba(255, 255, 255, 0.8); /* 투명도를 0.98에서 0.8로 낮춤 */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 2;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* 카드 제목 */
+.login-card .card-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem; /* 여백 약간 줄임 */
+}
+
+/* 폼 컨트롤 스타일은 동일 */
+.form-control {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.3s !important;
+}
+
+.form-control:focus {
+    border-color: #007bff !important;
+    box-shadow: none !important;
+}
+
+/* 로그인 버튼: 브랜드 컬러 유지 */
+.btn-primary {
+    background-color: #007bff;
+!important;
+    border-color: #007bff;
+!important;
+    border-radius: 12px;
+    transition: background-color 0.3s, border-color 0.3s;
+    font-weight: 600;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+}
+
+/* 비밀번호 토글 버튼 (변경 없음) */
+.position-relative {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 70%;
+    right: 15px;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #555;
+}
+
+/* 오류 메시지: fade-in 효과 */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* 모바일 대응: 로그인 카드의 패딩 살짝 줄임 */
+@media (max-width: 576px) {
+    .login-card {
+        margin: 20px;
+        padding: 1rem;
+    }
+}
+
+/* 백그라운드 비디오 컨테이너 */
+.video-background {
+    position: fixed; /* 페이지에 고정되어 스크롤 시에도 항상 보임 */
+    top: 0;
+    left: 0;
+    width: 100vw; /* 뷰포트 전체 너비 */
+    height: 100vh; /* 뷰포트 전체 높이 */
+    overflow: hidden;
+    z-index: -2; /* 다른 콘텐츠 뒤에 배치 */
+}
+
+.video-background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 영상이 비율을 유지하면서 컨테이너를 꽉 채움 */
+    filter: blur(4px); /* 비디오를 흐릿하게 처리 (픽셀 값은 필요에 따라 조정) */
+}
+
+/* Footer */
+.wave-footer {
+    background: #f8f9fa;
+    margin-top: 60px;
+    padding: 20px 0;
+    font-size: 0.9rem;
+}

@@ -2,6 +2,7 @@ package org.example.store.memberReview;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.chatRoom.ChatRoomService;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.product.ProductService;
@@ -21,6 +22,8 @@ public class ReviewService {
 
     private final ProductService productService;
 
+    private final ChatRoomService chatRoomService;
+
     public boolean writeReview(ReviewDto reviewDto, int productId,
                                CustomUserDetails user) {
         log.info("Writing review");
@@ -28,11 +31,11 @@ public class ReviewService {
         Product product = productService.getProduct(productId);
         reviewDto.setProductDto(Product.fromEntity(product));
         reviewDto.setSeller(Member.fromEntity(product.getSeller())); //판매자
-
-        //구매자
-        reviewDto.setReviewer(Member.fromEntity(user.getLoggedMember()));
+        reviewDto.setReviewer(Member.fromEntity(user.getLoggedMember())); //구매자
 
         Review review = reviewRepository.save(ReviewDto.toEntity(reviewDto));
+
+        chatRoomService.writePaymentResult(productId, user); //결제 완료 메시지를 채팅으로 전송
         return Review.fromEntity(review) != null;
     }
 

@@ -43,8 +43,8 @@ public class LikeService {
     }
 
     // 찜 여부 >> product service 에서 호출됨
-    public boolean isLiked(CustomUserDetails liker, Product product) {
-        return likeRepository.existsByLikerAndProduct(liker.getLoggedMember(), product);
+    public boolean isLiked(Member liker, Product product) {
+        return likeRepository.existsByLikerAndProduct(liker, product);
     }
 
     // 내가 찜한 상품 출력

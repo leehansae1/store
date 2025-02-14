@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
+import org.example.store.member.dto.MemberDto;
+import org.example.store.product.ProductService;
+import org.example.store.product.dto.ProductDto;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,10 +39,18 @@ public class PaymentController {
 
     // 구매화면 진입
     @GetMapping("/payment/widget/checkout")
-    public String checkout(Model model) {
+    public String checkout(Model model,
+                           String sellerName, int price, String thumbnailUrl, String productName) {
         model.addAttribute(
                 "orderId", UUID.randomUUID().toString().substring(0, 8)
         );
+        ProductDto productDto = ProductDto.builder()
+                .price(price)
+                .thumbnailUrl(thumbnailUrl)
+                .productName(productName)
+                .seller(MemberDto.builder().userName(sellerName).build())
+                .build();
+        model.addAttribute("product", productDto);
         return prefix + "/widget/checkout";
     }
 
@@ -156,6 +167,7 @@ public class PaymentController {
     public List<PaymentDto> getSellPayments(@AuthenticationPrincipal CustomUserDetails user) {
         return paymentService.getSellPayments(user);
     }
+
     // 내 구매 내역
     @GetMapping("/payment/buyHistory")
     public List<PaymentDto> getBuyPayments(@AuthenticationPrincipal CustomUserDetails user) {

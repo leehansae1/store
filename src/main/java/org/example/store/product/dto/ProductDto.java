@@ -63,6 +63,8 @@ public class ProductDto {
 
     private int likeCount;
 
+    private String timeAgo;
+
     public static Product toEntity(ProductDto productDto) {
         return Product.builder()
                 .productId(productDto.getProductId())

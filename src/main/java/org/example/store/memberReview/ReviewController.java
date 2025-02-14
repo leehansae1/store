@@ -2,7 +2,6 @@ package org.example.store.memberReview;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.store.chatRoom.ChatRoomService;
 import org.example.store.member.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,8 +19,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    private final ChatRoomService chatRoomService;
-
     private final String prefix = "/review";
 
     @GetMapping("/write/{productId}")
@@ -31,14 +28,15 @@ public class ReviewController {
         return prefix + "/write";
     }
 
-    @PostMapping("/write")
     //productId 는 히든 인풋으로 넘김
+    @PostMapping("/write")
     public String writeReview(ReviewDto reviewDto, int productId,
                               @AuthenticationPrincipal CustomUserDetails user) {
-        chatRoomService.writePaymentResult(productId, user); // 결제 되었다는 채팅 날리기
-        return reviewService.writeReview(reviewDto, productId, user)
-                ? "/chatRoom/paymentResult/" + productId : prefix + "/write";
+        return reviewService.writeReview(reviewDto, productId, user) ?
+                "/chatRoom/paymentResult/" + productId : "/review/write";
     }
+
+
 
     // /review/list/{userId} 화면에서 버튼으로 처리 >> 남의 상점에 내 후기가 달려있고, 거기서 삭제 버튼
     @DeleteMapping("/delete/{reviewId}")

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="WAVE Market 상품 등록 페이지입니다.">
+    <title>WAVE Market - 상품 등록</title>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 (CSS) -->
+    <link rel="stylesheet" href="/css/product-upload.css">
+</head>
+<body>
+
+<!-- PC 전용 상단 헤더 -->
+<header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="" alt="WAVE" height="50">
+            <span class="ms-2 fw-bold fs-4">WAVE</span>
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
+                <li class="nav-item me-3">
+                    <a class="btn btn-light" href="/shop">내 상점</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+
+<!-- 메인 컨텐츠 -->
+<main class="container">
+    <!-- 제목 영역 -->
+    <div class="form-header">
+        <h1 class="form-title">
+            <i class="bi bi-pencil-square"></i> 상품 등록
+        </h1>
+        <p class="form-subtitle">새로운 상품을 등록하고, 거래를 시작하세요!</p>
+    </div>
+
+    <form action="/product/upload" th:action="@{/product/upload}" method="post"
+          enctype="multipart/form-data" class="product-form"
+    >
+
+        <!-- 이미지 업로드 영역: 드래그 앤 드롭 & 클릭 -->
+        <div class="d-flex">
+            <b class="me-3">상품이미지 (최대 7개)</b>
+            <div class="form-group image-upload-group">
+                <label class="upload-label" id="drop-area">
+                    <img src="/img/2765820.jpg" alt="클릭 시 상품 이미지 업로드" class="upload-placeholder">
+                </label>
+                <input type="file" id="images" name="imageFiles" class="form-control" multiple accept="image/*" hidden>
+                <!-- 미리보기 영역 -->
+                <div id="preview-container" class="preview-container"></div>
+            </div>
+        </div>
+
+        <!-- 상품명, 가격 입력 -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="productName" class="form-label">상품명</label>
+                    <input type="text" id="productName" name="productName" class="form-control"
+                           placeholder="상품명을 입력하세요" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="price" class="form-label">가격 (₩)</label>
+                    <!-- 보이는 필드 -->
+                    <input type="text" id="price" class="form-control" placeholder="가격을 입력하세요" required>
+                    <!-- 숨겨진 필드: 실제 폼 제출 시 정제된 숫자 값이 전송됨 -->
+                    <input type="number" id="priceNumeric" name="price"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- 카테고리 선택: 두 개의 드롭다운 -->
+        <div class="form-group">
+            <label class="form-label">카테고리</label>
+            <div class="row">
+                <div class="col-6">
+                    <select id="majorCategory" class="form-select" required>
+                        <option value="">메인 카테고리</option>
+                        <option value="남성의류">남성의류</option>
+                        <option value="여성의류">여성의류</option>
+                        <option value="신발">신발</option>
+                        <option value="가방/지갑">가방/지갑</option>
+                        <option value="시계">시계</option>
+                        <option value="쥬얼리">쥬얼리</option>
+                        <option value="패션 액세서리">패션 액세서리</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <select id="subCategory" name="category" class="form-select" required>
+                        <option value="">메인 카테고리를 선택해주세요</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- 상품 상태와 직거래 장소를 같은 행에 배치 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="productStatus" class="form-label">상품 상태</label>
+                    <select id="productStatus" name="productStatus" class="form-select" required>
+                        <option value="선택안함">상품 상태를 선택하세요</option>
+                        <option value="새상품">새상품 (미사용)</option>
+                        <option value="사용감 없음">사용감 없음</option>
+                        <option value="사용감 적음">사용감 적음</option>
+                        <option value="사용감 많음">사용감 많음</option>
+                        <option value="고장/파손 상품">고장/파손 상품</option>
+                        <option value="기능 이상이나 외관 손상 등으로 수리/수선 필요">기능 이상이나 외관 손상 등으로 수리/수선 필요</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="location" class="form-label">직거래 장소</label>
+                    <!-- 로그인된 사용자의 주소를 기본값으로 설정 -->
+                    <input type="text" id="location" class="form-control"
+                           placeholder="직거래 장소를 입력하세요" th:value="${#authentication.principal.loggedMember.address}"
+                           required>
+                </div>
+            </div>
+        </div>
+        <!-- 상품 설명 입력 -->
+        <div class="form-group">
+            <label for="description" class="form-label">상품 설명</label>
+            <textarea id="description" name="description" class="form-control" rows="4"
+                      placeholder="상품에 대해 설명해주세요" required></textarea>
+        </div>
+        <!-- 태그 입력 (사용자가 띄어쓰기를 하면 해쉬태그를 붙여서 구분) -->
+        <div class="form-group">
+            <label for="tag" class="form-label">태그 (띄어쓰기로 구분)</label>
+            <input type="text" id="tag" name="tag" class="form-control" placeholder="예: 여름 세일">
+            <!-- 실시간 미리보기 영역 -->
+            <div id="tag-preview" class="tag-preview"></div>
+        </div>
+
+        <!-- display == 기본값이 true-->
+        <input type="hidden" name="display" value="true"/>
+        <!-- 등록 버튼 -->
+        <div class="form-group mt-5">
+            <button type="submit" class="btn btn-primary btn-block">등록하기</button>
+        </div>
+    </form>
+</main>
+
+<!-- 하단 파도 효과 -->
+<div class="wave-container">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path fill="#e6f2ff" fill-opacity="1"
+              d="M0,192L48,181.3C96,171,192,149,288,138.7C384,128,480,128,576,144C672,160,768,192,864,208C960,224,1056,224,1152,208C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+</div>
+
+<script>
+    let uploadedFiles = [];
+
+    const fileInput = document.querySelector('#images');
+    const dropArea = document.querySelector('#drop-area');
+    const previewContainer = document.querySelector('#preview-container');
+
+    fileInput.addEventListener('change', function (e) {
+        // 기존 파일 목록 초기화
+        uploadedFiles = [];
+        previewContainer.innerHTML = "";
+        handleFiles(Array.from(e.target.files));
+        fileInput.value = "";
+    });
+
+    // 공통 이벤트 핸들러 등록 함수
+    const registerDragEvents = (element, events, callback) => {
+        events.forEach(eventName => {
+            element.addEventListener(eventName, callback, false);
+        });
+    };
+
+    registerDragEvents(dropArea, ['dragenter', 'dragover'], (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add('highlight');
+    });
+
+    registerDragEvents(dropArea, ['dragleave', 'drop'], (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove('highlight');
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+    });
+
+    function handleFiles(files) {
+        for (let file of files) {
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                continue;
+            }
+            if (uploadedFiles.length >= 7) {
+                alert('최대 7개의 이미지 파일만 업로드할 수 있습니다.');
+                // 기존 파일 목록 초기화
+                uploadedFiles = [];
+                previewContainer.innerHTML = "";
+                break;
+            }
+            uploadedFiles.push(file);
+        }
+        updatePreviews();
+    }
+
+    function createPreviewElement(file, index) {
+        const previewDiv = document.createElement('div');
+        previewDiv.className = "preview";
+        previewDiv.draggable = true;
+
+        previewDiv.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData("text/plain", index);
+            previewDiv.classList.add('dragging');
+        });
+        previewDiv.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        previewDiv.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const fromIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+            const toIndex = index;
+            if (fromIndex === toIndex) return;
+            const [movedFile] = uploadedFiles.splice(fromIndex, 1);
+            uploadedFiles.splice(toIndex, 0, movedFile);
+            updatePreviews();
+        });
+        previewDiv.addEventListener('dragend', (e) => {
+            previewDiv.classList.remove('dragging');
+        });
+
+        const img = document.createElement('img');
+        img.src = file;
+        img.alt = "업로드 이미지 미리보기";
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = "button";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
+        deleteBtn.addEventListener('click', () => {
+            uploadedFiles.splice(index, 1);
+            updatePreviews();
+        });
+
+        const overlayLabel = document.createElement('div');
+        overlayLabel.className = "preview-number";
+        overlayLabel.textContent = index === 0 ? "대표사진" : (index + 1).toString();
+
+        previewDiv.appendChild(img);
+        previewDiv.appendChild(deleteBtn);
+        previewDiv.appendChild(overlayLabel);
+        return previewDiv;
+    }
+
+    function updatePreviews() {
+        previewContainer.innerHTML = "";
+        const previewElements = [];
+        let loadedCount = 0;
+
+        uploadedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewElements[index] = createPreviewElement(e.target.result, index);
+                loadedCount++;
+                if (loadedCount === uploadedFiles.length) {
+                    // append in order
+                    previewElements.forEach(preview => previewContainer.appendChild(preview));
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    dropArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // majorCategory 및 subCategory 관련 코드는 그대로 유지
+    const majorCategorySelect = document.querySelector('#majorCategory');
+    const subCategorySelect = document.querySelector('#subCategory');
+
+    const subCategories = {
+        "남성의류": ["티셔츠", "셔츠", "바지", "정장", "아우터"],
+        "여성의류": ["원피스", "블라우스", "스커트", "바지", "아우터"],
+        "신발": ["운동화", "구두", "샌들", "부츠"],
+        "가방/지갑": ["백팩", "토트백", "숄더백", "지갑", "클러치"],
+        "시계": ["디지털", "아날로그", "스마트워치", "골드", "실버"],
+        "쥬얼리": ["목걸이", "반지", "귀걸이", "팔찌"],
+        "패션 액세서리": ["모자", "벨트", "선글라스", "스카프"]
+    };
+
+    majorCategorySelect.addEventListener('change', function () {
+        const selectedMajor = majorCategorySelect.value;
+        subCategorySelect.innerHTML = "<option value=''>상세 카테고리</option>";
+        if (subCategories[selectedMajor]) {
+            subCategories[selectedMajor].forEach(subCat => {
+                const option = document.createElement('option');
+                if (subCat === "아우터") {
+                    if (selectedMajor === "남성의류") {
+                        option.value = "남성아우터";
+                    } else if (selectedMajor === "여성의류") {
+                        option.value = "여성아우터";
+                    } else {
+                        option.value = subCat;
+                    }
+                    option.textContent = "아우터";
+                } else {
+                    option.value = subCat;
+                    option.textContent = subCat;
+                }
+                subCategorySelect.appendChild(option);
+            });
+        }
+    });
+
+    // 해쉬태그 자동 생성
+    const tagInput = document.querySelector('#tag');
+    const tagPreview = document.querySelector('#tag-preview');
+
+    tagInput.addEventListener('input', function () {
+        const tokens = this.value.split(/[\s,]+/).map(token => token.trim()).filter(token => token !== '');
+        const formattedTokens = tokens.map(token => token.startsWith('#') ? token : '#' + token);
+        tagPreview.textContent = formattedTokens.join(' ');
+    });
+
+    // 가격 입력 관련 처리
+    const priceInput = document.querySelector('#price');
+    const priceNumericInput = document.querySelector('#priceNumeric');
+    const MAX_DIGITS = 9;
+
+    priceInput.addEventListener('keydown', function (e) {
+        if ([8, 9, 13, 46, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) return;
+        if (e.ctrlKey || e.metaKey) return;
+        const currentDigits = this.value.replace(/[^0-9]/g, '');
+        if (/\d/.test(e.key) && currentDigits.length >= MAX_DIGITS) {
+            e.preventDefault();
+        }
+    });
+
+    priceInput.addEventListener('paste', function (e) {
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text').trim();
+        const currentDigits = this.value.replace(/[^0-9]/g, '');
+        if (!/^\d+$/.test(pastedText) || (currentDigits.length + pastedText.length) > MAX_DIGITS) {
+            e.preventDefault();
+        }
+    });
+
+    priceInput.addEventListener('input', function () {
+        let value = this.value.replace(/원/g, '').replace(/,/g, '').trim();
+        if (value === "" || isNaN(value)) {
+            this.value = "";
+            return;
+        }
+        if (value.length > MAX_DIGITS) {
+            value = value.slice(0, MAX_DIGITS);
+        }
+        this.value = Number(value).toLocaleString();
+    });
+
+    priceInput.addEventListener('focus', function () {
+        this.value = this.value.replace(/원/g, '').trim();
+    });
+
+    priceInput.addEventListener('blur', function () {
+        let value = this.value.replace(/원/g, '').replace(/,/g, '').trim();
+        if (value !== "") {
+            this.value = Number(value).toLocaleString() + " 원";
+        }
+    });
+
+    // 폼 제출 인터셉트
+    const form = document.querySelector('.product-form');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        priceNumericInput.value = parseInt(priceInput.value.replace(/원/g, '').replace(/,/g, '').trim());
+        const formData = new FormData(form);
+        formData.delete('imageFiles');
+        uploadedFiles.forEach(file => {
+            formData.append('imageFiles', file);
+        });
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+            .catch(error => {
+                console.error("Error during form submission:", error);
+                alert("상품 등록 중 오류가 발생했습니다.");
+            });
+    });
+</script>
+</body>
+</html>

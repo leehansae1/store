@@ -56,9 +56,9 @@ public class FaqController {
     public String modify(@PathVariable int faqId, RedirectAttributes redirectAttributes) {
         FaqDto faqDto = faqService.getFaq(faqId);
         log.info("컨트롤러의 faqDto == {}", faqDto);
-        redirectAttributes.addAttribute("faqDto", faqDto);
+        redirectAttributes.addFlashAttribute("faqDto", faqDto);
         // if(isModify != null && isModify(==자체가 불린)) 이라면 페이지 타이틀, 문구 바꾸기
-        redirectAttributes.addAttribute("isModify", true);
+        redirectAttributes.addFlashAttribute("isModify", true);
         return "redirect:" + prefix + "/write";
     }
 

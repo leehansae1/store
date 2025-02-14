@@ -1,8 +1,10 @@
 package org.example.store.product;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
+import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,14 +48,12 @@ public class ProductController {
     @GetMapping("/list/{searchWord}")
     public String getSearchPage(@PathVariable String searchWord, Model model) {
         List<ProductDto> productDtoList = productService.getProductList(searchWord);
-        if (productDtoList.isEmpty()) log.info("no products found, search word");
-        else {
-            log.info("search {} products", productDtoList.size());
-            productDtoList.forEach(pL ->
-                    log.info("product {}", pL)
-            );
-            model.addAttribute("productList", productDtoList);
-        }
+        log.info("productDtoList == {}", productDtoList);
+        log.info("search {} products", productDtoList.size());
+        productDtoList.forEach(pL ->
+                log.info("product {}", pL)
+        );
+        model.addAttribute("productList", productDtoList);
         return prefix + "/list";
     }
 
@@ -65,7 +66,7 @@ public class ProductController {
 
     // 작성 후 저장
     @PostMapping("/upload")
-    public String uploadProduct(ProductDto productDto, @RequestBody List<MultipartFile> imageFiles,
+    public String uploadProduct(ProductDto productDto, @RequestParam List<MultipartFile> imageFiles,
                                 @AuthenticationPrincipal CustomUserDetails user
                                 //// 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ) {
@@ -89,8 +90,11 @@ public class ProductController {
     // 상품 상세 페이지
     @GetMapping("/detail/{productId}")
     public String getProduct(@PathVariable int productId, Model model,
-                             @AuthenticationPrincipal CustomUserDetails customUser) {
-        Map<String, Object> resultMap = productService.getProductDetail(productId, customUser);
+                             @AuthenticationPrincipal @Nullable Optional<CustomUserDetails> user) {
+        Member member;
+        if (user != null && user.isPresent()) member = user.get().getLoggedMember();
+        else member = Member.builder().build();
+        Map<String, Object> resultMap = productService.getProductDetail(productId, member);
         model.addAttribute("product", resultMap.get("product"));
         model.addAttribute("member", resultMap.get("member"));
         model.addAttribute("imageList", resultMap.get("imageList"));
@@ -101,8 +105,9 @@ public class ProductController {
         log.info("found {} ", resultMap.get("product"));
         log.info("found {} ", resultMap.get("member"));
         log.info("found {} image ", ((List<String>) resultMap.get("imageList")).size());
-        return prefix + "/detail/" + productId;
+        return prefix + "/detail";
     }
+
 
     // 내 상품 관리 페이지
     @GetMapping("/manage")

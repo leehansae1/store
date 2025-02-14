@@ -60,7 +60,7 @@ public class FollowService {
         List<MemberDto> memberDtoList = new ArrayList<>();
         List<Follow> followList = followRepository.findAllByFollower(member);
         followList.forEach(follow ->
-                memberDtoList.add(Member.fromEntity(follow.getFollower()))
+                memberDtoList.add(Member.fromEntity(follow.getSeller()))
         );
 
         if (memberDtoList.isEmpty()) log.info("팔로잉이 없어용,,,");

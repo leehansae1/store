@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WAVE Market - 중고 거래 플랫폼</title>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Swiper CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 -->
+    <link rel="stylesheet" href="/css/product-list.css">
+</head>
+<body>
+
+<!-- PC 전용 상단 헤더 -->
+<header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="" alt="WAVE" height="50">
+            <span class="ms-2 fw-bold fs-4">WAVE</span>
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
+                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-light" href="/shop">내 상점</a>
+                </li>
+                <!-- 사용자가 로그인하지 않은 경우 '로그인' 버튼 표시 -->
+                <li class="nav-item me-3" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-light" href="/member/login">로그인</a>
+                </li>
+                <li class="nav-item me-3" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link btn-need-login" href="/member/login">WAVE톡</a>
+                </li>
+                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link btn-need-login" href="/member/login">판매하기</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 배경: 파도 모션 효과와 여유로운 소개 섹션 -->
+<section class="wave-hero">
+    <div class="container text-center text-white">
+        <h1 class="display-3 fw-bold">편안한 파도 위에서 거래를 즐기세요</h1>
+        <p class="lead fs-5">WAVE Market은 중고 거래를 더 여유롭고 감성적으로 만들어 드립니다.</p>
+    </div>
+    <div class="wave-animation"></div>
+</section>
+
+<!-- 배너 영역 (Swiper 슬라이더) -->
+<div class="container my-5">
+    <div class="swiper-container banner-slider">
+        <div class="swiper-wrapper">
+            <!-- 첫 번째 슬라이드: 동영상 -->
+            <div class="swiper-slide">
+                <video class="w-100 h-100" autoplay muted loop playsinline>
+                    <source src="/video/7445_Surfer_Surfing.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <!-- 두 번째 슬라이드: 동영상 -->
+            <div class="swiper-slide">
+                <video class="w-100 h-100" autoplay muted loop playsinline>
+                    <source src="/video/0_Beach_Vacation.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <!-- 세 번째 슬라이드: 동영상 -->
+            <div class="swiper-slide">
+                <video class="w-100 h-100" autoplay muted loop playsinline>
+                    <source src="/video/1472467_People_Leisure.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        <!-- Swiper 컨테이너의 자식 요소로 페이지네이션과 내비게이션 버튼 배치 -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+<!-- 추천 상품 영역 -->
+<main class="container my-5">
+    <!-- 추천 상품 제목과 필터 토글 버튼을 감싸는 래퍼 -->
+    <div class="recommendation-header">
+        <!-- 필터 래퍼: 버튼과 사이드바를 함께 감쌈 -->
+        <div class="filter-wrapper me-3" style="position: relative; display: inline-block;">
+            <button id="filter-toggle-btn" class="btn btn-outline-primary">
+                <i class="bi bi-funnel-fill"></i> 필터
+            </button>
+            <!-- 새 필터 사이드바 (초기에는 숨김) -->
+            <div class="filter-sidebar">
+                <div class="major-categories">
+                    <!-- 전체 버튼 -->
+                    <button class="btn btn-outline-primary subcategory-btn all-btn" data-filter="all">전체</button>
+                    <!-- 남성의류 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">남성의류</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="티셔츠">티셔츠</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="셔츠">셔츠</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="남성바지">바지</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="정장">정장</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="남성아우터">아우터</button>
+                        </div>
+                    </div>
+                    <!-- 여성의류 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">여성의류</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="원피스">원피스</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="블라우스">블라우스</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="스커트">스커트</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="여성바지">바지</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="여성아우터">아우터</button>
+                        </div>
+                    </div>
+                    <!-- 신발 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">신발</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="운동화">운동화</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="구두">구두</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="샌들">샌들</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="부츠">부츠</button>
+                        </div>
+                    </div>
+                    <!-- 가방/지갑 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">가방/지갑</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="백팩">백팩</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="토트백">토트백</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="숄더백">숄더백</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="지갑">지갑</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="클러치">클러치</button>
+                        </div>
+                    </div>
+                    <!-- 시계 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">시계</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="디지털">디지털</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="아날로그">아날로그</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="스마트워치">스마트워치</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="골드">골드</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="실버">실버</button>
+                        </div>
+                    </div>
+                    <!-- 쥬얼리 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">쥬얼리</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="목걸이">목걸이</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="반지">반지</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="귀걸이">귀걸이</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="팔찌">팔찌</button>
+                        </div>
+                    </div>
+                    <!-- 패션 액세서리 -->
+                    <div class="major-category">
+                        <button class="btn btn-outline-primary major-btn">패션 액세서리</button>
+                        <div class="sub-category-menu">
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="모자">모자</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="벨트">벨트</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="선글라스">선글라스</button>
+                            <button class="btn btn-outline-secondary subcategory-btn" data-filter="스카프">스카프</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2 class="mb-0">추천 상품</h2>
+    </div>
+
+    <!-- 상품 카드 영역 -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 product-container">
+        <!-- 각 상품 카드 -->
+        <div class="col product-item" th:each="product : ${productList}" th:data-category="${product.category}">
+            <div class="card h-100 shadow-sm product-card">
+
+                <a th:href="@{/product/detail/{id}(id=${product.productId})}">
+                    <img th:src="${product.thumbnailUrl}" class="card-img-top" alt="상품 이미지">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title text-truncate" th:text="${product.productName}"></h5>
+                    <p class="card-text text-muted small text-truncate" th:text="${product.description}"></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fw-bold mb-0" id="price"
+                           th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+                        <p class="text-muted small mb-0">
+                            <span th:text="${product.getTimeAgo()}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="wave-footer text-center py-4">
+    <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
+</footer>
+
+<!-- JavaScript 코드 -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        document.querySelectorAll(".btn-need-login").forEach(b => {
+            b.addEventListener("click", e => {
+                if (!confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // 1. 검색 기능 초기화
+        const initSearch = () => {
+            const searchBtn = document.querySelector("#search-btn");
+            const searchInput = document.querySelector("#search-input");
+
+            const executeSearch = () => {
+                const searchWord = searchInput.value.trim();
+                if (searchWord) {
+                    window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
+                }
+            };
+
+            searchBtn.addEventListener("click", (event) => {
+                event.preventDefault();
+                executeSearch();
+            });
+
+            searchInput.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    executeSearch();
+                }
+            });
+        };
+
+        // 2. Swiper 배너 초기화
+        const initSwiper = () => {
+            new Swiper(".banner-slider", {
+                loop: true,
+                autoplay: {delay: 3000},
+                pagination: {el: ".swiper-pagination", clickable: true},
+                navigation: {nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev"},
+            });
+        };
+
+        // 3. 필터 사이드바 초기화
+        const initFilterSidebar = () => {
+            const filterToggleBtn = document.querySelector("#filter-toggle-btn");
+            const filterSidebar = document.querySelector(".filter-sidebar");
+
+            // 필터 토글 버튼 클릭 시 사이드바 표시/숨김
+            filterToggleBtn.addEventListener('click', () => {
+                filterSidebar.style.display = (filterSidebar.style.display === 'block') ? 'none' : 'block';
+            });
+
+            // 사이드바 내 소분류 버튼 클릭 시 상품 필터링
+            document.querySelectorAll('.filter-sidebar .subcategory-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const filterValue = btn.getAttribute('data-filter').toLowerCase();
+                    document.querySelectorAll('.product-item').forEach((item) => {
+                        if (filterValue === 'all') {
+                            console.log("all이 맞습니다")
+                            item.style.display = '';
+                        } else {
+                            const itemCategory = item.getAttribute('data-category').toLowerCase();
+                            item.style.display = (itemCategory === filterValue) ? '' : 'none';
+                        }
+                    });
+                    // 필터 적용 후 사이드바 숨김 (옵션)
+                    filterSidebar.style.display = 'none';
+                });
+            });
+        };
+
+        // 초기화 함수 호출
+        initSearch();
+        initSwiper();
+        initFilterSidebar();
+    });
+</script>
+</body>
+</html>

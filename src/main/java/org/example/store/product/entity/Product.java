@@ -104,6 +104,10 @@ public class Product {
         this.image = image;
     }
 
+    public void incrementViews() {
+        this.views++; // this.views 필드의 값을 증가시킴
+    }
+
     public static ProductDto fromEntity(Product product) {
         return ProductDto.builder()
                 .productId(product.getProductId())
@@ -129,3 +133,4 @@ public class Product {
         return productDtoList;
     }
 }
+

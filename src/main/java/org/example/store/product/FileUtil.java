@@ -1,7 +1,6 @@
 package org.example.store.product;
 
 import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
 import org.example.store.product.entity.Image;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,11 +44,6 @@ public class FileUtil {
 
             Path targetFile = timeFolder.resolve(renameFileName); //경로설정
             file.transferTo(targetFile); //transferTo를 통해 설정한 경로로 파일을 옮김
-
-            Thumbnails.of(targetFile.toFile()) //썸네일레이터로 리사이징
-                    .size(300, 300)
-                    .keepAspectRatio(true)
-                    .toFile(targetFile.toFile());
 
             System.gc(); //파일 잠김 해제 (Windows 대응)
 

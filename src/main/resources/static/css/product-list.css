@@ -1,0 +1,281 @@
+/* 기본 폰트 및 배경 */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #e0f7fa, #ffffff);
+    margin: 0;
+    width: 100vw;
+    padding-top: 80px; /* 고정 헤더 높이 확보 */
+}
+
+/* 헤더 (PC 우선) */
+.wave-navbar {
+    width: 100vw;
+    background: rgba(0, 123, 255, 0.85);
+    backdrop-filter: blur(8px);
+    height: 80px;
+}
+
+/* 데스크탑용 검색창 */
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+#search-input {
+    width: 100%;
+    height: 50px;
+    padding-right: 50px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+}
+
+#search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+/* 메인 배경 (파도 모션 효과) */
+.wave-hero {
+    position: relative;
+    background: linear-gradient(180deg, #007bff, #00bfff);
+    color: #fff;
+    padding: 120px 0 60px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.wave-hero h1 {
+    font-size: 3rem;
+    font-weight: 600;
+}
+
+.wave-hero p {
+    font-size: 1.25rem;
+}
+
+/* 파도 애니메이션 */
+.wave-animation {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 80px;
+    background: url("../img/missing.jpg") repeat-x;
+    background-size: cover;
+    animation: wave 10s linear infinite;
+}
+
+@keyframes wave {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.banner-slider {
+    max-width: 100%;
+    height: 300px;
+    margin: 40px auto;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 동영상 슬라이더에 적용 */
+.banner-slider .swiper-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiper-pagination {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999 !important;
+}
+
+/* 내비게이션 버튼 위치 예시 (일반적인 배치) */
+.swiper-button-prev {
+    left: 10px !important;
+}
+
+.swiper-button-next {
+    right: 10px !important;
+}
+
+/* 추천 상품 제목과 필터 버튼을 한 줄에 배치 */
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem; /* 기존 mb-4와 비슷한 여백, 필요에 따라 조정 */
+}
+
+/* 상품 카드 */
+.product-card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px; /* 원하는 고정 높이 */
+    object-fit: cover; /* 이미지가 카드 영역에 맞게 꽉 차도록, 비율을 유지하면서 잘라냄 */
+}
+
+@media (min-width: 768px) {
+    .card-img-top {
+        height: 250px;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-img-top {
+        height: 300px;
+    }
+}
+
+/* 필터 토글 버튼 커스텀 */
+.filter-wrapper .btn#filter-toggle-btn {
+    background-color: #0056b3 !important;  /* 메인 파랑보다 약간 어두운 색 */
+    border-color: #0056b3 !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+/* 대분류 버튼 커스텀 */
+.filter-sidebar .major-btn {
+    background-color: #fff !important;
+    border: none !important;
+    color: #007bff !important;
+    font-weight: 600;
+}
+
+/* 대분류 버튼 호버 효과 */
+.filter-sidebar .major-btn:hover{
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+
+/* "전체" 버튼은 소분류 버튼과 구분하기 위해 다른 스타일 적용 */
+.filter-sidebar .all-btn {
+    background-color: #fff !important;
+    border: none !important;
+    color: #007fff !important;
+    font-weight: 600;
+}
+
+/* "전체" 버튼 호버 효과 (필요 시 조정) */
+.filter-sidebar .all-btn:hover {
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+
+/* 추천 상품 제목과 필터 토글 버튼을 포함하는 컨테이너는 이미 flexbox로 배치됨 */
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 1.5rem;
+    position: relative; /* 필터 사이드바를 절대 위치로 배치하기 위해 필요 */
+}
+
+/* 필터 사이드바: filter-wrapper 내부에서 버튼의 왼쪽에 오버레이 */
+.filter-sidebar {
+    display: none; /* 기본적으로 숨김 */
+    position: absolute;
+    left: 100%; /* filter-wrapper의 오른쪽 끝에 붙어서 */
+    top: 0;
+    width: 150px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
+}
+
+/* 대분류 목록을 세로 정렬 */
+.major-categories {
+    display: flex;
+    flex-direction: column;
+}
+
+.major-btn {
+    width: 100%;
+}
+
+/* 소분류 메뉴: 대분류 버튼의 왼쪽에 세로로 배치 */
+.sub-category-menu {
+    display: none; /* 기본 숨김 */
+    position: absolute;
+    left: 100%;
+    margin-right: 10px;
+    top: 0;
+    width: 150px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+    z-index: 1200;
+}
+
+/* 소분류 버튼을 블록으로 표시하여 세로 정렬 */
+.sub-category-menu .subcategory-btn {
+    display: block;
+    width: 100%;
+}
+
+/* 대분류 버튼 hover 시 소분류 메뉴 표시 */
+.major-category:hover .sub-category-menu {
+    display: block;
+}
+
+/* 소분류 버튼 커스텀 */
+.filter-sidebar .subcategory-btn {
+    background-color: #f8f9fa !important;
+    border: none !important;
+    color: #007bff !important;
+}
+
+/* 소분류 버튼 호버 효과 */
+.filter-sidebar .subcategory-btn:hover {
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+
+/* Footer */
+.wave-footer {
+    background: #f8f9fa;
+    margin-top: 60px;
+    padding: 20px 0;
+    font-size: 0.9rem;
+}

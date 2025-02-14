@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,17 @@ public class FaqService {
 
     // 관리자가 FAQ 작성
     public FaqDto writeFaq(FaqDto faqDto, CustomUserDetails user) {
-        faqDto.setMemberDto(Member.fromEntity(user.getLoggedMember()));
-        Faq resultFaq = faqRepository.save(FaqDto.toEntity(faqDto));
-        return Faq.fromEntity(resultFaq);
+        Member admin = user.getLoggedMember(); // 관리자 정보 가져오기
+
+        Faq faq = Faq.builder()
+                .faqCategory(faqDto.getFaqCategory())
+                .question(faqDto.getQuestion())
+                .answer(faqDto.getAnswer())
+                .faqViews(0) // 초기 조회수는 0
+                .member(admin)
+                .build();
+
+        return Faq.fromEntity(faqRepository.save(faq));
     }
 
     // FAQ 수정 시 기존 글 긁어오기
@@ -37,21 +46,29 @@ public class FaqService {
     }
 
     // FAQ 삭제
+    @Transactional
     public boolean deleteFaq(int faqId) {
-        faqRepository.deleteById(faqId);
-        return !faqRepository.existsById(faqId);
+        try {
+            faqRepository.deleteById(faqId);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("삭제 실패: FAQ ID {}가 존재하지 않음", faqId);
+            return false;
+        }
     }
 
+
+
     // 클릭 시 조회수 올리기
+    @Transactional
     public int addViews(int faqId, CustomUserDetails user) {
-        Role role = user.getLoggedMember().getRole();
-        if (role.name().equals("role_admin")) return 0;
-        FaqDto faqDto;
-        Optional<Faq> optionalFaq = faqRepository.findById(faqId);
-        if (optionalFaq.isPresent()) {
-            faqDto = Faq.fromEntity(optionalFaq.get());
-            faqDto.setFaqViews(faqDto.getFaqViews() + 1);
-            return faqRepository.save(FaqDto.toEntity(faqDto)).getFaqViews();
-        } else return -1; // FAQ 질문 접근자가 admin 이면 0, faq 가 없으면 -1 반환
+        // 현재 조회한 사용자가 관리자라면 조회수 증가시키지 않음
+        if (user.getLoggedMember().getRole() == Role.ROLE_ADMIN) {
+            return 0;
+        }
+
+        // 조회수 증가
+        return faqRepository.increaseViewCount(faqId);
     }
+
 }
