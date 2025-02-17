@@ -27,39 +27,51 @@
 <header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="/img/logo.png" alt="WAVE" height="50">
+            <img src="" alt="WAVE" height="50">
             <span class="ms-2 fw-bold fs-4">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
             <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
-                    <a class="btn btn-light" href="/shop">내 상점</a>
-                </li>
-                <li class="nav-item me-3" sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-light" href="/member/login">로그인</a>
-                </li>
-                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
-                    <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
-                </li>
-                <li class="nav-item me-3" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link btn-need-login" href="/member/login">WAVE톡</a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
-                </li>
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link btn-need-login" href="/member/login">판매하기</a>
-                </li>
+                <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <li class="nav-item me-3">
+                        <a class="btn btn-light" href="/shop">내 상점</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                    </li>
+                </th:block>
+                <!-- 사용자가 로그인하지 않은 경우 '로그인' 버튼 표시 -->
+                <th:block sec:authorize="!isAuthenticated()">
+                    <li class="nav-item me-3">
+                        <a class="btn btn-light" href="/member/login">로그인</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link btn-need-login" href="/member/login">WAVE톡</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-need-login" href="/member/login">판매하기</a>
+                    </li>
+                </th:block>
             </ul>
         </div>
     </div>
 </header>
 
+
 <!-- 메인 컨텐츠 -->
 <main class="container product-detail-container">
-    <div class="row">
+    <div class="row gx-2">
         <!-- 상품 이미지 영역 (Swiper 슬라이더 적용) -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="product-images">
                 <div class="swiper my-swiper">
                     <div class="swiper-wrapper">
@@ -68,108 +80,173 @@
                             <img th:src="${product.thumbnailUrl}" alt="상품 대표 이미지"/>
                         </div>
                         <!-- 추가 이미지 슬라이드 (반복문) -->
-                        <div th:each="imgUrl : ${imageList}" class="swiper-slide">
+                        <div th:if="${imageList ne null}" th:each="imgUrl : ${imageList}" class="swiper-slide">
                             <img th:src="${imgUrl}" alt="상품 추가 이미지"/>
                         </div>
                     </div>
-                    <!-- Pagination (선택 사항) -->
-                    <div class="swiper-pagination"></div>
                     <!-- Navigation 버튼 (선택 사항) -->
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-button-next"></div>
                 </div>
+                <!-- Pagination (선택 사항) -->
+                <div class="swiper-pagination"></div>
             </div>
         </div>
         <!-- 오른쪽 영역: 상단 상품 요약 -->
-        <div class="col-md-6">
-            <div class="product-summary mb-4">
+        <div class="col-md-7">
+            <div class="product-summary">
                 <h2 th:text="${product.productName}">상품명</h2>
-                <span th:text="${#numbers.formatInteger(product.price,0,'COMMA')}">가격</span><span>원</span>
+                <h4 class="product-price">
+                    <span th:text="${#numbers.formatInteger(product.price,0,'COMMA')}"></span>
+                    <span class="currency">원</span>
+                </h4>
 
                 <!-- 액션 버튼 및 메타 정보 영역 -->
                 <div class="product-actions-meta my-3">
 
-                    <!-- 메타 정보 영역 (조회수, 등록일 등) -->
-                    <div class="d-flex justify-content-around align-items-center">
-                        <div class="mb-2">
-                            <span class="badge bg-secondary" th:text="${product.productStatus}">상품 상태</span>
+                    <!-- 메타 정보 영역 (조회수, 등록일, 새상품 등) -->
+                    <div class="meta-info">
+                        <!-- 상단: 조회수 및 등록일 -->
+                        <div class="info-details d-flex align-items-center">
+                            <div class="d-flex align-items-center me-4"
+                                 th:if="${#authentication.name eq member.userId}"
+                            >
+                                <i class="bi bi-heart me-1"></i>
+                                <span th:text="${product.likeCount}">0</span>
+                            </div>
+                            <div class="d-flex align-items-center me-4">
+                                <i class="bi bi-eye me-1"></i>
+                                <span th:text="${product.views}">0</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clock me-1"></i>
+                                <span th:text="${product.timeAgo}">방금 전</span>
+                                <span class="post-date-text">(등록일 기준)</span>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-eye me-1"></i>
-                            <span th:text="${product.views}">0</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-clock me-1"></i>
-                            <span th:text="${product.timeAgo}">방금 전</span>
+                        <!-- 하단: 상품 상태 (단독으로 표시) -->
+                        <div class="product-status">
+                            <span class="status-circle"></span>
+                            <span class="status-label"> 상품상태: </span>
+                            <span class="status-value" th:text="${product.productStatus}">미사용</span>
                         </div>
                     </div>
-
                     <!-- 액션 버튼 영역 -->
-                    <div class="d-flex justify-content-around align-items-center mb-2">
-                        <!-- 찜하기 버튼 (Thymeleaf 표현식 사용) -->
-                        <button id="likeBtn" class="btn" th:data-product-id="${product.productId}"
-                                th:classappend="${product.likeState} ? 'btn-danger' : 'btn-outline-danger'"
-                        >
-                            <i class="bi"
-                               th:classappend="${product.likeState} ? 'bi-heart' : 'bi-heart-fill'">
-                            </i>
-                            <span th:text="${product.likeCount}">0</span>
-                        </button>
-                        <!-- 채팅하기 버튼 -->
-                        <button class="btn btn-outline-primary">
-                            <i class="bi bi-chat-dots"></i> 채팅하기
-                        </button>
-                        <!-- 구매하기 버튼 -->
-                        <button class="btn btn-success">
-                            <i class="bi bi-bag-check"></i> 구매하기
-                        </button>
+                    <div class="product-actions-meta my-3">
+                        <div th:if="${#authentication.name eq member.userId}">
+                            <!-- 로그인한 사용자와 판매자가 같은 경우 "내 상점관리" 버튼 표시 -->
+                            <a href="/product/manage" class="btn-shop-manage">내 상점관리</a>
+                        </div>
+                        <div th:unless="${#authentication.name eq member.userId}">
+                            <!-- 로그인한 사용자와 판매자가 다른 경우 기존 버튼 표시 -->
+                            <div class="d-flex product-action-buttons mb-2">
+                                <!-- 찜하기 버튼 -->
+                                <th:block sec:authorize="isAuthenticated()">
+                                    <button id="likeBtn" class="btn flex-fill"
+                                            th:classappend="${product.likeState} ? 'btn-danger':'btn-outline-danger' "
+                                            th:data-product-id="${product.productId}">
+                                        <i class="bi"
+                                           th:classappend="${product.likeState} ? 'bi-heart-fill':'bi-heart'"></i>
+                                        <span>찜</span><span th:text="${product.likeCount}">what</span>
+                                    </button>
+                                    <!-- 채팅하기 버튼 -->
+                                    <button class="btn btn-action flex-fill btn-chatting">
+                                        <i class="bi bi-chat-dots"></i> 채팅
+                                    </button>
+                                    <!-- 구매하기 버튼 -->
+                                    <button class="btn btn-action flex-fill btn-payment">
+                                        <i class="bi bi-bag-check"></i> 바로구매
+                                    </button>
+                                </th:block>
+                                <th:block sec:authorize="!isAuthenticated()">
+                                    <button class="btn flex-fill btn-need-login"
+                                            th:classappend="${product.likeState} ? 'btn-danger':'btn-outline-danger' ">
+                                        <i class="bi"
+                                           th:classappend="${product.likeState} ? 'bi-heart-fill':'bi-heart'"></i>
+                                        <span>찜</span><span th:text="${product.likeCount}">what</span>
+                                    </button>
+                                    <button class="btn btn-action flex-fill btn-need-login">
+                                        <i class="bi bi-chat-dots"></i> 채팅
+                                    </button>
+                                    <button class="btn btn-action flex-fill btn-need-login">
+                                        <i class="bi bi-bag-check"></i> 바로구매
+                                    </button>
+                                </th:block>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
-        <!-- 하단 상품 정보 & 판매자 정보 영역 -->
-        <div class="row footer-info">
+
+        <!-- 하단 영역: 상품 정보와 상점(판매자) 정보 -->
+        <div class="row footer-info mt-4">
             <!-- 상품 정보 영역 -->
-            <div class="col-md-8">
-                <div class="product-info">
-                    <h5>상품 정보</h5>
-                    <ul class="list-unstyled">
-                        <li>
-                            <strong>상품설명:</strong>
-                            <span th:text="${product.description}">상품 설명</span>
-                        </li>
-                        <li>
-                            <strong>직거래지역:</strong>
-                            <span th:text="${member.address}">지역 정보</span>
-                        </li>
-                        <li>
-                            <strong>카테고리:</strong>
-                            <span th:text="${product.category}">카테고리</span>
-                        </li>
-                        <li>
-                            <strong>상품태그:</strong>
-                            <span th:text="${product.tag}">태그</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- 판매자 정보 영역 -->
-            <div class="col-md-4">
-                <div class="seller-info">
-                    <h5>판매자 정보</h5>
-                    <div class="d-flex align-items-center">
-                        <a href="/member/info">
-                            <img th:src="${member.userProfile}?:'/img/programmer.png'" alt="판매자 프로필"
-                                 class="rounded-circle">
-                        </a>
-                        <div class="ms-2">
-                            <p th:text="${member.userName}">판매자 이름</p>
-                            <small th:text="'팔로워 ' + ${member.followCount}">팔로워 수</small>
+            <div class="col-md-8 m-0 p-0">
+                <div class="card product-info-card p-3">
+                    <h5 class="card-title">상품 정보</h5>
+                    <!-- 상품 설명 영역: 주 내용 -->
+                    <div class="product-description">
+                        <p th:text="${product.description}">상품 설명 내용이 여기에 표시됩니다.</p>
+                    </div>
+                    <!-- 하단 박스 영    역: 직거래지역, 카테고리, 상품태그 -->
+                    <div class="product-details d-flex justify-content-between">
+                        <div class="detail-box">
+                            <strong>직거래지역</strong>
+                            <p th:text="${member.address}">지역 정보</p>
+                        </div>
+                        <div class="detail-box">
+                            <strong>카테고리</strong>
+                            <p th:text="${product.category}">카테고리</p>
+                        </div>
+                        <div class="detail-box">
+                            <strong>상품태그</strong>
+                            <p th:text="${product.tag}">태그</p>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <button class="btn btn-outline-primary">팔로우</button>
+                </div>
+            </div>
+            <!-- 상점 정보 영역 -->
+            <div class="col-md-4 m-0 p-0">
+                <div class="card seller-info-card p-3">
+                    <h5 class="card-title">상점 정보</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <a th:unless="${#authentication.name == member.userId}"
+                           th:href="@{|/shop/products/${product.productId}|}">
+                            <img th:src="${member.userProfile}?:'/img/programmer.png'" alt="판매자 프로필"
+                                 class="rounded-circle seller-profile">
+                        </a>
+                        <a th:if="${#authentication.name == member.userId}"
+                           href="/shop/products">
+                            <img th:src="${member.userProfile}?:'/img/programmer.png'" alt="판매자 프로필"
+                                 class="rounded-circle seller-profile">
+                        </a>
+                        <div class="ms-2">
+                            <p class="seller-name mb-0" th:text="${member.userName}">판매자 이름</p>
+                            <small id="followerCount" class="seller-follow" th:text="|팔로워 ${member.followCount}|">팔로워
+                                수</small>
+                        </div>
+                    </div>
+                    <div>
+                        <th:block>
+                            <button
+                                    sec:authorize="isAuthenticated()"
+                                    th:unless="${#authentication.name == member.userId}"
+                                    class="btn btn-follow w-100" id="followBtn"
+                                    th:data-seller-id="${member.userId}"
+                                    th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
+                                    th:text="${member.followState}? '팔로잉':'팔로우'"
+                            >팔로우버튼
+                            </button>
+                            <button
+                                    sec:authorize="!isAuthenticated()"
+                                    class="btn btn-follow btn-need-login w-100"
+                                    th:data-seller-id="${member.userId}"
+                                    th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
+                                    th:text="${member.followState}? '팔로잉':'팔로우'"
+                            >팔로우버튼
+                            </button>
+                        </th:block>
                     </div>
                 </div>
             </div>
@@ -190,13 +267,12 @@
     </svg>
 </div>
 
-<!-- Swiper JS -->
+<!-- Swiper & Search JS -->
 <script>
-    // Swiper 초기화
     const swiper = new Swiper('.my-swiper', {
         loop: true,
         pagination: {
-            el: '.swiper-pagination',
+            el: '.swiper-pagination', // Swiper 컨테이너 밖에 배치된 페이지네이션 사용
             clickable: true,
         },
         navigation: {
@@ -204,63 +280,148 @@
             prevEl: '.swiper-button-prev',
         },
     });
+
+    const searchBtn = document.querySelector("#search-btn");
+    const searchInput = document.querySelector("#search-input");
+
+    const executeSearch = () => {
+        const searchWord = searchInput.value.trim();
+        if (searchWord) {
+            window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
+        }
+    };
+
+    searchBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        executeSearch();
+    });
+
+    searchInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            executeSearch();
+        }
+    });
 </script>
-<script th:inline="javascript">
-    // Thymeleaf를 통해 로그인 여부를 전달받음 (로그인되어 있으면 true, 아니면 false)
-    const isLoggedIn = /*[[${#authentication.name != 'anonymousUser'}]]*/ false;
+<script th:inline="javascript" th:unless="${#authentication.name eq member.userId}">
 
-    // 좋아요 버튼 요소 선택
-    const likeBtn = document.querySelector('#likeBtn');
+    document.addEventListener('DOMContentLoaded', () => {
+        const isLoggedIn = /*[[${#authentication.name != 'anonymousUser'}]]*/ false;
 
-    document.querySelectorAll(".btn-need-login").forEach(b => {
-        b.addEventListener("click", e => {
-            if (!confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                e.preventDefault();
+        document.querySelectorAll(".btn-need-login").forEach(b => {
+            if (!isLoggedIn) {
+                b.addEventListener("click", (e) => {
+                    if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        if (!b.classList.contains("nav-link")) window.location.href = "/member/login";
+                    } else e.preventDefault();
+                });
             }
         });
-    })
-    likeBtn.addEventListener('click', () => {
-        // 로그인 안된 상태라면
-        if (!isLoggedIn) {
-            if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                window.location.href = '/member/login';
-            }
-            return;
-        }
 
-        const productId = likeBtn.getAttribute('data-product-id');
-        const icon = likeBtn.querySelector('i');
-        const likeCountSpan = likeBtn.querySelector('span');
+        if (isLoggedIn) {
 
-        // 현재 좋아요 상태 확인: 'bi-heart-fill'이면 찜한 상태, 아니면 아직 찜하지 않음
-        // 현재 좋아요 상태 확인: bi-heart-fill이면 이미 좋아요 상태
-        const currentlyLiked = icon.classList.contains('bi-heart-fill');
-        const url = currentlyLiked ? `/product/unlike/${productId}` : `/product/like/${productId}`;
-        const method = currentlyLiked ? 'DELETE' : 'POST';
+            const chattingBtn = document.querySelector(".btn-chatting");
+            const paymentBtn = document.querySelector(".btn-payment");
 
-        fetch(url, { method })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("네트워크 응답이 정상이 아닙니다.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                // 서버가 { like: boolean, likeCount: number } 형태로 응답한다고 가정
-                if (data.like) {
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                } else {
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
-                }
-                likeCountSpan.textContent = data.likeCount;
-            })
-            .catch(error => {
-                console.error("좋아요 처리 중 오류:", error);
-                alert("좋아요 처리 중 오류가 발생했습니다.");
+            chattingBtn.addEventListener("click", e => {
+                e.preventDefault();
+                window.location.href = '/chatRoom/' + productId;
             });
+
+            paymentBtn.addEventListener("click", e => {
+                e.preventDefault();
+                window.location.href = '/product/payment/checkout/' + productId;
+            });
+
+            const likeBtn = document.querySelector('#likeBtn');
+            const productId = likeBtn.getAttribute('data-product-id');
+
+            likeBtn.addEventListener('click', () => {
+                const icon = likeBtn.querySelector('i');
+                // 두 번째 span 요소에 현재 찜 개수가 표시됨
+                const spans = likeBtn.querySelectorAll('span');
+                const likeCountSpan = spans[1];
+                // 현재 DOM에 표시된 찜 개수를 숫자로 읽어오기
+                let likeCount = parseInt(likeCountSpan.textContent) || 0;
+
+                const currentlyLiked = icon.classList.contains('bi-heart-fill');
+                const url = currentlyLiked ? `/product/unlike/${productId}` : `/product/like/${productId}`;
+                const method = currentlyLiked ? 'DELETE' : 'POST';
+                fetch(url, {method})
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("네트워크 응답이 정상이 아닙니다.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.like) {
+                            likeBtn.classList.remove('btn-outline-danger');
+                            likeBtn.classList.add('btn-danger');
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill');
+                            likeCount++;
+                        } else if (data.unlike) {
+                            likeBtn.classList.remove('btn-danger');
+                            likeBtn.classList.add('btn-outline-danger');
+                            icon.classList.remove('bi-heart-fill');
+                            icon.classList.add('bi-heart');
+                            likeCount--;
+                        }
+                        likeCountSpan.textContent = likeCount;
+                    })
+                    .catch(error => {
+                        console.error("좋아요 처리 중 오류:", error);
+                        alert("좋아요 처리 중 오류가 발생했습니다.");
+                    });
+            });
+
+            // =========================
+            // 팔로우 기능 처리
+            // =========================
+            const followBtn = document.querySelector('#followBtn');
+            const sellerId = followBtn.getAttribute('data-seller-id');
+
+            followBtn.addEventListener("click", () => {
+                const currentState = followBtn.textContent.trim();
+                const url = `/member/follow/${sellerId}`;
+                let method = currentState === "팔로우" ? 'POST' : 'DELETE';
+
+                fetch(url, {method})
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("네트워크 응답이 정상이 아닙니다.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const followerCountElem = document.querySelector('#followerCount');
+                        let followCount = 0;
+                        if (followerCountElem) {
+                            // "팔로워 12" 같은 형식에서 숫자만 추출
+                            followCount = parseInt(followerCountElem.textContent.replace("팔로워", "").trim()) || 0;
+                        }
+
+                        if (data.isSaved) {
+                            followBtn.classList.remove('btn-follow');
+                            followBtn.classList.add('btn-unfollow');
+                            followBtn.textContent = "팔로잉";
+                            followCount++;
+                        } else if (data.isDelete) {
+                            followBtn.classList.remove('btn-unfollow');
+                            followBtn.classList.add('btn-follow');
+                            followBtn.textContent = "팔로우";
+                            followCount--;
+                        }
+                        if (followerCountElem) {
+                            followerCountElem.textContent = "팔로워 " + followCount;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("팔로우 처리 중 오류:", error);
+                        alert("팔로우 처리 중 오류가 발생했습니다.");
+                    });
+            });
+        }
     });
 </script>
 </body>

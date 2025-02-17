@@ -58,14 +58,14 @@ public class ProductService {
     public List<ProductDto> getProductList(String searchWord) {
         // LIKE 쿼리 대체
         List<Product> productList = productRepository
-                .findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContaining
-                        (searchWord, searchWord, searchWord, searchWord);
+                .findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContainingAndDisplayOrderByPostDateDesc
+                        (searchWord, searchWord, searchWord, searchWord,true);
         List<ProductDto> productDtoList = Product.fromEntityList(productList);
         productDtoList.forEach(productDto ->
                 // n일전 or n시간전 or n분전 or 방금전 출력
-                productDto.setTimeAgo(productDto.getUpdateDate() == null
-                        ? DateUtils.getTimeAgo(productDto.getPostDate())
-                        : DateUtils.getTimeAgo(productDto.getUpdateDate()))
+                productDto.setTimeAgo(productDto.getUpdateDate().equals(productDto.getPostDate())
+                        ? DateUtils.getTimeAgo(productDto.getUpdateDate())
+                        : DateUtils.getTimeAgo(productDto.getPostDate()))
         );
         return productDtoList;
     }
@@ -87,27 +87,25 @@ public class ProductService {
         int followCount = followService.getFollowCount(product.getSeller());
         memberDto.setFollowCount(followCount); //팔로우 수
 
-        // 로그인 했을때만
-        if (user.getUserId() != null) {
+        if (!user.getUserId().equals("비회원")) { // 로그인 했을 때만
             boolean isLiked = likeService.isLiked(user, product);
             productDto.setLikeState(isLiked); //내가 찜했는지 여부
             boolean isFollowed = followService.isFollowed(product.getSeller(), user);
             memberDto.setFollowState(isFollowed); //팔로우 여부
 
-            if (user.getUserId().equals(product.getSeller().getUserId())) { //조회수 로직
+            if (!user.getUserId().equals(memberDto.getUserId())) { //조회수 로직
                 product.incrementViews();
             }
         } else product.incrementViews();
         productDto.setViews(product.getViews());
-        productDto.setTimeAgo(productDto.getUpdateDate() == null // n일전 or n시간전 or n분전 or 방금전 출력
-                ? DateUtils.getTimeAgo(productDto.getPostDate())
-                : DateUtils.getTimeAgo(productDto.getUpdateDate()));
+        productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()));
         map.put("product", productDto);
         map.put("member", memberDto);
 
         // 상품 이미지 테이블 조회
         // 프론트에서 값을 꺼낼 때 리스트로 꺼내면 더 간단하기 때문에 image 도메인을 리스트로 변환
-        map.put("imageList", ImageDto.fromDto(Image.fromEntity(product.getImage())));
+        List<String> imageUrls = ImageDto.fromDto(Image.fromEntity(product.getImage()));
+        if (!imageUrls.getFirst().equals("이미지가 없습니다 여기는 imageDto의 fromDto")) map.put("imageList", imageUrls);
 
         return map;
     }
@@ -132,7 +130,6 @@ public class ProductService {
         });
 
         productDto.setThumbnailUrl(imageUrlList.getFirst());
-        log.info("썸네일 저장 후 productDto == {}", productDto);
         imageUrlList.removeFirst();
 
         ImageDto imageDto;
@@ -142,10 +139,11 @@ public class ProductService {
 
         productDto.setImageDto(imageDto);
 
+        productDto.setDisplay(true); //false 항목은 메인 페이지 상품 리스트에서 제외
+
         Product product = productRepository.save(ProductDto.toEntity(productDto));
 
         imageDto.setProductDto(Product.fromEntity(product));
-        log.info("product 저장 후 imageDto == {}", imageDto);
         imageRepository.save(ImageDto.toEntity(imageDto));
 
         return Product.fromEntity(product) != null ? product.getProductId() : 0; //널이 아니라면 id를 뱉어낸다

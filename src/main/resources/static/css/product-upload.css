@@ -3,11 +3,12 @@ body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    width: 100vw;
+    width: 100%;
     background: linear-gradient(180deg, #e0f7fa, #ffffff);
     min-height: 100vh;
     position: relative;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* 헤더 */

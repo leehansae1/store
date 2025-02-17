@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8"/>
     <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png"/>
-    <link rel="stylesheet" type="text/css" href="/toss.css"/>
+    <link rel="stylesheet" href="/css/toss.css"/>
+    <link rel="stylesheet" href="/css/payment-checkout.css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>상품 구매화면</title>
@@ -15,49 +16,61 @@
 <!-- 주문서 영역 -->
 <div class="wrapper">
     <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
+
+        <!-- 주문 요약 영역 추가 -->
+        <div class="order-summary">
+            <h2 class="order-summary-title">결제하기</h2>
+            <div class="order-item">
+                <img src="https://via.placeholder.com/80" th:src="@{${product.thumbnailUrl}}" alt="상품 이미지">
+                <div class="order-item-info">
+                    <p class="order-item-name" th:text="${product.productName}">상품명 예시</p>
+                    <p class="order-item-price" th:text="|가격: ${product.price}원|">가격: 1,000,000원</p>
+                </div>
+            </div>
+            <div class="order-total">
+                <p>총 결제금액: <span id="total-amount" th:text="|${product.price}원|">1,000,000원</span></p>
+            </div>
+        </div>
+        <!-- // 주문 요약 영역 끝 -->
+
         <!-- 결제 UI -->
         <div id="payment-method"></div>
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
         <!-- 쿠폰 체크박스 -->
-        <div style="padding-left: 30px">
+        <div style="padding-left: 25px">
             <div class="checkable typography--p">
-                <label for="coupon-box" class="checkable__label typography--regular"
-                ><input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true"/><span
-                        class="checkable__label-text">5,000원 쿠폰 적용</span></label
-                >
+                <label for="coupon-box" class="checkable__label typography--regular">
+                    <input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true"/>
+                    <span class="checkable__label-text">5,000원 쿠폰 적용</span>
+                </label>
             </div>
         </div>
         <!-- 결제하기 버튼 -->
-        <button class="button" id="payment-button" style="margin-top: 30px">결제하기</button>
+        <div class="result wrapper">
+            <button class="button" id="payment-button" style="margin-top: 30px">
+                결제하기
+            </button>
+        </div>
     </div>
 </div>
-</body>
 <script th:inline="javascript">
     main();
 
     async function main() {
-        const button = document.getElementById("payment-button");
-        const coupon = document.getElementById("coupon-box");
+        const button = document.querySelector("#payment-button");
+        const coupon = document.querySelector("#coupon-box");
         const amount = {
             currency: "KRW",
             value: 1000000,
         };
 
         // ------  결제위젯 초기화 ------
-        // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
-        // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
-        // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
         const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
         const customerKey = /*[[${orderId}]]*/ "";
         const tossPayments = TossPayments(clientKey);
         // 회원 결제
-        // @docs https://docs.tosspayments.com/sdk/v2/js#tosspaymentswidgets
-        //const widgets = tossPayments.widgets({
-        //   customerKey, //커스터머 키는 서버에서 이 페이지로 넘어올 때 뿌려줘야함!
-        //});
-        //비회원 결제
-        const widgets = tossPayments.widgets({customerKey: TossPayments.ANONYMOUS});
+        const widgets = tossPayments.widgets({customerKey,});
 
         // ------  주문서의 결제 금액 설정 ------
         // TODO: 위젯의 결제금액을 결제하려는 금액으로 초기화하세요.
@@ -86,7 +99,7 @@
                     currency: "KRW",
                     value: amount.value - 5000,
                 });
-
+                document.querySelector("#total-amount").textContent = (amount.value - 5000).toLocaleString() + "원";
                 return;
             }
 
@@ -126,8 +139,8 @@
             await widgets.requestPayment({
                 orderId: customerKey, //주문번호는 서버에서 뿌려준다(랜덤하고 고유한값이여야함 == uuid와 아이디로 할까,,)
                 orderName: "금거북이", //prodcut의 상품명
-                successUrl: window.location.origin + "/payment/widget/success.html",
-                failUrl: window.location.origin + "/payment/fail.html",
+                successUrl: window.location.origin + "/payment/success.html",
+                failUrl: window.location.origin + "/payment/fail",
                 customerEmail: "crof672@naver.com", //결제 성공 시에 여기로 주문내역을 토스가 보내줌
                 customerName: "이한새", //토스에서 메일을 보낼때에 사용함 멤버 이름 뿌리기
                 customerMobilePhone: "01012341234", //가상계좌 안내, 퀵계좌이체 휴대폰 번호 자동 완성에 사용
@@ -135,4 +148,6 @@
         });
     }
 </script>
+</body>
+
 </html>

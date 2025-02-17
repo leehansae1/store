@@ -96,10 +96,10 @@
             </div>
         </div>
         <!-- Swiper 컨테이너의 자식 요소로 페이지네이션과 내비게이션 버튼 배치 -->
-        <div class="swiper-pagination"></div>
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
     </div>
+    <div class="swiper-pagination"></div>
 </div>
 
 <!-- 추천 상품 영역 -->
@@ -207,7 +207,7 @@
                 </a>
                 <div class="card-body">
                     <h5 class="card-title text-truncate" th:text="${product.productName}"></h5>
-                    <p class="card-text text-muted small text-truncate" th:text="${product.description}"></p>
+                    <p class="card-text text-muted small text-truncate" th:text="${product.tag}"></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-0" id="price"
                            th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
@@ -288,7 +288,6 @@
                     const filterValue = btn.getAttribute('data-filter').toLowerCase();
                     document.querySelectorAll('.product-item').forEach((item) => {
                         if (filterValue === 'all') {
-                            console.log("all이 맞습니다")
                             item.style.display = '';
                         } else {
                             const itemCategory = item.getAttribute('data-category').toLowerCase();

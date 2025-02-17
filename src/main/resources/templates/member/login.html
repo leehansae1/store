@@ -119,6 +119,31 @@
             // 아이콘 변경 (Bootstrap Icons 사용)
             toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
         });
+
+        // 1. 검색 기능 초기화
+        const initSearch = () => {
+            const searchBtn = document.querySelector("#search-btn");
+            const searchInput = document.querySelector("#search-input");
+
+            const executeSearch = () => {
+                const searchWord = searchInput.value.trim();
+                if (searchWord) {
+                    window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
+                }
+            };
+
+            searchBtn.addEventListener("click", (event) => {
+                event.preventDefault();
+                executeSearch();
+            });
+
+            searchInput.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    executeSearch();
+                }
+            });
+        };
+        initSearch();
     });
 </script>
 </body>

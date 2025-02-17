@@ -5,9 +5,10 @@ body {
     padding: 0;
     background: linear-gradient(180deg, #e0f7fa, #ffffff);
     min-height: 100vh;
-    width: 100vw;
+    width: 100%;
     position: relative;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* 헤더 (공통 스타일) */
@@ -57,14 +58,14 @@ main.container {
 /* 상품 상세 컨테이너 */
 .product-detail-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 40px auto;
     padding: 1rem;
 }
 
-/* 상품 이미지 영역의 크기 조정 */
 .product-images {
     max-width: 500px;
-    margin: 0 auto;
+    margin: 0; /* auto를 제거해서 컨테이너의 왼쪽 정렬을 따름 */
+    border-radius: 12px;
 }
 
 /* Swiper 슬라이더 컨테이너 높이 조정 */
@@ -78,8 +79,29 @@ main.container {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 12px;
 }
 
+/* 기본 상태: 버튼 숨김 */
+.my-swiper .swiper-button-prev,
+.my-swiper .swiper-button-next {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* 마우스 hover 시 버튼 보임 */
+.my-swiper:hover .swiper-button-prev,
+.my-swiper:hover .swiper-button-next {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.swiper-pagination {
+    position: static !important; /* 기본 절대 위치를 해제 */
+    margin-top: 10px;            /* 이미지와 페이지네이션 사이의 간격 조정 */
+    text-align: center;
+}
 
 .product-images .main-image img {
     width: 100%;
@@ -101,92 +123,225 @@ main.container {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid #ddd;
 }
 
-/* 상품 정보 영역 */
-.product-details {
-    padding: 1rem;
+.product-summary {
+    padding: 0 1.5rem;
+    margin-top: 0;
 }
 
-.product-details h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.product-details h4 {
-    font-size: 1.5rem;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-.product-details p {
-    font-size: 1rem;
-    color: #555;
+.product-summary h2 {
+    font-size: 2rem; /* 기존 설정 유지 */
+    font-weight: 700;  /* 굵게 */
     margin-bottom: 15px;
 }
 
-.product-details .badge {
-    font-size: 0.9rem;
+.product-price {
+    font-size: 2.5rem;           /* 기존 설정 유지 */
+    font-weight: 700;          /* 굵게 */
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
+
+/* "원" 표시는 가격보다 작게 */
+.product-price .currency {
+    font-size: 1.2rem;
+    vertical-align: bottom;
+    margin-left: 3px;
+}
+
+/* 메타정보 전체 영역 스타일 */
+.meta-info {
+    font-size: 1.1rem; /* 기존보다 약간 크게 */
+}
+
+/* 조회수, 등록일 영역 스타일 */
+.info-details > div {
+    font-size: 1.2rem; /* 필요 시 크기 조정 */
+}
+
+.post-date-text{
+    font-size: 1rem;
+    color: #aaa;
+}
+
+/* 상품 상태 영역: 상단 여백 추가 */
+.product-status {
+    font-size: 1.2rem;
+    margin-top: 10px; /* 상단 간격 조절 */
+    margin-bottom: 250px;
+}
+
+.status-label {
+    color: #aaa;
+    white-space: pre;
+}
+
+.status-value {
+    font-weight: 700;
+    color: #333;
+}
+
+.status-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #aaa;
+    margin: 0;
+}
+
+.product-action-buttons {
+    gap: 10px; /* 버튼 간 간격 */
+}
+
+.product-action-buttons button {
+    margin: 0;
+    border-radius: 12px; /* wave의 시그니처 border-radius 적용 */
+    font-size: 1.3rem;
+    padding: 10px 0;
+}
+
+/*내상점관리 버튼*/
+.btn-shop-manage {
+    display: inline-block;
+    width: 100%;
+    padding: 12px 0;            /* 세로 여백 조절 */
+    font-size: 1.2rem;          /* 텍스트 크기 */
+    font-weight: 600;
+    color: #fff;                /* 흰색 텍스트 */
+    background-color: #009688;  /* 기본 티얼 계열 색상 */
+    border: none;
+    border-radius: 12px;        /* wave 시그니처 border-radius */
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-shop-manage:hover {
+    background-color: #00796b;  /* 약간 어두운 티얼 계열 색상 */
+}
+
+/* 채팅하기와 구매하기 버튼: 산뜻한 티얼 계열 */
+.btn-action, .btn-unfollow, .btn-follow {
+    background-color: #009688;  /* 기본 티얼 색상 */
+    border-color: #009688;
+    color: #fff;
+}
+
+.btn-follow:hover,
+.btn-follow:focus,
+.btn-follow:active,
+.btn-unfollow:hover,
+.btn-unfollow:focus,
+.btn-unfollow:active,
+.btn-action:hover,
+.btn-action:focus,
+.btn-action:active{
+    background-color: #00796b;  /* 약간 어두운 티얼 색상 */
+    border-color: #00796b;
+}
+
+/* 찜하기 버튼: outline 스타일, 활성화 시 핑크 색상 */
+.btn-outline-danger {
+    color: #e91e63;  /* 선명한 핑크 */
+    border-color: #e91e63;
+    background-color: transparent;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active{
+    background-color: #e91e63;
+    color: #fff;
+}
+
 
 /* 판매자 정보 영역 */
 .footer-info {
+    box-sizing: content-box;
     border-top: 1px solid #555;
     margin-top: 20px;
     padding: 0;
 }
 
-.product-info {
-    padding: 1.5rem;
-}
-
-.seller-info {
-    padding: 1.5rem;
-    border-left: 1px solid #ddd;
-}
-
-.seller-info h5 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
+/* 상품 설명 영역: 주 내용을 부각시키기 위해 고정 높이 및 스크롤 처리 */
+.product-description {
+    height: 220px;              /* 높이를 부여하여 내용이 주목되도록 (필요에 따라 조정) */
+    overflow-y: auto;           /* 내용이 넘칠 경우 스크롤 생성 */
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    font-size: 1rem;
     color: #333;
 }
 
-.seller-info .d-flex a {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    overflow: hidden;
+/* 하단 박스 영역: 직거래지역, 카테고리, 상품태그 */
+.product-details {
+    display: flex;
+    gap: 10px;
 }
 
-.seller-info .d-flex img {
+.detail-box {
+    flex: 1;
+    background-color: #f1f1f1;   /* 부드러운 배경색 */
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.detail-box p {
+   margin-top: 5px;
+}
+
+/* 카드 스타일 (상품 정보, 상점 정보 공통) */
+.card {
+    background-color: #fff;
+    border: none;
+    border-radius: 12px;          /* wave의 시그니처 border-radius */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 카드 제목 스타일 */
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* 상점 정보 관련 */
+.seller-profile {
     width: 60px;
     height: 60px;
     object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #ddd;
 }
 
-.seller-info p {
-    margin: 0;
+.seller-name {
     font-size: 1rem;
+    font-weight: 600;
     color: #333;
 }
 
-.seller-info small {
-    font-size: 0.8rem;
+.seller-follow {
+    font-size: 0.9rem;
     color: #777;
 }
 
-/* 액션 버튼 영역 */
-.product-actions {
-    margin-top: 20px;
-}
-
-.product-actions button {
-    margin-right: 10px;
-    font-size: 1rem;
+/* 모바일 대응: 카드 간 간격 조정 */
+@media (max-width: 576px) {
+    .footer-info .col-md-8,
+    .footer-info .col-md-4 {
+        margin-bottom: 15px;
+    }
 }
 
 /* 하단 파도 효과 */

@@ -38,8 +38,6 @@ public class MemberController {
   private final MemberRepository memberRepository;
 
   private String prefix = "/member";
-  
-
 
   // 회원가입 화면
   @GetMapping("/signup")
@@ -181,17 +179,18 @@ public class MemberController {
 
   // 구독 & 취소 처리
   @PostMapping("/follow/{sellerId}")
+  @ResponseBody
   public Map<String, Boolean> follow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails user) {
     log.info("PostMapping");
-
     return memberService.follow(sellerId, user)
-            ? Map.of("is saved", true) : Map.of("is saved", false);
+            ? Map.of("isSaved", true) : Map.of("isSaved", false);
   }
   @DeleteMapping("/follow/{sellerId}")
+  @ResponseBody
   public Map<String, Boolean> unFollow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails user) {
     log.info("DeleteMapping");
     int deleteResult = memberService.unfollow(sellerId, user);
     return deleteResult > 0
-            ? Map.of("is delete", true) : Map.of("is delete", false);
+            ? Map.of("isDelete", true) : Map.of("isDelete", false);
   }
 }

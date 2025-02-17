@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.dto.MemberDto;
-import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,23 +36,6 @@ public class PaymentController {
     private static final String WIDGET_SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
     private static final String API_SECRET_KEY = "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R";
 
-    // 구매화면 진입
-    @GetMapping("/payment/widget/checkout")
-    public String checkout(Model model,
-                           String sellerName, int price, String thumbnailUrl, String productName) {
-        model.addAttribute(
-                "orderId", UUID.randomUUID().toString().substring(0, 8)
-        );
-        ProductDto productDto = ProductDto.builder()
-                .price(price)
-                .thumbnailUrl(thumbnailUrl)
-                .productName(productName)
-                .seller(MemberDto.builder().userName(sellerName).build())
-                .build();
-        model.addAttribute("product", productDto);
-        return prefix + "/widget/checkout";
-    }
-
     // 결제버튼 클릭 시 임시저장 ajax 처리
     @PostMapping("/payment/temporary-save")
     @ResponseBody
@@ -68,11 +50,8 @@ public class PaymentController {
     @RequestMapping("/confirm/widget")
     public ResponseEntity<JSONObject> confirmPayment(HttpServletRequest request,
                                                      @RequestBody String jsonBody) throws Exception {
-        log.info("여기는 컨펌 위젯, 컨펌 페이먼트");
-        log.info("jsonBody: {}", jsonBody);
         //사실 우리는 widget 시크릿 키만 씀
         String secretKey = request.getRequestURI().contains("/confirm/payment") ? API_SECRET_KEY : WIDGET_SECRET_KEY;
-        log.info("secretKey: {}", secretKey);
         JSONObject response
                 = sendRequest(
                 parseRequestData(jsonBody), secretKey, "https://api.tosspayments.com/v1/payments/confirm"

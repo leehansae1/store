@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -66,14 +64,13 @@ public class ProductController {
 
     // 작성 후 저장
     @PostMapping("/upload")
-    public String uploadProduct(ProductDto productDto, @RequestParam List<MultipartFile> imageFiles,
-                                @AuthenticationPrincipal CustomUserDetails user
-                                //// 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    @ResponseBody
+    public Map<String, Integer> uploadProduct(ProductDto productDto, @RequestParam List<MultipartFile> imageFiles,
+                                              @AuthenticationPrincipal CustomUserDetails user
+                                              //// 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ) {
         int productId = productService.uploadProduct(productDto, imageFiles, user);
-        // 저장이 되었다면 상세화면으로 넘어가기
-        if (productId > 0) return "redirect:" + prefix + "/detail/" + productId;
-        else return prefix + "/upload";
+        return productId > 0 ? Map.of("isSaved", productId) : Map.of("isSaved", 0);
     }
 
     // 상품 수정 페이지 >> 업로드 페이지로 기존 값 싣고 보내기
@@ -81,30 +78,30 @@ public class ProductController {
     public String getModifyPage(RedirectAttributes redirectAttributes, @PathVariable int productId) {
         ProductDto productDto = productService.getProductDto(productId);
         log.info("modify product {}", productDto);
-        redirectAttributes.addAttribute("product", productDto);
+        redirectAttributes.addFlashAttribute("productDto", productDto);
         // isSelect 가 true 라면 업로드 페이지 문구를 수정에 맞게 바꾸기
-        redirectAttributes.addAttribute("isSelect", productDto != null);
-        return prefix + "redirect:/upload";
+        redirectAttributes.addFlashAttribute("isModify", productDto != null);
+        return "redirect:/product/upload";
     }
 
     // 상품 상세 페이지
     @GetMapping("/detail/{productId}")
     public String getProduct(@PathVariable int productId, Model model,
-                             @AuthenticationPrincipal @Nullable Optional<CustomUserDetails> user) {
+                             @AuthenticationPrincipal @Nullable Object principal) {
         Member member;
-        if (user != null && user.isPresent()) member = user.get().getLoggedMember();
-        else member = Member.builder().build();
+        if (principal instanceof CustomUserDetails) {
+            member = ((CustomUserDetails) principal).getLoggedMember();
+        } else {
+            member = Member.builder().userId("비회원").build();
+        }
         Map<String, Object> resultMap = productService.getProductDetail(productId, member);
         model.addAttribute("product", resultMap.get("product"));
         model.addAttribute("member", resultMap.get("member"));
-        model.addAttribute("imageList", resultMap.get("imageList"));
-        List<String> imageList = (List<String>) resultMap.get("imageList");
-        imageList.forEach(image -> {
-            log.info("image {}", image);
-        });
-        log.info("found {} ", resultMap.get("product"));
-        log.info("found {} ", resultMap.get("member"));
-        log.info("found {} image ", ((List<String>) resultMap.get("imageList")).size());
+        List<String> imageList;
+        if (resultMap.get("imageList") != null){
+            imageList = (List<String>) resultMap.get("imageList");
+            model.addAttribute("imageList", imageList);
+        }
         return prefix + "/detail";
     }
 
@@ -133,5 +130,16 @@ public class ProductController {
                                        @AuthenticationPrincipal CustomUserDetails user) {
         return (productService.unlike(productId, user) > 0)
                 ? Map.of("unlike", true) : Map.of("unlike", false);
+    }
+
+    // 구매화면 진입
+    @GetMapping("/payment/checkout/{productId}")
+    public String checkout(Model model, @PathVariable int productId) {
+        model.addAttribute(
+                "orderId", UUID.randomUUID().toString().substring(0, 8)
+        );
+        ProductDto productDto = productService.getProductDto(productId);
+        model.addAttribute("product", productDto);
+        return "/payment/checkout";
     }
 }

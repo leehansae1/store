@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    List<Product> findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContaining(
-            @NotNull String description, String category, String tag, @NotNull String productName
-    );
-
     List<Product> findAllBySeller(Member seller);
+
+    List<Product> findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContainingAndDisplayOrderByPostDateDesc(
+            @NotNull String description, String category, String tag, @NotNull String productName, boolean display
+    );
 }
 

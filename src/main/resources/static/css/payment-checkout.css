@@ -1,0 +1,53 @@
+/* 주문 요약 영역 스타일 */
+.order-summary {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.order-summary-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.order-item-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.order-item-price {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.order-total {
+    text-align: right;
+}
+
+.order-total p {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
