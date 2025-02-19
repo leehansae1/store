@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head class="head">
     <meta charset="utf-8"/>
     <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png"/>
     <link rel="stylesheet" href="/css/toss.css"/>
-    <link rel="stylesheet" href="/css/payment-checkout.css" />
+    <link rel="stylesheet" href="/css/payment-checkout.css"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>상품 구매화면</title>
@@ -24,11 +24,11 @@
                 <img src="https://via.placeholder.com/80" th:src="@{${product.thumbnailUrl}}" alt="상품 이미지">
                 <div class="order-item-info">
                     <p class="order-item-name" th:text="${product.productName}">상품명 예시</p>
-                    <p class="order-item-price" th:text="|가격: ${product.price}원|">가격: 1,000,000원</p>
+                    <p class="order-item-price" th:text="|가격: ${#numbers.formatInteger(product.price,0,'COMMA')}원|">가격: 1,000,000원</p>
                 </div>
             </div>
             <div class="order-total">
-                <p>총 결제금액: <span id="total-amount" th:text="|${product.price}원|">1,000,000원</span></p>
+                <p>총 결제금액: <span id="total-amount" th:text="|${#numbers.formatInteger(product.price,0,'COMMA')}원|">1,000,000원</span></p>
             </div>
         </div>
         <!-- // 주문 요약 영역 끝 -->
@@ -37,18 +37,9 @@
         <div id="payment-method"></div>
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
-        <!-- 쿠폰 체크박스 -->
-        <div style="padding-left: 25px">
-            <div class="checkable typography--p">
-                <label for="coupon-box" class="checkable__label typography--regular">
-                    <input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true"/>
-                    <span class="checkable__label-text">5,000원 쿠폰 적용</span>
-                </label>
-            </div>
-        </div>
         <!-- 결제하기 버튼 -->
         <div class="result wrapper">
-            <button class="button" id="payment-button" style="margin-top: 30px">
+            <button class="button btn-lg" id="payment-button" style="margin-top: 30px">
                 결제하기
             </button>
         </div>
@@ -59,10 +50,18 @@
 
     async function main() {
         const button = document.querySelector("#payment-button");
-        const coupon = document.querySelector("#coupon-box");
+        const price = /*[[${product.price}]]*/ 0;
+        const productId = /*[[${product.productId}]]*/ 0;
+        const userId = /*[[${#authentication.principal.loggedMember.userId}]]*/ "";
+        const userName = /*[[${#authentication.principal.loggedMember.userName}]]*/ "";
+        const userEmail = /*[[${#authentication.principal.loggedMember.userEmail}]]*/ "";
+        const productName = /*[[${product.productName}]]*/ "";
+        const userTel = /*[[${#authentication.principal.loggedMember.tel}]]*/ "";
+        const tel = userTel.replaceAll("-", "");
+        console.log("tel", tel);
         const amount = {
             currency: "KRW",
-            value: 1000000,
+            value: price,
         };
 
         // ------  결제위젯 초기화 ------
@@ -92,34 +91,15 @@
             }),
         ]);
 
-        // ------  주문서의 결제 금액이 변경되었을 경우 결제 금액 업데이트 ------
-        coupon.addEventListener("change", async function () {
-            if (coupon.checked) {
-                await widgets.setAmount({
-                    currency: "KRW",
-                    value: amount.value - 5000,
-                });
-                document.querySelector("#total-amount").textContent = (amount.value - 5000).toLocaleString() + "원";
-                return;
-            }
-
-            await widgets.setAmount({
-                currency: "KRW",
-                value: amount.value,
-            });
-        });
-
         // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
         button.addEventListener("click", async function () {
-            const saveAmount = coupon.checked ? amount.value - 5000 : amount.value;
-            console.log("saveAmount ==" + saveAmount);
             const sendData = {
                 orderId: customerKey,
-                customerEmail: "crof672@naver.com",
-                amount: saveAmount,
-                productId: "1", //product 의 id
-                customerId: "crof672",
-                orderName: "프로덕트의 상품명"
+                customerEmail: userEmail,
+                amount: price,
+                productId: productId, //product 의 id
+                customerId: userId,
+                orderName: productName
             };
             //임시 저장해놓자(나중에 비교해볼거 + 멤버, 상품아이디)
             fetch("/payment/temporary-save", {
@@ -134,16 +114,14 @@
                     console.log("여기타면 성공")
                     console.log(json);
                 });
-            //결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
-            //결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
             await widgets.requestPayment({
                 orderId: customerKey, //주문번호는 서버에서 뿌려준다(랜덤하고 고유한값이여야함 == uuid와 아이디로 할까,,)
-                orderName: "금거북이", //prodcut의 상품명
+                orderName: productName, //prodcut의 상품명
                 successUrl: window.location.origin + "/payment/success.html",
                 failUrl: window.location.origin + "/payment/fail",
-                customerEmail: "crof672@naver.com", //결제 성공 시에 여기로 주문내역을 토스가 보내줌
-                customerName: "이한새", //토스에서 메일을 보낼때에 사용함 멤버 이름 뿌리기
-                customerMobilePhone: "01012341234", //가상계좌 안내, 퀵계좌이체 휴대폰 번호 자동 완성에 사용
+                customerEmail: userEmail,
+                customerName: userName,
+                customerMobilePhone: tel, //가상계좌 안내, 퀵계좌이체 휴대폰 번호 자동 완성에 사용
             });
         });
     }

@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class FileUtil {
 
+
     public static String saveAndRenameFile(MultipartFile file, String folderPathStr) {
 
         String originalFileName = file.getOriginalFilename(); //원본파일의 이름
