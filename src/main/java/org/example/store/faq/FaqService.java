@@ -57,8 +57,6 @@ public class FaqService {
         }
     }
 
-
-
     // 클릭 시 조회수 올리기
     @Transactional
     public int addViews(int faqId, CustomUserDetails user) {

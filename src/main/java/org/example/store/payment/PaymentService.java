@@ -7,13 +7,8 @@ import org.example.store.member.entity.Member;
 import org.example.store.member.service.MemberService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
-import org.example.store.product.entity.Image;
-import org.example.store.product.entity.Product;
-import org.example.store.product.repository.ProductRepository;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,7 +39,7 @@ public class PaymentService {
             paymentDto.setTotalAmount(saveDto.getAmount());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             paymentDto.setApprovedAt(LocalDateTime.now().format(formatter));
-        }
+        } else productService.hideProduct(productDto.getProductId()); //product 판매완료, true로 바꿔주기
         Payment payment = paymentRepository.save(PaymentDto.toEntity(paymentDto));
         return Payment.fromEntity(payment) != null;
     }

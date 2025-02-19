@@ -163,18 +163,20 @@ public class ProductService {
     // 내 물건 리스트 관리를 위한 조회 (상품리스트 관리 페이지)
     public List<ProductDto> getMyProducts(CustomUserDetails user) {
         List<Product> products = productRepository.findAllBySeller(user.getLoggedMember());
-        List<ProductDto> productDtoList = Product.fromEntityList(products);
-        productDtoList.forEach(productDto -> {
-            if (paymentRepository.findByProductAndSuccess(ProductDto.toEntity(productDto), 1).isEmpty()) {
-                productDto.setSellStatus(true);
-            }
-        });
-        return productDtoList;
+        return Product.fromEntityList(products);
     }
 
     // 판매자 물건 리스트 조회 (타인의 내 상점 안의 상품리스트)
     public List<ProductDto> getSellerProducts(MemberDto memberDto) {
         List<Product> products = productRepository.findAllBySeller(MemberDto.toEntity(memberDto));
         return Product.fromEntityList(products);
+    }
+
+    public boolean hideProduct(int productId) {
+        ProductDto productDto = getProductDto(productId);
+        productDto.setSellStatus(true);
+        productDto.setDisplay(false);
+        Product product = productRepository.save(ProductDto.toEntity(productDto));
+        return product.isDisplay();
     }
 }
