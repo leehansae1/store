@@ -29,7 +29,8 @@
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
-                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)" aria-label="Search">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
                 <button id="search-btn" class="btn btn-primary search-btn">
                     <i class="bi bi-search"></i>
                 </button>
@@ -79,15 +80,21 @@
                         <!-- 아이디 -->
                         <div class="mb-3">
                             <label for="userId" class="form-label">아이디</label>
-                            <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디 입력"
-                                   th:value="*{userId}" required>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디 입력"
+                                       th:value="*{userId}" required>
+                                <button type="button" class="btn btn-outline-secondary" id="btn-duplicate-id">중복확인
+                                </button>
+                            </div>
                             <div class="invalid-feedback">아이디를 올바르게 입력해주세요.</div>
                         </div>
                         <!-- 비밀번호 -->
                         <div class="mb-3 position-relative">
                             <label for="userPw" class="form-label">비밀번호</label>
-                            <input type="password" class="form-control" id="userPw" name="userPw" placeholder="비밀번호 입력" required autocomplete="current-password">
-                            <button type="button" class="btn btn-link toggle-password" id="togglePassword" aria-label="비밀번호 표시 전환">
+                            <input type="password" class="form-control" id="userPw" name="userPw" placeholder="비밀번호 입력"
+                                   required autocomplete="current-password">
+                            <button type="button" class="btn btn-link toggle-password" id="togglePassword"
+                                    aria-label="비밀번호 표시 전환">
                                 <i id="toggleIcon" class="bi bi-eye"></i>
                             </button>
                             <div class="invalid-feedback">비밀번호는 8자 이상이어야 합니다.</div>
@@ -95,29 +102,33 @@
                         <!-- 프로필 이미지 -->
                         <div class="mb-3">
                             <label for="userProfile" class="form-label">프로필 이미지</label>
-                            <input type="file" class="form-control" id="userProfile" name="userProfile" accept="image/*">
+                            <input type="file" class="form-control" id="userProfile" name="userProfile"
+                                   accept="image/*">
                         </div>
                         <!-- 이메일 (3분할) -->
                         <div class="mb-3">
                             <label for="userEmailLocal" class="form-label">이메일</label>
                             <div class="input-group">
-                                <!-- 사용자 이메일: name 속성 제거 -->
                                 <input type="text" class="form-control" id="userEmailLocal" placeholder="사용자 이메일" required>
                                 <span class="input-group-text">@</span>
-                                <!-- 이메일 도메인: name 속성 제거 -->
                                 <select class="form-select" id="emailDomain">
                                     <option value="gmail.com">gmail.com</option>
                                     <option value="naver.com">naver.com</option>
                                     <option value="daum.net">daum.net</option>
                                     <option value="">직접 입력</option>
                                 </select>
-                                <!-- 이메일 인증 버튼 -->
-                                <button type="button" class="btn btn-outline-secondary" id="emailAuthBtn">이메일인증</button>
+                                <button type="button" class="btn btn-outline-secondary" id="btn-send-email">인증메일 발송</button>
                             </div>
-                            <!-- 최종 이메일 주소를 저장할 hidden input (서버로 전송됨) -->
+                            <!-- 최종 이메일 주소를 저장할 hidden input -->
                             <input type="hidden" id="userEmail" name="userEmail">
-                            <!-- 이메일 인증 상태 메시지 -->
                             <div id="emailStatusMsg" class="form-text text-danger">이메일 인증이 필요합니다.</div>
+                            <!-- 이메일 인증번호 입력 영역: 기본적으로 숨김 처리 -->
+                            <div id="emailConfirmArea" class="mt-2 blind">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="user-email-confirm" placeholder="인증번호 입력 (6자리)">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-email-confirm">인증번호 확인</button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 이름 -->
@@ -179,22 +190,80 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        let emailVerified = false; // 이메일 인증 완료 여부
+        // 플래그 변수들
+        let isAuth = false;         // 이메일 인증 완료 여부
+        let isIdChecked = false;    // 아이디 중복 확인 여부
+        let timerInterval;          // 타이머 인터벌 변수
+
+        // 요소 선택 (HTML에서 사용한 id와 class와 일치)
+        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (HTML에 배치되어 있으면)
+        const btnDuplicateId = document.querySelector("#btn-duplicate-id");
+        const userIdInput = document.querySelector("#userId");
+        const btnSendEmail = document.querySelector("#btn-send-email");
+        const btnEmailConfirm = document.querySelector("#btn-email-confirm");
+        const emailConfirmArea = document.querySelector("#emailConfirmArea");
+        const userEmailLocal = document.querySelector("#userEmailLocal");
+        const emailDomain = document.querySelector("#emailDomain");
+        const userEmailConfirm = document.querySelector("#user-email-confirm");
+        const userEmailField = document.querySelector("#userEmail");
+        const emailStatusMsg = document.querySelector("#emailStatusMsg");
+        const signupForm = document.querySelector("#signupForm");
+        const passwordInput = document.querySelector("#userPw");
+        const togglePassword = document.querySelector("#togglePassword");
+        const toggleIcon = document.querySelector("#toggleIcon");
+        const searchBtn = document.querySelector("#search-btn");
+        const searchInput = document.querySelector("#search-input");
+
+        // URL 파라미터에 token이 있는지 확인 (예: 이메일 인증 링크 클릭 시)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        if (token) {
+            // 실제 구현에서는 token 검증 API 호출 후 처리해야 함.
+            isAuth = true;
+            emailStatusMsg.textContent = "이메일 인증 완료";
+            emailStatusMsg.classList.remove("text-danger");
+            emailStatusMsg.classList.add("text-success");
+            btnSendEmail.disabled = true;
+        }
+
+        // 아이디 중복 확인
+        btnDuplicateId.addEventListener("click", function (e) {
+            e.preventDefault();
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert("아이디를 입력해주세요.");
+                return;
+            }
+            fetch("/member/check-duplicate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ userId })
+            })
+                .then(response => response.text())
+                .then(isDuplicate => {
+                    isDuplicate = (isDuplicate === "true");
+                    if (isDuplicate) {
+                        alert("이미 사용 중인 아이디입니다.");
+                        isIdChecked = false;
+                    } else {
+                        alert("사용 가능한 아이디입니다.");
+                        isIdChecked = true;
+                    }
+                })
+                .catch(error => {
+                    console.error("아이디 중복 확인 오류:", error);
+                    alert("서버 오류가 발생했습니다.");
+                });
+        });
 
         // 비밀번호 토글 기능
-        const togglePassword = document.querySelector("#togglePassword");
-        const passwordInput = document.querySelector("#userPw");
-        const toggleIcon = document.querySelector("#toggleIcon");
-
         togglePassword.addEventListener("click", function () {
             const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
             toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
         });
 
-        // 검색 기능 (헤더)
-        const searchBtn = document.querySelector("#search-btn");
-        const searchInput = document.querySelector("#search-input");
+        // 검색 기능
         const executeSearch = () => {
             const searchWord = searchInput.value.trim();
             if (searchWord) {
@@ -211,97 +280,116 @@
             }
         });
 
-        // 회원가입 폼 유효성 검사 및 이메일 주소 합치기
-        const form = document.querySelector("#signupForm");
-        form.addEventListener("submit", function (event) {
-            let valid = true;
+        // 타이머 시작 함수 (예: 5분 = 300초)
+        function startTimer(duration) {
+            let timer = duration;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+                const seconds = String(timer % 60).padStart(2, "0");
+                if (timerDisplay) {
+                    timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+                }
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
+                    isAuth = false;
+                    userEmailConfirm.disabled = true;
+                }
+            }, 1000);
+        }
 
-            // 아이디 검사: 최소 4글자
-            const userId = document.querySelector("#userId");
-            if (userId.value.trim().length < 4) {
-                userId.classList.add("is-invalid");
+        // 이메일 인증번호 요청 (입력된 이메일 정보를 합쳐서 hidden 필드에 저장)
+        btnSendEmail.addEventListener("click", function (e) {
+            e.preventDefault();
+            const localPart = userEmailLocal.value.trim();
+            const domain = emailDomain.value.trim();
+            if (!localPart || !domain) {
+                alert("이메일 정보를 모두 입력해주세요.");
+                return;
+            }
+            const combinedEmail = localPart + "@" + domain;
+            userEmailField.value = combinedEmail;
+            console.log("요청 이메일:", combinedEmail);
+            fetch("/mail/confirm", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ email: combinedEmail })
+            })
+                .then(response => {
+                    console.log("응답 상태:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("서버 응답:", data);
+                    alert("인증 메일이 발송되었습니다. 이메일을 확인하고 6자리 인증번호를 입력해주세요.");
+                    // 인증번호 입력 영역 보이기 (모달이 아니라 기존 페이지 내에 한 줄로 배치)
+                    emailConfirmArea.classList.remove("blind");
+                    userEmailConfirm.disabled = false;
+                    startTimer(300);
+                    // 서버에서 받은 6자리 인증번호 저장
+                    window.serverConfirmNumber = data.confirmNumber;
+                })
+                .catch(error => {
+                    console.error("이메일 인증 요청 오류:", error);
+                    alert("인증 메일 발송 중 오류가 발생했습니다.");
+                });
+        });
+
+        // 이메일 인증번호 확인 (사용자가 직접 입력한 6자리 코드 비교)
+        btnEmailConfirm.addEventListener("click", function (e) {
+            e.preventDefault();
+            const enteredCode = userEmailConfirm.value.trim();
+            if (enteredCode === window.serverConfirmNumber) {
+                alert("인증되었습니다.");
+                isAuth = true;
+                clearInterval(timerInterval);
+                emailStatusMsg.textContent = "이메일 인증 완료";
+                emailStatusMsg.classList.remove("text-danger");
+                emailStatusMsg.classList.add("text-success");
+                btnSendEmail.disabled = true;
+            } else {
+                alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
+                isAuth = false;
+            }
+        });
+
+        // 회원가입 폼 제출 시 유효성 검사 및 이메일 인증 여부 확인
+        signupForm.addEventListener("submit", function (event) {
+            let valid = true;
+            if (userIdInput.value.trim().length < 4) {
+                userIdInput.classList.add("is-invalid");
                 valid = false;
             } else {
-                userId.classList.remove("is-invalid");
+                userIdInput.classList.remove("is-invalid");
             }
-
-            // 비밀번호 검사: 최소 8글자
             if (passwordInput.value.trim().length < 8) {
                 passwordInput.classList.add("is-invalid");
                 valid = false;
             } else {
                 passwordInput.classList.remove("is-invalid");
             }
-
-            // 이메일 검사
-            const localPart = document.querySelector("#userEmailLocal").value.trim();
-            const domain = document.querySelector("#emailDomain").value.trim();
-            if (!localPart || !domain) {
-                document.querySelector("#userEmailLocal").classList.add("is-invalid");
+            const local = userEmailLocal.value.trim();
+            const dom = emailDomain.value.trim();
+            if (!local || !dom) {
+                userEmailLocal.classList.add("is-invalid");
                 valid = false;
             } else {
-                document.querySelector("#userEmailLocal").classList.remove("is-invalid");
+                userEmailLocal.classList.remove("is-invalid");
             }
-
-            // 이메일 인증 여부 확인
-            if (!emailVerified) {
+            if (!isAuth) {
                 alert("회원가입 전에 이메일 인증을 완료해주세요.");
                 valid = false;
             }
-
-            // 최종 이메일 주소 합치기 (유효한 경우)
-            if (valid) {
-                const combinedEmail = localPart + "@" + domain;
-                document.querySelector("#userEmail").value = combinedEmail;
-                console.log("Combined email: " + combinedEmail);
-            } else {
+            if (!valid) {
                 event.preventDefault();
                 return;
             }
-            // 기타 필드 검사 추가 가능
-        });
-
-        // 이메일 인증 버튼 기능
-        const emailAuthBtn = document.querySelector("#emailAuthBtn");
-        emailAuthBtn.addEventListener("click", function () {
-            const localPart = document.querySelector("#userEmailLocal").value.trim();
-            const domain = document.querySelector("#emailDomain").value.trim();
-            if (!localPart || !domain) {
-                alert("이메일 정보를 먼저 입력해주세요.");
-                return;
-            }
-            const combinedEmail = localPart + "@" + domain;
-            // AJAX 요청: fetch API를 사용해 이메일 인증번호 요청
-            fetch(`/mail/confirm`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email: combinedEmail })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // data.confirmNumber에 서버에서 전송된 인증번호가 있음
-                    alert("인증번호가 전송되었습니다. 받은 번호를 입력해주세요.");
-                    const userInput = prompt("인증번호를 입력해주세요:");
-                    if (userInput === data.confirmNumber) {
-                        emailVerified = true;
-                        document.querySelector("#emailStatusMsg").textContent = "이메일 인증 완료";
-                        document.querySelector("#emailStatusMsg").classList.remove("text-danger");
-                        document.querySelector("#emailStatusMsg").classList.add("text-success");
-                        emailAuthBtn.disabled = true;
-                    } else {
-                        alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
-                        emailVerified = false;
-                    }
-                })
-                .catch(error => {
-                    console.error("이메일 인증 요청 오류:", error);
-                    alert("이메일 인증 요청에 실패했습니다.");
-                });
+            console.log("회원가입 폼 제출, 이메일:", userEmailField.value);
         });
     });
 </script>
+
 
 </body>
 </html>

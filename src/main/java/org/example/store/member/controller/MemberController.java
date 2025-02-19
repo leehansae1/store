@@ -37,7 +37,7 @@ public class MemberController {
   private final MemberService memberService;
   private final MemberRepository memberRepository;
 
-  private String prefix = "/member";
+  private String prefix = "member";
 
   // 회원가입 화면
   @GetMapping("/signup")

@@ -23,7 +23,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    private final String prefix = "/product";
+    private final String prefix = "product";
 
     // 첫페이지 >> 상품리스트 전체조회
     @GetMapping("/list")
@@ -81,7 +81,7 @@ public class ProductController {
         redirectAttributes.addFlashAttribute("productDto", productDto);
         // isSelect 가 true 라면 업로드 페이지 문구를 수정에 맞게 바꾸기
         redirectAttributes.addFlashAttribute("isModify", productDto != null);
-        return "redirect:/product/upload";
+        return "redirect:product/upload";
     }
 
     // 상품 상세 페이지
@@ -140,6 +140,6 @@ public class ProductController {
         );
         ProductDto productDto = productService.getProductDto(productId);
         model.addAttribute("product", productDto);
-        return "/payment/checkout";
+        return "payment/checkout";
     }
 }

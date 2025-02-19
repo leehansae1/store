@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 80
 
 spring:
   application:
@@ -20,8 +20,8 @@ spring:
 
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@//localhost:1521
-    username: crof672
+    url: jdbc:oracle:thin:@//52.79.61.147:1521/xe
+    username: wave
     password: 1234
 
   jpa:

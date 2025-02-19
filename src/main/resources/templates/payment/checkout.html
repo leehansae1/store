@@ -115,10 +115,10 @@
                     console.log(json);
                 });
             await widgets.requestPayment({
-                orderId: customerKey, //주문번호는 서버에서 뿌려준다(랜덤하고 고유한값이여야함 == uuid와 아이디로 할까,,)
+                orderId: customerKey, //주문번호는 서버에서 뿌려준다
                 orderName: productName, //prodcut의 상품명
-                successUrl: window.location.origin + "/payment/success.html",
-                failUrl: window.location.origin + "/payment/fail",
+                successUrl: window.location.href ="http://ec2-52-79-61-147.ap-northeast-2.compute.amazonaws.com/payment/success.html",
+                failUrl: window.location.href = "http://ec2-52-79-61-147.ap-northeast-2.compute.amazonaws.com/payment/fail",
                 customerEmail: userEmail,
                 customerName: userName,
                 customerMobilePhone: tel, //가상계좌 안내, 퀵계좌이체 휴대폰 번호 자동 완성에 사용

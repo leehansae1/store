@@ -20,7 +20,7 @@ public class FaqController {
 
     private final FaqService faqService;
 
-    private final String prefix = "/faq";
+    private final String prefix = "faq";
 
     // 클라이언트-어드민 모두 리스트로 조회
     @GetMapping("/list")

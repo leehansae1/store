@@ -46,7 +46,7 @@ public class ShopController {
         );
         if (!productDtoList.isEmpty()) return "/product/list";
         model.addAttribute("productList", productDtoList);
-        return "/shop/products";
+        return "shop/products";
     }
 
     // 타인의 내 상점 페이지 >> 상품 디테일에서 접근 됨
@@ -60,7 +60,7 @@ public class ShopController {
         );
         if (!productDtoList.isEmpty()) return "/product/list";
         model.addAttribute("productList", productDtoList);
-        return "/shop/products";
+        return "shop/products";
     }
 
     // 상점후기

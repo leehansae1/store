@@ -32,7 +32,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    private final String prefix = "/payment";
+    private final String prefix = "payment";
     private static final String WIDGET_SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
     private static final String API_SECRET_KEY = "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R";
 

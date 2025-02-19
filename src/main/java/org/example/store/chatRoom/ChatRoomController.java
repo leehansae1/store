@@ -37,7 +37,7 @@ public class ChatRoomController {
             log.info("chatList === {}",chatDtos);
             model.addAttribute("chatList", chatDtos);
         }
-        return "/chatRoom";
+        return "chatRoom";
     }
 
     // 기존 채팅방 조회 >> 없으면 문구하나 정도 띄우기, 아니면 모달로 알려주기?
@@ -52,7 +52,7 @@ public class ChatRoomController {
             log.info("안읽은 개수 {}", chatRoomDto.getUnreadCount());
         });
         model.addAttribute("chatRoomList", chatRoomDtoList);
-        return "/chatRoom";
+        return "chatRoom";
     }
 
     // 채팅 쓰기
@@ -72,6 +72,6 @@ public class ChatRoomController {
     public String writePaymentResult(@PathVariable int productId,
                                      @AuthenticationPrincipal CustomUserDetails user) {
         return chatRoomService.writePaymentResult(productId, user) != null
-                ? "redirect:/chatRoom/" + productId : "/";
+                ? "redirect:chatRoom/" + productId : "/";
     }
 }

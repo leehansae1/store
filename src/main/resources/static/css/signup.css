@@ -1,16 +1,13 @@
-/* signup.css */
-
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(180deg, #e0f7fa, #ffffff);
     margin: 0;
     padding-top: 80px; /* 고정 헤더 높이 확보 */
     width: 100%;
-    overflow-x: hidden; /* 수평 스크롤 제거 */
+    overflow-x: hidden;
 }
 
-
-/* 헤더 (PC 우선) */
+/* 헤더 */
 .wave-navbar {
     width: 100vw;
     background: rgba(0, 123, 255, 0.85);
@@ -18,13 +15,12 @@ body {
     height: 80px;
 }
 
-/* 데스크탑용 검색창 */
+/* 검색창 */
 .search-container {
     flex-grow: 1;
     max-width: 500px;
     position: relative;
 }
-
 #search-input {
     width: 100%;
     height: 50px;
@@ -33,7 +29,6 @@ body {
     border: none;
     font-size: 1rem;
 }
-
 #search-btn {
     position: absolute;
     right: 10px;
@@ -48,8 +43,7 @@ body {
     font-size: 1.2rem;
 }
 
-
-/* 백그라운드 비디오: 전체 화면에 흐릿하게 표시 */
+/* 백그라운드 비디오 */
 .video-background {
     position: fixed;
     top: 0;
@@ -59,7 +53,6 @@ body {
     overflow: hidden;
     z-index: -1;
 }
-
 .video-background video {
     width: 100%;
     height: 100%;
@@ -67,28 +60,25 @@ body {
     filter: blur(4px);
 }
 
+/* 메인 컨텐츠 */
 .container {
-    padding-top: 60px;  /* 상단 여백을 100px에서 60px로 줄임 */
-    padding-bottom: 60px; /* 필요 시 하단 여백도 조정 */
+    padding-top: 60px;
+    padding-bottom: 60px;
 }
-
-/* 중앙 정렬 레이아웃 박스 (공통) */
 .layout-box {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1rem;
 }
 
-/* 카드 스타일: 로그인 페이지의 카드 스타일과 동일 */
+/* 카드 스타일 */
 .login-card {
     background: rgba(255, 255, 255, 0.8);
     border: none;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     padding: 1.5rem;
 }
-
-/* 카드 제목 */
 .card-title {
     font-weight: 600;
     color: #333;
@@ -96,19 +86,16 @@ body {
     text-align: center;
 }
 
-/* 폼 그룹 및 레이블 */
+/* 폼 그룹, 레이블, 컨트롤 */
 .form-group,
 .mb-3 {
     margin-bottom: 1rem;
 }
-
 .form-label {
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #333;
 }
-
-/* 폼 컨트롤 (입력 필드) */
 .form-control {
     width: 100%;
     padding: 0.75rem 1rem;
@@ -117,12 +104,12 @@ body {
     font-size: 1rem;
     transition: border-color 0.3s;
 }
-
 .form-control:focus {
     border-color: #007bff;
     box-shadow: none;
 }
 
+/* 비밀번호 토글 */
 .toggle-password {
     position: absolute;
     top: 70%;
@@ -135,7 +122,12 @@ body {
     color: #555;
 }
 
-/* 회원가입 버튼: Bootstrap btn-primary 스타일을 확장 */
+/* 숨김 처리용 클래스 */
+.blind {
+    display: none;
+}
+
+/* 회원가입 버튼 */
 .btn-signup {
     display: block;
     width: 100%;
@@ -149,23 +141,21 @@ body {
     transition: background-color 0.3s;
     margin-top: 1.5rem;
 }
-
 .btn-signup:hover,
 .btn-signup:focus {
     background-color: #0056b3;
 }
 
-/* 하단 링크 스타일 */
+/* 하단 링크 */
 .text-center a.link-primary {
     text-decoration: none;
     color: #007bff;
 }
-
 .text-center a.link-primary:hover {
     text-decoration: underline;
 }
 
-/* Footer 스타일 */
+/* Footer */
 .wave-footer {
     background: #f8f9fa;
     padding: 20px 0;
@@ -174,7 +164,7 @@ body {
     color: #777;
 }
 
-/* 반응형 조정: 모바일에서는 카드의 마진과 패딩을 축소 */
+/* 반응형 (모바일) */
 @media (max-width: 576px) {
     .login-card {
         margin: 20px;

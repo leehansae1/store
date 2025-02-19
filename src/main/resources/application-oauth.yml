@@ -9,7 +9,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            redirect-uri: http://ec2-52-79-61-147.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/google
 
           kakao:
             client-id:
@@ -20,7 +20,7 @@ spring:
               - account_email
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: http://52.79.61.147/login/oauth2/code/kakao
             client-authentication-method: client_secret_post
 
         provider:

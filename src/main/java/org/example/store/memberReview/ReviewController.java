@@ -19,7 +19,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    private final String prefix = "/review";
+    private final String prefix = "review";
 
     @GetMapping("/write/{productId}")
     public String writeReview(Model model, @PathVariable String productId) {
@@ -33,7 +33,7 @@ public class ReviewController {
     public String writeReview(ReviewDto reviewDto, int productId,
                               @AuthenticationPrincipal CustomUserDetails user) {
         return reviewService.writeReview(reviewDto, productId, user) ?
-                "/chatRoom/paymentResult/" + productId : "/review/write";
+                "chatRoom/paymentResult/" + productId : "review/write";
     }
 
 
@@ -54,6 +54,6 @@ public class ReviewController {
         redirectAttributes.addAttribute("review", reviewDto);
         //if(isModify != null && isModify(==자체가 불린)) 이라면 페이지 타이틀, 문구 바꾸기
         redirectAttributes.addAttribute("isModify", true);
-        return prefix + "redirect:" + prefix + "/write/" + reviewDto.getProductDto().getProductId();
+        return "redirect:" + prefix + "/write/" + reviewDto.getProductDto().getProductId();
     }
 }
