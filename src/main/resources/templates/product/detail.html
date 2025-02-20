@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="WAVE Market 상품 상세 페이지입니다.">
     <title>WAVE Market - 상품 상세</title>
-    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+    <!-- 로고 -->
+    <link rel="icon" href="/img/wave-logo.png"/>
     <!-- 구글 폰트 (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,7 +214,8 @@
                     <div class="d-flex align-items-center mb-2">
                         <a th:unless="${#authentication.name == member.userId}"
                            th:href="@{|/shop/products/${product.productId}|}">
-                            <img th:src="${member.userProfile}?:'/img/programmer.png'" alt="판매자 프로필"
+                            <img th:src="|${member.userProfile != null ? member.userProfile : '/img/programmer.png'}|"
+                                 alt="판매자"
                                  class="rounded-circle seller-profile">
                         </a>
                         <a th:if="${#authentication.name == member.userId}"
