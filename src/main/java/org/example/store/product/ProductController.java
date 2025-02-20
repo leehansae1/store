@@ -98,7 +98,7 @@ public class ProductController {
         model.addAttribute("product", resultMap.get("product"));
         model.addAttribute("member", resultMap.get("member"));
         List<String> imageList;
-        if (resultMap.get("imageList") != null){
+        if (resultMap.get("imageList") != null) {
             imageList = (List<String>) resultMap.get("imageList");
             model.addAttribute("imageList", imageList);
         }
@@ -132,14 +132,13 @@ public class ProductController {
                 ? Map.of("unlike", true) : Map.of("unlike", false);
     }
 
-    // 구매화면 진입
     @GetMapping("/payment/checkout/{productId}")
-    public String checkout(Model model, @PathVariable int productId) {
-        model.addAttribute(
-                "orderId", UUID.randomUUID().toString().substring(0, 8)
-        );
+    public String checkout(Model model, @PathVariable int productId, @AuthenticationPrincipal CustomUserDetails user) {
+        model.addAttribute("orderId", UUID.randomUUID().toString().substring(0, 8));
         ProductDto productDto = productService.getProductDto(productId);
         model.addAttribute("product", productDto);
+
         return "payment/checkout";
     }
+
 }

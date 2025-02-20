@@ -54,8 +54,7 @@ public class ProductService {
     public List<ProductDto> getProductList(String searchWord) {
         // LIKE 쿼리 대체
         List<Product> productList = productRepository
-                .findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContainingAndDisplayOrderByPostDateDesc
-                        (searchWord, searchWord, searchWord, searchWord, true);
+                .findDisplayProducts(searchWord, true);
         List<ProductDto> productDtoList = Product.fromEntityList(productList);
         productDtoList.forEach(productDto ->
                 // n일전 or n시간전 or n분전 or 방금전 출력

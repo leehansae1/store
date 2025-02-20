@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import org.example.store.member.entity.Member;
 import org.example.store.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,8 +14,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findAllBySeller(Member seller);
 
-    List<Product> findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContainingAndDisplayOrderByPostDateDesc(
-            @NotNull String description, String category, String tag, @NotNull String productName, boolean display
-    );
+    @Query("SELECT p FROM Product p " +
+            "WHERE (p.description LIKE %:searchWord% " +
+            "OR p.category LIKE %:searchWord% " +
+            "OR p.tag LIKE %:searchWord% " +
+            "OR p.productName LIKE %:searchWord%) " +
+            "AND p.display = :display " +
+            "ORDER BY p.postDate DESC")
+    List<Product> findDisplayProducts(@NotNull String searchWord, boolean display);
 }
 

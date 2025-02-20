@@ -115,7 +115,7 @@ public class PaymentController {
     }
 
     // 결제 실패 시 진입화면, 성공화면은 토스페이먼츠 api 에서 자동으로 띄워줌
-    @GetMapping("/fail")
+    @GetMapping("/payment/fail")
     public String failPayment(HttpServletRequest request, Model model) {
         log.info("여기는 실패");
         model.addAttribute("code", request.getParameter("code"));
