@@ -168,3 +168,7 @@ Spring Boot 애플리케이션을 실행합니다.
 ```
 웹 브라우저에서 접속
 애플리케이션이 성공적으로 실행되면 웹 브라우저에서 http://localhost:8080을 통해 접속할 수 있습니다.
+
+## 📌 웹 링크
+http://ec2-52-79-61-147.ap-northeast-2.compute.amazonaws.com/
+
