@@ -66,9 +66,9 @@ public class MemberController {
   // 아이디 중복 확인
   @PostMapping("/check-duplicate")
   @ResponseBody
-  public boolean checkDuplicateId(@RequestBody Map<String, String> request) {     
-    String userId = request.get("userId");
-    return memberRepository.existsByUserId(userId);
+  public Map<String, Boolean> checkDuplicateId(@RequestBody String userId) {
+    userId = userId.replaceAll("^\"|\"$", "");
+    return Map.of("isExisted",memberRepository.existsByUserId(userId));
   }
   
   

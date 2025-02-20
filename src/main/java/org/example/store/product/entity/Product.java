@@ -51,6 +51,8 @@ public class Product {
 
     private boolean display; //숨김 기능 구현
 
+    private boolean isSell;
+
     @CreatedDate
     private LocalDateTime postDate;
 
@@ -77,7 +79,7 @@ public class Product {
     private Image image;
 
     @Builder
-    public Product(int productId, int views, int price, boolean display,
+    public Product(int productId, int views, int price, boolean display, boolean isSell,
                    String productName, String description, String tag, String category,
                    String productStatus, LocalDateTime postDate, LocalDateTime updateDate,
                    String thumbnailUrl, Member seller,
@@ -95,6 +97,7 @@ public class Product {
         this.updateDate = updateDate;
         this.thumbnailUrl = thumbnailUrl;
         this.display = display;
+        this.isSell = isSell;
 
         this.seller = seller;
         this.chatRoomList = chatRoomList;
@@ -110,6 +113,7 @@ public class Product {
 
     public static ProductDto fromEntity(Product product) {
         return ProductDto.builder()
+                .isSell(product.isSell())
                 .productId(product.getProductId())
                 .productName(product.getProductName())
                 .description(product.getDescription())

@@ -1,6 +1,7 @@
 package org.example.store.member.service;
 
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,12 +26,11 @@ public class MailService {
     MimeMessage message = javaMailSender.createMimeMessage();
     try {
       message.setFrom("test9876test@naver.com"); // 보내는 사람
-      message.setRecipients(MimeMessage.RecipientType.TO, userEmail);
+      message.setRecipients(MimeMessage.RecipientType.TO, InternetAddress.parse(userEmail));
       message.setSubject("WAVE Market 이메일 인증");
 
       String token = makeRandomNumber();
 
-      // 인증 링크 생성 (예시 URL, 실제 도메인으로 변경)
       String content = "<h1 style='text-align:center'>"+token+"</h1>"
               + "<h3 style='text-align:center'>인증번호를 복사하여 이메일 인증을 완료해주세요.</h3>";
       message.setContent(content, "text/html; charset=UTF-8");

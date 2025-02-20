@@ -7,20 +7,18 @@ import org.example.store.like_product.LikeService;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.dto.MemberDto;
-import org.example.store.payment.PaymentRepository;
 import org.example.store.product.dto.ImageDto;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Image;
 import org.example.store.product.entity.Product;
 import org.example.store.product.repository.ImageRepository;
 import org.example.store.product.repository.ProductRepository;
+import org.example.store.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -38,8 +36,6 @@ public class ProductService {
     private final LikeService likeService;
 
     private final FollowService followService;
-
-    private final PaymentRepository paymentRepository;
 
     //product 가 필요할 때
     public Product getProduct(int productId) {
@@ -59,7 +55,7 @@ public class ProductService {
         // LIKE 쿼리 대체
         List<Product> productList = productRepository
                 .findAllByDescriptionContainingOrCategoryContainingOrTagContainingOrProductNameContainingAndDisplayOrderByPostDateDesc
-                        (searchWord, searchWord, searchWord, searchWord,true);
+                        (searchWord, searchWord, searchWord, searchWord, true);
         List<ProductDto> productDtoList = Product.fromEntityList(productList);
         productDtoList.forEach(productDto ->
                 // n일전 or n시간전 or n분전 or 방금전 출력
@@ -125,7 +121,7 @@ public class ProductService {
 
         List<String> imageUrlList = new ArrayList<>();
         files.forEach(multipartFile -> { //파일 저장 및 이름 바꿔서 변환
-            String renamedFile = FileUtil.saveAndRenameFile(multipartFile, folderPath);
+            String renamedFile = FileUtil.saveAndRenameFile(multipartFile, folderPath, 1);
             imageUrlList.add(renamedFile);
         });
 
@@ -172,11 +168,14 @@ public class ProductService {
         return Product.fromEntityList(products);
     }
 
-    public boolean hideProduct(int productId) {
+    public boolean hideProduct(int productId, boolean isSell) {
         ProductDto productDto = getProductDto(productId);
-        productDto.setSellStatus(true);
+        if (isSell) productDto.setSell(true);
         productDto.setDisplay(false);
         Product product = productRepository.save(ProductDto.toEntity(productDto));
+        ImageDto imageDto = productDto.getImageDto();
+        imageDto.setProductDto(Product.fromEntity(product));
+        imageRepository.save(ImageDto.toEntity(imageDto));
         return product.isDisplay();
     }
 }

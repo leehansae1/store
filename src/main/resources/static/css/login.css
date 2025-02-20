@@ -95,20 +95,24 @@ body {
 }
 
 /* 로그인 버튼: 브랜드 컬러 유지 */
-.btn-primary {
+.btn-login {
     background-color: #007bff;
 !important;
-    border-color: #007bff;
-!important;
-    border-radius: 12px;
-    transition: background-color 0.3s, border-color 0.3s;
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    transition: background-color 0.3s;
+    margin-top: 1.5rem;
 }
 
-.btn-primary:hover,
-.btn-primary:focus {
-    background-color: #0056b3 !important;
-    border-color: #0056b3 !important;
+.btn-login:hover,
+.btn-login:focus {
+    background-color: #0056b3;
 }
 
 /* 비밀번호 토글 버튼 (변경 없음) */

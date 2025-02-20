@@ -11,6 +11,7 @@ import org.example.store.member.dto.ModifyDto;
 import org.example.store.member.dto.SignupDto;
 import org.example.store.member.entity.Member;
 import org.example.store.member.repository.MemberRepository;
+import org.example.store.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,20 +36,16 @@ public class MemberService implements IMemberService {
 
 
     @Value("${file.path}")
-    private String filePath; // yml에서 경로를 읽어옴
+    private String folderPath; // yml에서 경로를 읽어옴
 
     // signup
     @Override
     public Member signup(SignupDto signupDto) {
         // 1. 프로필 이미지 파일 업로드 처리
-        String userProfilePath = null;
+        String userProfilePath;
         if (signupDto.getUserProfile() != null && !signupDto.getUserProfile().isEmpty()) {
-            try {
-                userProfilePath = handlerFileUpload(signupDto.getUserProfile());
-            } catch (IOException e) {
-                log.error("file upload fail === {}", e.getMessage());
-            }
-        }
+            userProfilePath = FileUtil.saveAndRenameFile(signupDto.getUserProfile(), folderPath, 0);
+        } else userProfilePath = null;
 
         // 2. 패스워드 암호화 처리
         String encodePassword = bCryptPasswordEncoder.encode(signupDto.getUserPw());
@@ -73,33 +70,6 @@ public class MemberService implements IMemberService {
         return memberRepository.save(savedMember);
     }
 
-    private String handlerFileUpload(MultipartFile multipartFile) throws IOException {
-        // 파일이 비어있으면 null
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            return null;
-        }
-
-        // 원본 파일명에서 확장자 추출
-        String originalFilename = multipartFile.getOriginalFilename();
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
-        // UUID로 새 파일명 생성
-        String uuid = UUID.randomUUID().toString();
-        String newFileName = uuid + extension;
-
-        // 경로 연결 (C:\업로드\ + uuid.jpg 이런식으로 저장)
-        String fullPath = filePath + "member"+File.separator + newFileName;
-
-        // 실제 파일을 해당 경로에 저장
-        File file = new File(fullPath);
-        multipartFile.transferTo(file);
-
-        return newFileName; // 전체 경로가 아닌 파일명만 저장
-    }
-
     // modify
     @Transactional
     public Member modifiedMember(ModifyDto modifyDto) {
@@ -120,14 +90,9 @@ public class MemberService implements IMemberService {
 
             // 2. 이미지가 새로 넘어올 경우 업로드 후 회원 정보를 업데이트
             if (modifyDto.getUserProfile() != null && !modifyDto.getUserProfile().isEmpty()) {
-                try {
-                    String newProfilePath = handlerFileUpload(modifyDto.getUserProfile());
-
-                    // DB에 새 경로 저장
-                    member.setUserProfile(newProfilePath);
-                } catch (IOException e) {
-                    log.error("file upload fail === {}", e.getMessage());
-                }
+                String newProfileName = FileUtil.saveAndRenameFile(modifyDto.getUserProfile(), folderPath, 0);
+                // DB에 새 경로 저장
+                member.setUserProfile(newProfileName);
             }
             // 3. 나머지 정보 업데이트
             member.updateInfo(modifyDto);
@@ -157,7 +122,6 @@ public class MemberService implements IMemberService {
         }
         return false; // 삭제 실패
     }
-
 
     // 삭제된 회원 목록 (관리자용)
     public List<Member> getDeletedMembers() {

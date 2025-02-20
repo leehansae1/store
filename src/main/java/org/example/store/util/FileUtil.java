@@ -1,4 +1,4 @@
-package org.example.store.product;
+package org.example.store.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.product.entity.Image;
@@ -16,7 +16,7 @@ import java.util.List;
 public class FileUtil {
 
 
-    public static String saveAndRenameFile(MultipartFile file, String folderPathStr) {
+    public static String saveAndRenameFile(MultipartFile file, String folderPathStr, int id) {
 
         String originalFileName = file.getOriginalFilename(); //원본파일의 이름
         if (originalFileName == null || originalFileName.isEmpty()) {
@@ -36,7 +36,9 @@ public class FileUtil {
         String folderName = LocalDateTime.now().format(folderFormat);
 
         //파일 저장 경로 설정 (upload/product/날짜)
-        Path timeFolder = Paths.get(folderPathStr, "product", folderName);
+        Path timeFolder;
+        if (id > 0) timeFolder = Paths.get(folderPathStr, "product", folderName);
+        else timeFolder = Paths.get(folderPathStr, "member", folderName);
         try {
             if (Files.notExists(timeFolder)) { //날짜별 폴더가 없으면 생성 >> 하루에 한 번만 생성됨
                 Files.createDirectories(timeFolder);
@@ -51,7 +53,8 @@ public class FileUtil {
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 중 오류 발생" + e);
         }
-        return "/upload/product/" + folderName + "/" + renameFileName;
+        if (id > 0) return "/upload/product/" + folderName + "/" + renameFileName;
+        else return "/upload/member/" + folderName + "/" + renameFileName;
     }
 
     public static void deleteFile(Image image, String thumbnailPath) {

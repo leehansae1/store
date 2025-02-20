@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- 회원가입 전용 커스텀 스타일 -->
     <link rel="stylesheet" href="/css/signup.css">
+    <!-- 우편번호 api -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 
@@ -24,7 +26,7 @@
 <header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="" alt="WAVE" height="50">
+            <img src="/img/wave-logo.png" alt="WAVE" height="90">
             <span class="ms-2 fw-bold fs-4">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
@@ -83,7 +85,7 @@
                             <div class="input-group">
                                 <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디 입력"
                                        th:value="*{userId}" required>
-                                <button type="button" class="btn btn-outline-secondary" id="btn-duplicate-id">중복확인
+                                <button type="button" class="btn btn-outline-primary" id="btn-duplicate-id">중복확인
                                 </button>
                             </div>
                             <div class="invalid-feedback">아이디를 올바르게 입력해주세요.</div>
@@ -117,18 +119,19 @@
                                     <option value="daum.net">daum.net</option>
                                     <option value="">직접 입력</option>
                                 </select>
-                                <button type="button" class="btn btn-outline-secondary" id="btn-send-email">인증메일 발송</button>
+                                <button type="button" class="btn btn-outline-primary" id="btn-send-email">인증메일 발송</button>
                             </div>
-                            <!-- 최종 이메일 주소를 저장할 hidden input -->
-                            <input type="hidden" id="userEmail" name="userEmail">
-                            <div id="emailStatusMsg" class="form-text text-danger">이메일 인증이 필요합니다.</div>
                             <!-- 이메일 인증번호 입력 영역: 기본적으로 숨김 처리 -->
                             <div id="emailConfirmArea" class="mt-2 blind">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="user-email-confirm" placeholder="인증번호 입력 (6자리)">
                                     <button type="button" class="btn btn-outline-primary" id="btn-email-confirm">인증번호 확인</button>
                                 </div>
+                                <!-- 타이머 영역 추가 -->
+                                <div id="timer" class="mt-2 text-center text-muted"></div>
                             </div>
+                            <input type="hidden" id="userEmail" name="userEmail">
+                            <div id="emailStatusMsg" class="form-text text-danger">이메일 인증이 필요합니다.</div>
                         </div>
 
                         <!-- 이름 -->
@@ -138,17 +141,21 @@
                                    th:value="*{userName}" required>
                             <div class="invalid-feedback">이름을 입력해주세요.</div>
                         </div>
-                        <!-- 주소 -->
+                        <!-- 직거래 지역 -->
                         <div class="mb-3">
-                            <label for="address" class="form-label">주소</label>
-                            <input type="text" class="form-control" id="address" name="address" placeholder="주소 입력"
-                                   th:value="*{address}">
+                            <label for="address" class="form-label">직거래 가능 지역</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="address" name="address"
+                                       placeholder="직거래 지역 선택" th:value="*{address}" readonly>
+                                <button type="button" class="btn btn-outline-primary" id="btn-address">주소 검색
+                                </button>
+                            </div>
                         </div>
                         <!-- 전화번호 -->
                         <div class="mb-3">
                             <label for="tel" class="form-label">전화번호</label>
-                            <input type="tel" class="form-control" id="tel" name="tel" placeholder="전화번호 입력"
-                                   th:value="*{tel}">
+                            <input type="tel" class="form-control" id="tel" name="tel" placeholder="전화번호 입력" th:value="*{tel}">
+                            <small class="form-text text-muted">숫자만 입력해주세요. 자동으로 '-'가 추가됩니다. (예: 010-7742-8032)</small>
                         </div>
                         <!-- 자기소개 -->
                         <div class="mb-3">
@@ -189,79 +196,33 @@
 </footer>
 
 <script>
+
     document.addEventListener("DOMContentLoaded", function () {
         // 플래그 변수들
-        let isAuth = false;         // 이메일 인증 완료 여부
-        let isIdChecked = false;    // 아이디 중복 확인 여부
-        let timerInterval;          // 타이머 인터벌 변수
+        let isAuth = false; // 폼 데이터 전송 시 이메일 인증 완료 여부
+        let timerInterval;  // 타이머 인터벌 변수
 
-        // 요소 선택 (HTML에서 사용한 id와 class와 일치)
-        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (HTML에 배치되어 있으면)
-        const btnDuplicateId = document.querySelector("#btn-duplicate-id");
-        const userIdInput = document.querySelector("#userId");
-        const btnSendEmail = document.querySelector("#btn-send-email");
-        const btnEmailConfirm = document.querySelector("#btn-email-confirm");
-        const emailConfirmArea = document.querySelector("#emailConfirmArea");
-        const userEmailLocal = document.querySelector("#userEmailLocal");
-        const emailDomain = document.querySelector("#emailDomain");
-        const userEmailConfirm = document.querySelector("#user-email-confirm");
-        const userEmailField = document.querySelector("#userEmail");
-        const emailStatusMsg = document.querySelector("#emailStatusMsg");
-        const signupForm = document.querySelector("#signupForm");
-        const passwordInput = document.querySelector("#userPw");
-        const togglePassword = document.querySelector("#togglePassword");
-        const toggleIcon = document.querySelector("#toggleIcon");
         const searchBtn = document.querySelector("#search-btn");
         const searchInput = document.querySelector("#search-input");
 
-        // URL 파라미터에 token이 있는지 확인 (예: 이메일 인증 링크 클릭 시)
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("token");
-        if (token) {
-            // 실제 구현에서는 token 검증 API 호출 후 처리해야 함.
-            isAuth = true;
-            emailStatusMsg.textContent = "이메일 인증 완료";
-            emailStatusMsg.classList.remove("text-danger");
-            emailStatusMsg.classList.add("text-success");
-            btnSendEmail.disabled = true;
-        }
+        const userIdInput = document.querySelector("#userId");
+        const btnDuplicateId = document.querySelector("#btn-duplicate-id");
 
-        // 아이디 중복 확인
-        btnDuplicateId.addEventListener("click", function (e) {
-            e.preventDefault();
-            const userId = userIdInput.value.trim();
-            if (!userId) {
-                alert("아이디를 입력해주세요.");
-                return;
-            }
-            fetch("/member/check-duplicate", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ userId })
-            })
-                .then(response => response.text())
-                .then(isDuplicate => {
-                    isDuplicate = (isDuplicate === "true");
-                    if (isDuplicate) {
-                        alert("이미 사용 중인 아이디입니다.");
-                        isIdChecked = false;
-                    } else {
-                        alert("사용 가능한 아이디입니다.");
-                        isIdChecked = true;
-                    }
-                })
-                .catch(error => {
-                    console.error("아이디 중복 확인 오류:", error);
-                    alert("서버 오류가 발생했습니다.");
-                });
-        });
+        const passwordInput = document.querySelector("#userPw");
+        const togglePassword = document.querySelector("#togglePassword");
+        const toggleIcon = document.querySelector("#toggleIcon");
 
-        // 비밀번호 토글 기능
-        togglePassword.addEventListener("click", function () {
-            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
-        });
+        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역
+        const userEmailLocal = document.querySelector("#userEmailLocal"); // ex)aaa1234@naver.com >> aaa1234
+        const emailDomain = document.querySelector("#emailDomain"); // naver.com
+        const btnSendEmail = document.querySelector("#btn-send-email"); //인증메일 전송
+        const emailConfirmArea = document.querySelector("#emailConfirmArea"); //인증번호 작성 div (숨김처리)
+        const userEmailConfirm = document.querySelector("#user-email-confirm"); //인증번호 작성 input
+        const btnEmailConfirm = document.querySelector("#btn-email-confirm"); //인증번호 버튼
+        const userEmailField = document.querySelector("#userEmail"); // 폼 데이터 전송용
+        const emailStatusMsg = document.querySelector("#emailStatusMsg"); // 인증 여부 메시지
+
+        const signupForm = document.querySelector("#signupForm");
 
         // 검색 기능
         const executeSearch = () => {
@@ -280,21 +241,70 @@
             }
         });
 
+        // 아이디 중복 확인
+        btnDuplicateId.addEventListener("click", function (e) {
+            e.preventDefault();
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert("아이디를 입력해주세요.");
+                return;
+            }
+            fetch("/member/check-duplicate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(userId)
+            })
+                .then(response => response.json())
+                .then(json => {
+                    console.log(json);
+                    if (json.isExisted) {
+                        alert("이미 사용 중인 아이디입니다.");
+                    } else {
+                        alert("사용 가능한 아이디입니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("아이디 중복 확인 오류:", error);
+                    alert("서버 오류가 발생했습니다.");
+                });
+        });
+
+        // 비밀번호 토글 기능
+        togglePassword.addEventListener("click", function () {
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
+        });
+
         // 타이머 시작 함수 (예: 5분 = 300초)
         function startTimer(duration) {
             let timer = duration;
             clearInterval(timerInterval);
+
+            // 타이머가 실행되는 동안 이메일 경고 메시지 제거
+            if (emailStatusMsg) {
+                emailStatusMsg.textContent = "";
+            }
+
+            // 타이머 시작 직전에 초기 시간 표시
+            const initialMinutes = String(Math.floor(timer / 60)).padStart(2, "0");
+            const initialSeconds = String(timer % 60).padStart(2, "0");
+            if (timerDisplay) {
+                timerDisplay.textContent = `남은 시간: ${initialMinutes}:${initialSeconds}`;
+            }
+
             timerInterval = setInterval(() => {
-                const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
-                const seconds = String(timer % 60).padStart(2, "0");
-                if (timerDisplay) {
-                    timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
-                }
                 if (--timer < 0) {
                     clearInterval(timerInterval);
                     if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
                     isAuth = false;
                     userEmailConfirm.disabled = true;
+                } else {
+                    const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+                    const seconds = String(timer % 60).padStart(2, "0");
+                    if (timerDisplay) {
+                        timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+                    }
                 }
             }, 1000);
         }
@@ -314,7 +324,7 @@
             fetch("/mail/confirm", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ email: combinedEmail })
+                body: JSON.stringify(combinedEmail)
             })
                 .then(response => {
                     console.log("응답 상태:", response.status);
@@ -348,10 +358,48 @@
                 emailStatusMsg.classList.remove("text-danger");
                 emailStatusMsg.classList.add("text-success");
                 btnSendEmail.disabled = true;
+                // 타이머 숨기기
+                if (timerDisplay) {
+                    timerDisplay.style.display = "none";
+                }
             } else {
                 alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
                 isAuth = false;
             }
+        });
+
+        // 우편번호 api
+        document.querySelector("#btn-address").addEventListener("click", e => {
+            e.preventDefault();
+            daumPostcode();
+        })
+
+        function daumPostcode() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    const addr = document.querySelector("#address"); //도 시(군) (동,읍,면) 출력
+                    if (data.bname1 !== "") addr.value = `${data.sido} ${data.sigungu} ${data.bname1}`;
+                    else addr.value = `${data.sido} ${data.sigungu} ${data.bname}`;
+                }
+            }).open();
+            document.querySelector("#tel").focus();
+        }
+
+        // 전화번호 하이픈 처리
+        document.querySelector("#tel").addEventListener("input", function() {
+            // 입력된 값에서 숫자만 추출
+            let input = this.value.replace(/\D/g, '');
+
+            // 입력 길이에 따라 하이픈을 자동 추가 (최대 11자리)
+            let formatted = input;
+            if (input.length > 3 && input.length <= 7) {
+                formatted = input.substring(0, 3) + '-' + input.substring(3);
+            } else if (input.length > 7) {
+                formatted = input.substring(0, 3) + '-' + input.substring(3, 7) + '-' + input.substring(7, 11);
+            }
+
+            // 필드에 포맷된 값 적용
+            this.value = formatted;
         });
 
         // 회원가입 폼 제출 시 유효성 검사 및 이메일 인증 여부 확인
@@ -389,7 +437,5 @@
         });
     });
 </script>
-
-
 </body>
 </html>

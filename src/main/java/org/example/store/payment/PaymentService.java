@@ -39,7 +39,10 @@ public class PaymentService {
             paymentDto.setTotalAmount(saveDto.getAmount());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             paymentDto.setApprovedAt(LocalDateTime.now().format(formatter));
-        } else productService.hideProduct(productDto.getProductId()); //product 판매완료, true로 바꿔주기
+        } else {
+            boolean isSell = productService.hideProduct(productDto.getProductId(),true); //판매완료, 상품숨기기
+            if (isSell) log.info("숨김처리 완료");
+        }
         Payment payment = paymentRepository.save(PaymentDto.toEntity(paymentDto));
         return Payment.fromEntity(payment) != null;
     }

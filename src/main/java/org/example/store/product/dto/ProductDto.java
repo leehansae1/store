@@ -56,7 +56,7 @@ public class ProductDto {
 
     private List<LikeProductDto> likeDtoList;
 
-    private boolean sellStatus;
+    private boolean isSell;
 
     // 아래 속성들은 실제 테이블엔 없음
     private boolean likeState;
@@ -67,6 +67,7 @@ public class ProductDto {
 
     public static Product toEntity(ProductDto productDto) {
         return Product.builder()
+                .isSell(productDto.isSell())
                 .productId(productDto.getProductId())
                 .productName(productDto.getProductName())
                 .description(productDto.getDescription())
