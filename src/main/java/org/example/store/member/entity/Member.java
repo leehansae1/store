@@ -17,6 +17,7 @@ import org.example.store.member.dto.ModifyDto;
 import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.entity.Product;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,31 +29,26 @@ public class Member {
 
   @Column(unique = true)
   @Id
-  private String userId; 
+  private String userId;
 
   private String userPw;
-
   private String userName;
-
   private String userProfile;
-
   private String userEmail;
-
   private String address;
-
   private String tel;
 
   @Enumerated(EnumType.STRING)
   private Role role;
 
+  @CreatedDate
   private LocalDateTime regDate;
 
   private String introduce;
 
   @Enumerated(EnumType.STRING)
-  private MemberStatus status; // 회원 상태 (ACTIVE, DELETED)
+  private MemberStatus status;
 
-  // 맵핑
   @OneToMany(mappedBy = "member")
   private List<Faq> faqList;
 
@@ -79,14 +75,11 @@ public class Member {
   private List<Payment> paymentList;
 
   @Builder
-  public Member(String userId, String userPw, String userName, String userProfile, String userEmail, String address,
-                String tel, Role role, LocalDateTime regDate, String introduce,
-                MemberStatus status
-          
-                , List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList, List<Product> productList,
-                List<Follow> followList, List<LikeProduct> likeProductList, List<Review> reviewList,
-                List<Payment> paymentList
-                ) {
+  public Member(String userId, String userPw, String userName, String userProfile, String userEmail,
+                String address, String tel, Role role, LocalDateTime regDate, String introduce,
+                MemberStatus status, List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList,
+                List<Product> productList, List<Follow> followList, List<LikeProduct> likeProductList,
+                List<Review> reviewList, List<Payment> paymentList) {
     this.userId = userId;
     this.userPw = userPw;
     this.userName = userName;
@@ -97,8 +90,7 @@ public class Member {
     this.role = role;
     this.regDate = regDate;
     this.introduce = introduce;
-    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE; // 기본 값 설정
-
+    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE;
     this.faqList = faqList;
     this.chatList = chatList;
     this.chatRoomList = chatRoomList;
@@ -107,49 +99,40 @@ public class Member {
     this.likeProductList = likeProductList;
     this.reviewList = reviewList;
     this.paymentList = paymentList;
-    }
-
+  }
 
   public void updateInfo(ModifyDto modifyDto) {
-    // 수정된 정보를 member 객체에 반영
     this.userName  = modifyDto.getUserName();
     this.userEmail = modifyDto.getUserEmail();
-    this.address    = modifyDto.getAddress();
+    this.address   = modifyDto.getAddress();
     this.tel       = modifyDto.getTel();
     this.introduce = modifyDto.getIntroduce();
   }
 
   public void deleteMember() {
-    this.status = MemberStatus.STATUS_DELETED; // 상태를 DELETED로 변경
+    this.status = MemberStatus.STATUS_DELETED;
   }
-
 
   public void setUserPw(String encodedNewPassword) {
-    this.userPw = encodedNewPassword; // 새로운 패스워드 암호화 
+    this.userPw = encodedNewPassword;
   }
-
 
   public void setUserProfile(String newProfilePath) {
     this.userProfile = newProfilePath;
   }
 
-public static MemberDto fromEntity(Member member) {
-    // 멤버 테이블에 
-        return MemberDto.builder()
-                .userId(member.getUserId())
-                // 데이터 조회 시 패스워드 제외
-                .userName(member.getUserName())
-                .userProfile(member.getUserProfile())
-                .userEmail(member.getUserEmail())
-                .address(member.getAddress())
-                .tel(member.getTel())
-                .introduce(member.getIntroduce())
-                .role(member.getRole())
-                .regDate(member.getRegDate())
-                .status(member.getStatus())
-
-                .build();
-    }
-
-
+  public static MemberDto fromEntity(Member member) {
+    return MemberDto.builder()
+            .userId(member.getUserId())
+            .userName(member.getUserName())
+            .userProfile(member.getUserProfile())
+            .userEmail(member.getUserEmail())
+            .address(member.getAddress())
+            .tel(member.getTel())
+            .introduce(member.getIntroduce())
+            .role(member.getRole())
+            .regDate(member.getRegDate())
+            .status(member.getStatus())
+            .build();
+  }
 }

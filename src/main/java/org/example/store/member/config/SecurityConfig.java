@@ -27,7 +27,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationFailureHandler failureHandler() {
-        return new ForwardAuthenticationFailureHandler("/member/login"); // 실패 시 로그인 페이지로 리다이렉트
+        // 인증 실패 시 /member/login으로 포워딩
+        return new ForwardAuthenticationFailureHandler("/member/login");
     }
 
     @Bean
@@ -38,13 +39,13 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/static/**", "/index", "/css/**", "/js/**", "/img/**", "/video/**",
                                 "/product/list/**", "/product/list", "/upload/**", "/product/detail/**",
-                                "/member/**", "/mail/**",  "/external/**"
+                                "/member/**", "/mail/**", "/external/**"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(auth -> auth
-                        .loginPage("/member/login") // 로그인 페이지 URL
+                        .loginPage("/member/login")
                         .usernameParameter("userId")
                         .passwordParameter("userPw")
                         .loginProcessingUrl("/member/login")
@@ -57,21 +58,17 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                 )
-                // OAuth2 소셜 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/member/login")
                         .defaultSuccessUrl("/index", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2DetailService))
                 );
-
         return httpSecurity.build();
     }
 
-    // CORS 설정 빈 등록
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 외부 요청 허용 (필요시 특정 도메인만 허용하도록 변경 가능)
         configuration.setAllowedOrigins(List.of(
                 "https://t1.kakaocdn.net/online_payment/online-payment-pc-bridge-client/3c296bcc363f6110d94150d63869bd3dcb442001/static/index-78371517.css",
                 "https://online-payment.kakaopay.com",
@@ -84,9 +81,8 @@ public class SecurityConfig {
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
         ));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // 쿠키 전송 등 허용
-
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

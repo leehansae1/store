@@ -9,14 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member,String>{
-  // 아이디로 회원 정보 조회
+public interface MemberRepository extends JpaRepository<Member, String> {
   Optional<Member> findByUserId(String userId);
-
-  // 아이디 존재 여부 확인
   boolean existsByUserId(String userId);
-
-  // 관리자용 : 삭제 상태의 회원 조회
   List<Member> findByStatus(MemberStatus status);
-
 }

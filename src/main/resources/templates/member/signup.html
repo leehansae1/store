@@ -80,6 +80,27 @@
                     <!-- 회원가입 폼 -->
                     <form id="signupForm" th:action="@{/member/signup}" method="post" enctype="multipart/form-data"
                           th:object="${signupDto}">
+                        <!-- 관리자 여부 토글 -->
+                        <div class="mb-3">
+                            <label class="form-label">관리자 권한 신청</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="adminToggle">
+                                <label class="form-check-label" for="adminToggle">관리자 신청</label>
+                            </div>
+                            <!-- hidden input: 기본값 ROLE_USER -->
+                            <input type="hidden" id="userRole" name="role" value="ROLE_USER">
+                        </div>
+
+                        <!-- 관리자 인증 영역 (관리자 토글이 체크되면 보임) -->
+                        <div class="mb-3 blind" id="adminAuthSection">
+                            <label class="form-label">"관리자 비밀번호는 무엇입니까?"</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="adminAnswer" placeholder="답변 입력">
+                                <button type="button" class="btn btn-outline-primary" id="btn-admin-verify">인증하기</button>
+                            </div>
+                            <div id="adminAuthMsg" class="form-text text-danger"></div>
+                        </div>
+
                         <!-- 아이디 -->
                         <div class="mb-3">
                             <label for="userId" class="form-label">아이디</label>
@@ -197,33 +218,137 @@
 </footer>
 
 <script>
-
     document.addEventListener("DOMContentLoaded", function () {
         // 플래그 변수들
-        let isAuth = false; // 폼 데이터 전송 시 이메일 인증 완료 여부
-        let timerInterval;  // 타이머 인터벌 변수
+        let isAuth = false;         // 이메일 인증 완료 여부
+        let isIdChecked = false;    // 아이디 중복 확인 여부
+        let isAdminVerified = false; // 관리자 인증 여부
+        let timerInterval;          // 이메일 인증 타이머 인터벌
 
-        const searchBtn = document.querySelector("#search-btn");
-        const searchInput = document.querySelector("#search-input");
-
-        const userIdInput = document.querySelector("#userId");
+        // 요소 선택
+        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (있다면)
         const btnDuplicateId = document.querySelector("#btn-duplicate-id");
-
+        const userIdInput = document.querySelector("#userId");
+        const btnSendEmail = document.querySelector("#btn-send-email");
+        const btnEmailConfirm = document.querySelector("#btn-email-confirm");
+        const emailConfirmArea = document.querySelector("#emailConfirmArea");
+        const userEmailLocal = document.querySelector("#userEmailLocal");
+        const emailDomain = document.querySelector("#emailDomain");
+        const userEmailConfirm = document.querySelector("#user-email-confirm");
+        const userEmailField = document.querySelector("#userEmail");
+        const emailStatusMsg = document.querySelector("#emailStatusMsg");
+        const signupForm = document.querySelector("#signupForm");
         const passwordInput = document.querySelector("#userPw");
         const togglePassword = document.querySelector("#togglePassword");
         const toggleIcon = document.querySelector("#toggleIcon");
+        const searchBtn = document.querySelector("#search-btn");
+        const searchInput = document.querySelector("#search-input");
 
-        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역
-        const userEmailLocal = document.querySelector("#userEmailLocal"); // ex)aaa1234@naver.com >> aaa1234
-        const emailDomain = document.querySelector("#emailDomain"); // naver.com
-        const btnSendEmail = document.querySelector("#btn-send-email"); //인증메일 전송
-        const emailConfirmArea = document.querySelector("#emailConfirmArea"); //인증번호 작성 div (숨김처리)
-        const userEmailConfirm = document.querySelector("#user-email-confirm"); //인증번호 작성 input
-        const btnEmailConfirm = document.querySelector("#btn-email-confirm"); //인증번호 버튼
-        const userEmailField = document.querySelector("#userEmail"); // 폼 데이터 전송용
-        const emailStatusMsg = document.querySelector("#emailStatusMsg"); // 인증 여부 메시지
+        // 관리자 관련 요소
+        const adminToggle = document.querySelector("#adminToggle"); // 관리자 토글 스위치 (checkbox)
+        const adminAuthSection = document.querySelector("#adminAuthSection"); // 관리자 인증 영역 (숨김 처리됨)
+        const adminAnswerInput = document.querySelector("#adminAnswer"); // 관리자 인증 질문 답변 입력란
+        const btnAdminVerify = document.querySelector("#btn-admin-verify"); // 관리자 인증 확인 버튼
+        const adminAuthMsg = document.querySelector("#adminAuthMsg"); // 관리자 인증 상태 메시지
+        const userRoleField = document.querySelector("#userRole"); // hidden input, 기본 ROLE_USER
 
-        const signupForm = document.querySelector("#signupForm");
+        // URL 파라미터에 token이 있는지 확인 (이메일 인증 링크 클릭 시)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        if (token) {
+            // 실제 구현에서는 token 검증 API 호출 필요
+            isAuth = true;
+            emailStatusMsg.textContent = "이메일 인증 완료";
+            emailStatusMsg.classList.remove("text-danger");
+            emailStatusMsg.classList.add("text-success");
+            btnSendEmail.disabled = true;
+        }
+
+        // 관리자 토글 이벤트: 체크되면 관리자 인증 영역을 보임, 해제되면 숨김 처리 및 기본 ROLE_USER로 설정
+        adminToggle.addEventListener("change", function () {
+            if (this.checked) {
+                adminAuthSection.classList.remove("blind");
+            } else {
+                adminAuthSection.classList.add("blind");
+                isAdminVerified = false;
+                userRoleField.value = "ROLE_USER";
+                adminAuthMsg.textContent = "";
+            }
+        });
+
+        // 관리자 인증 확인 버튼: AJAX로 백엔드에 입력한 답변을 검증
+        btnAdminVerify.addEventListener("click", function (e) {
+            e.preventDefault();
+            const answer = adminAnswerInput.value.trim();
+            if (!answer) {
+                adminAuthMsg.textContent = "답변을 입력해주세요.";
+                return;
+            }
+            // AJAX 요청: 관리자 인증 답변 검증 (예: /member/admin/verify)
+            fetch("/member/admin/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ answer: answer })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.verified) {
+                        adminAuthMsg.textContent = "관리자 인증 성공";
+                        adminAuthMsg.classList.remove("text-danger");
+                        adminAuthMsg.classList.add("text-success");
+                        isAdminVerified = true;
+                        // 관리자 인증이 성공하면 hidden input에 ROLE_ADMIN 설정
+                        userRoleField.value = "ROLE_ADMIN";
+                    } else {
+                        adminAuthMsg.textContent = "인증 실패: 답변이 일치하지 않습니다.";
+                        adminAuthMsg.classList.remove("text-success");
+                        adminAuthMsg.classList.add("text-danger");
+                        isAdminVerified = false;
+                        userRoleField.value = "ROLE_USER";
+                    }
+                })
+                .catch(error => {
+                    console.error("관리자 인증 요청 오류:", error);
+                    adminAuthMsg.textContent = "서버 오류가 발생했습니다.";
+                });
+        });
+
+        // 아이디 중복 확인
+        btnDuplicateId.addEventListener("click", function (e) {
+            e.preventDefault();
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert("아이디를 입력해주세요.");
+                return;
+            }
+            fetch("/member/check-duplicate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId })
+            })
+                .then(response => response.text())
+                .then(isDuplicate => {
+                    isDuplicate = (isDuplicate === "true");
+                    if (isDuplicate) {
+                        alert("이미 사용 중인 아이디입니다.");
+                        isIdChecked = false;
+                    } else {
+                        alert("사용 가능한 아이디입니다.");
+                        isIdChecked = true;
+                    }
+                })
+                .catch(error => {
+                    console.error("아이디 중복 확인 오류:", error);
+                    alert("서버 오류가 발생했습니다.");
+                });
+        });
+
+        // 비밀번호 토글 기능
+        togglePassword.addEventListener("click", function () {
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
+        });
 
         // 검색 기능
         const executeSearch = () => {
@@ -242,75 +367,26 @@
             }
         });
 
-        // 아이디 중복 확인
-        btnDuplicateId.addEventListener("click", function (e) {
-            e.preventDefault();
-            const userId = userIdInput.value.trim();
-            if (!userId) {
-                alert("아이디를 입력해주세요.");
-                return;
-            }
-            fetch("/member/check-duplicate", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(userId)
-            })
-                .then(response => response.json())
-                .then(json => {
-                    console.log(json);
-                    if (json.isExisted) {
-                        alert("이미 사용 중인 아이디입니다.");
-                    } else {
-                        alert("사용 가능한 아이디입니다.");
-                    }
-                })
-                .catch(error => {
-                    console.error("아이디 중복 확인 오류:", error);
-                    alert("서버 오류가 발생했습니다.");
-                });
-        });
-
-        // 비밀번호 토글 기능
-        togglePassword.addEventListener("click", function () {
-            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
-        });
-
-        // 타이머 시작 함수 (예: 5분 = 300초)
+        // 타이머 시작 함수 (이메일 인증용, 5분 = 300초)
         function startTimer(duration) {
             let timer = duration;
             clearInterval(timerInterval);
-
-            // 타이머가 실행되는 동안 이메일 경고 메시지 제거
-            if (emailStatusMsg) {
-                emailStatusMsg.textContent = "";
-            }
-
-            // 타이머 시작 직전에 초기 시간 표시
-            const initialMinutes = String(Math.floor(timer / 60)).padStart(2, "0");
-            const initialSeconds = String(timer % 60).padStart(2, "0");
-            if (timerDisplay) {
-                timerDisplay.textContent = `남은 시간: ${initialMinutes}:${initialSeconds}`;
-            }
-
             timerInterval = setInterval(() => {
+                const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+                const seconds = String(timer % 60).padStart(2, "0");
+                if (timerDisplay) {
+                    timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+                }
                 if (--timer < 0) {
                     clearInterval(timerInterval);
                     if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
                     isAuth = false;
                     userEmailConfirm.disabled = true;
-                } else {
-                    const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
-                    const seconds = String(timer % 60).padStart(2, "0");
-                    if (timerDisplay) {
-                        timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
-                    }
                 }
             }, 1000);
         }
 
-        // 이메일 인증번호 요청 (입력된 이메일 정보를 합쳐서 hidden 필드에 저장)
+        // 이메일 인증번호 요청
         btnSendEmail.addEventListener("click", function (e) {
             e.preventDefault();
             const localPart = userEmailLocal.value.trim();
@@ -324,8 +400,8 @@
             console.log("요청 이메일:", combinedEmail);
             fetch("/mail/confirm", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(combinedEmail)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: combinedEmail })
             })
                 .then(response => {
                     console.log("응답 상태:", response.status);
@@ -334,11 +410,9 @@
                 .then(data => {
                     console.log("서버 응답:", data);
                     alert("인증 메일이 발송되었습니다. 이메일을 확인하고 6자리 인증번호를 입력해주세요.");
-                    // 인증번호 입력 영역 보이기 (모달이 아니라 기존 페이지 내에 한 줄로 배치)
                     emailConfirmArea.classList.remove("blind");
                     userEmailConfirm.disabled = false;
                     startTimer(300);
-                    // 서버에서 받은 6자리 인증번호 저장
                     window.serverConfirmNumber = data.confirmNumber;
                 })
                 .catch(error => {
@@ -347,7 +421,7 @@
                 });
         });
 
-        // 이메일 인증번호 확인 (사용자가 직접 입력한 6자리 코드 비교)
+        // 이메일 인증번호 확인
         btnEmailConfirm.addEventListener("click", function (e) {
             e.preventDefault();
             const enteredCode = userEmailConfirm.value.trim();
@@ -359,51 +433,13 @@
                 emailStatusMsg.classList.remove("text-danger");
                 emailStatusMsg.classList.add("text-success");
                 btnSendEmail.disabled = true;
-                // 타이머 숨기기
-                if (timerDisplay) {
-                    timerDisplay.style.display = "none";
-                }
             } else {
                 alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
                 isAuth = false;
             }
         });
 
-        // 우편번호 api
-        document.querySelector("#btn-address").addEventListener("click", e => {
-            e.preventDefault();
-            daumPostcode();
-        })
-
-        function daumPostcode() {
-            new daum.Postcode({
-                oncomplete: function (data) {
-                    const addr = document.querySelector("#address"); //도 시(군) (동,읍,면) 출력
-                    if (data.bname1 !== "") addr.value = `${data.sido} ${data.sigungu} ${data.bname1}`;
-                    else addr.value = `${data.sido} ${data.sigungu} ${data.bname}`;
-                }
-            }).open();
-            document.querySelector("#tel").focus();
-        }
-
-        // 전화번호 하이픈 처리
-        document.querySelector("#tel").addEventListener("input", function() {
-            // 입력된 값에서 숫자만 추출
-            let input = this.value.replace(/\D/g, '');
-
-            // 입력 길이에 따라 하이픈을 자동 추가 (최대 11자리)
-            let formatted = input;
-            if (input.length > 3 && input.length <= 7) {
-                formatted = input.substring(0, 3) + '-' + input.substring(3);
-            } else if (input.length > 7) {
-                formatted = input.substring(0, 3) + '-' + input.substring(3, 7) + '-' + input.substring(7, 11);
-            }
-
-            // 필드에 포맷된 값 적용
-            this.value = formatted;
-        });
-
-        // 회원가입 폼 제출 시 유효성 검사 및 이메일 인증 여부 확인
+        // 회원가입 폼 제출 시 유효성 검사
         signupForm.addEventListener("submit", function (event) {
             let valid = true;
             if (userIdInput.value.trim().length < 4) {
@@ -430,6 +466,11 @@
                 alert("회원가입 전에 이메일 인증을 완료해주세요.");
                 valid = false;
             }
+            // 만약 관리자로 토글되어 있다면 관리자 인증이 완료되었는지 확인
+            if (adminToggle.checked && !isAdminVerified) {
+                alert("관리자로 가입하시려면 관리자 인증을 완료해주세요.");
+                valid = false;
+            }
             if (!valid) {
                 event.preventDefault();
                 return;
@@ -438,5 +479,6 @@
         });
     });
 </script>
+
 </body>
 </html>

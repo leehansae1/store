@@ -15,7 +15,7 @@ public class MailService {
 
   private final JavaMailSender javaMailSender;
 
-  // 랜덤 숫자 생성 메서드
+  // 6자리 인증번호 생성 메서드
   private String makeRandomNumber() {
     Random random = new Random();
     int randomNumber = 100000 + random.nextInt(900000);
@@ -30,8 +30,7 @@ public class MailService {
       message.setSubject("WAVE Market 이메일 인증");
 
       String token = makeRandomNumber();
-
-      String content = "<h1 style='text-align:center'>"+token+"</h1>"
+      String content = "<h1 style='text-align:center'>" + token + "</h1>"
               + "<h3 style='text-align:center'>인증번호를 복사하여 이메일 인증을 완료해주세요.</h3>";
       message.setContent(content, "text/html; charset=UTF-8");
       javaMailSender.send(message);

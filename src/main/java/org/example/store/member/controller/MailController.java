@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/mail")
 @RequiredArgsConstructor
@@ -18,9 +17,8 @@ public class MailController {
 
     @PostMapping("/confirm")
     public Map<String, Object> confirm(@RequestBody String email) {
-        log.info("email == {}", email);
         email = email.replaceAll("^\"|\"$", "");
-        log.info("changedEmail == {}", email);
+        log.info("Received email for confirmation: {}", email);
         String token = mailService.sendAuthMail(email);
         return Map.of("confirmNumber", token);
     }
