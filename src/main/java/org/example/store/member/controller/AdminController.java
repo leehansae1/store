@@ -16,7 +16,7 @@ import java.util.Map;
 public class AdminController {
 
     // 예시: 미리 지정된 관리자 인증 정답 (실제 환경에서는 DB나 설정 파일에서 관리)
-    private static final String ADMIN_SECRET = "adminSecret123";
+    private static final String ADMIN_SECRET = "1234";
 
     @PostMapping("/verify")
     public Map<String, Boolean> verify(@RequestBody Map<String, String> request) {

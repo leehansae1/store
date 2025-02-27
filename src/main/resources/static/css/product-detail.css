@@ -51,7 +51,7 @@ body {
 /* 메인 컨텐츠 영역 */
 main.container {
     padding-top: 100px; /* 헤더 아래로 충분한 간격 */
-    padding-bottom: 150px;
+    padding-bottom: 50px;
     z-index: 2;
 }
 
@@ -346,7 +346,7 @@ main.container {
 
 /* 하단 파도 효과 */
 .wave-container {
-    position: absolute;
+    position: relative;
     bottom: 0;
     left: 0;
     width: 100vw;

@@ -1,9 +1,17 @@
+/* 전체 화면을 차지하도록 설정 */
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #e0f7fa, #ffffff);
     margin: 0;
-    padding-top: 80px; /* 고정 헤더 높이 확보 */
-    width: 100%;
+    padding: 0;
+    background: linear-gradient(180deg, #e0f7fa, #ffffff); /* 메인페이지와 동일한 그라데이션 */
+    min-height: 100vh;
+    position: relative;
     overflow-x: hidden;
 }
 
@@ -63,25 +71,39 @@ body {
     filter: blur(4px);
 }
 
-/* 메인 컨텐츠 */
+/* main 요소가 가변적으로 확장되도록 설정 */
+main {
+    flex-grow: 1;
+    width: 100%;
+}
+
 .container {
     padding-top: 60px;
     padding-bottom: 60px;
 }
 
 .layout-box {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1500px;
     padding: 1rem;
 }
 
-/* 카드 스타일 */
+/* 회원가입 카드 크기 조정 */
 .login-card {
     background: rgba(255, 255, 255, 0.8);
     border: none;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 1.5rem;
+    margin-top: 80px;
+    padding: 2rem;
+}
+
+/* 비밀번호 토글 버튼 위치 조정 */
+.position-relative {
+    position: relative;
+}
+
+#customEmailDomain {
+    display: none;
 }
 
 .card-title {
@@ -120,7 +142,7 @@ body {
 /* 비밀번호 토글 */
 .toggle-password {
     position: absolute;
-    top: 70%;
+    top: 60%;
     right: 15px;
     transform: translateY(-50%);
     border: none;
@@ -166,19 +188,42 @@ body {
     text-decoration: underline;
 }
 
-/* Footer */
+/* 푸터를 화면 최하단에 고정 */
 .wave-footer {
+    width: 100%;
     background: #f8f9fa;
-    padding: 20px 0;
     text-align: center;
-    font-size: 0.9rem;
-    color: #777;
+    padding: 20px 0;
 }
 
-/* 반응형 (모바일) */
-@media (max-width: 576px) {
-    .login-card {
-        margin: 20px;
-        padding: 1rem;
+/* 한 줄에 두 개 배치하는 입력 필드 그룹 */
+.flex-row-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* 각 입력 필드가 동일한 너비를 가지도록 설정 */
+.flex-row-group .form-group {
+    flex: 1;
+    min-width: 48%;
+    margin-right: 10px; /* 간격 조정 */
+}
+
+/* 마지막 요소의 margin 제거 */
+.flex-row-group .form-group:last-child {
+    margin-right: 0;
+}
+
+/* 반응형: 모바일에서는 한 줄씩 */
+@media (max-width: 768px) {
+    .flex-row-group {
+        flex-direction: column;
+    }
+
+    .flex-row-group .form-group {
+        width: 100%;
+        margin-right: 0;
     }
 }
+

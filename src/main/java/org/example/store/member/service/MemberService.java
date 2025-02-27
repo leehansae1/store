@@ -7,8 +7,6 @@ import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.dto.MemberDto;
-import org.example.store.member.dto.ModifyDto;
-import org.example.store.member.dto.SignupDto;
 import org.example.store.member.entity.Member;
 import org.example.store.member.repository.MemberRepository;
 import org.example.store.util.FileUtil;
@@ -17,14 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MemberService implements IMemberService {
+public class MemberService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberRepository memberRepository;
@@ -33,98 +30,62 @@ public class MemberService implements IMemberService {
     @Value("${file.path}")
     private String folderPath; // 파일 저장 경로
 
-    @Override
-    public Member signup(SignupDto signupDto) {
+    public boolean signup(MemberDto memberDto) {
         // 프로필 이미지 파일 업로드 처리
-        String userProfilePath = null;
-        if (signupDto.getUserProfile() != null && !signupDto.getUserProfile().isEmpty()) {
-            userProfilePath = FileUtil.saveAndRenameFile(signupDto.getUserProfile(), folderPath, 0);
-        }
+        String userProfilePath = FileUtil.saveAndRenameFile(memberDto.getProfile(), folderPath, 0);
+        memberDto.setUserProfile(userProfilePath);
         // 패스워드 암호화
-        String encodedPassword = bCryptPasswordEncoder.encode(signupDto.getUserPw());
-        // role: null이면 기본 ROLE_USER로 설정
-        Role role = signupDto.getRole() != null ? Role.valueOf(signupDto.getRole()) : Role.ROLE_USER;
-        MemberDto memberDto = MemberDto.builder()
-                .userId(signupDto.getUserId())
-                .userPw(encodedPassword)
-                .userEmail(signupDto.getUserEmail())
-                .userName(signupDto.getUserName())
-                .userProfile(userProfilePath)
-                .tel(signupDto.getTel())
-                .address(signupDto.getAddress())
-                .introduce(signupDto.getIntroduce())
-                .role(role)
-                .status(MemberStatus.STATUS_ACTIVE)
-                .regDate(LocalDateTime.now())
-                .build();
-        Member savedMember = MemberDto.toEntity(memberDto);
-        return memberRepository.save(savedMember);
+        String encodedPassword = bCryptPasswordEncoder.encode(memberDto.getUserPw());
+        memberDto.setUserPw(encodedPassword);
+        // enum 컬럼들 채우기
+        memberDto.setRole(
+                memberDto.getRoleStr().equals("ROLE_USER") ? Role.ROLE_USER : Role.ROLE_ADMIN
+        );
+        memberDto.setStatus(MemberStatus.STATUS_ACTIVE);
+
+        Member member = memberRepository.save(MemberDto.toEntity(memberDto));
+        return Member.fromEntity(member) != null;
     }
 
     @Transactional
-    public Member modifiedMember(ModifyDto modifyDto) {
-        log.info("Modifying member with ID: {}", modifyDto.getUserId());
-        Optional<Member> optionalMember = memberRepository.findByUserId(modifyDto.getUserId());
-        if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
-            if (modifyDto.getUserPw() != null && !modifyDto.getUserPw().isEmpty()) {
-                String encodedPassword = bCryptPasswordEncoder.encode(modifyDto.getUserPw());
-                member.setUserPw(encodedPassword);
-            }
-            if (modifyDto.getUserProfile() != null && !modifyDto.getUserProfile().isEmpty()) {
-                String newProfileName = FileUtil.saveAndRenameFile(modifyDto.getUserProfile(), folderPath, 0);
-                member.setUserProfile(newProfileName);
-            }
-            member.updateInfo(modifyDto);
-            return memberRepository.save(member);
-        }
-        log.warn("Member not found for ID: {}", modifyDto.getUserId());
-        return null;
+    public Member modifiedMember(MemberDto memberDto) {
+        log.info("Modifying member with ID: {}", memberDto.getUserId());
+        MemberDto foundMember = getMemberDto(memberDto.getUserId());
+        String encodedPassword = bCryptPasswordEncoder.encode(memberDto.getUserPw());
+        foundMember.setUserPw(encodedPassword);
+
+        String newProfileName = FileUtil.saveAndRenameFile(memberDto.getProfile(), folderPath, 0);
+        foundMember.setUserProfile(newProfileName);
+        return memberRepository.save(MemberDto.toEntity(foundMember));
     }
 
     @Transactional
-    public boolean deleteMember(String userId, String userPw) {
-        Optional<Member> optionalMember = memberRepository.findByUserId(userId);
-        if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
-            if (!bCryptPasswordEncoder.matches(userPw, member.getUserPw())) {
-                return false;
-            }
-            member.deleteMember();
-            memberRepository.save(member);
-            return true;
+    public boolean hideMember(String userId, String userPw) {
+        MemberDto memberDto = getMemberDto(userId);
+        if (!bCryptPasswordEncoder.matches(userPw, memberDto.getUserPw())) {
+            throw new IllegalArgumentException("Wrong password");
         }
-        return false;
+        memberDto.setStatus(MemberStatus.STATUS_DELETED);
+        Member member = memberRepository.save(MemberDto.toEntity(memberDto));
+        return Member.fromEntity(member) != null;
     }
 
     public List<Member> getDeletedMembers() {
         return memberRepository.findByStatus(MemberStatus.STATUS_DELETED);
     }
 
-    @Override
     public Member findByUserId(String userId) {
         return memberRepository.findByUserId(userId).orElse(null);
     }
 
-    @Override
-    public ModifyDto getMemberById(String loginUserId) {
-        Optional<Member> optionalMember = memberRepository.findByUserId(loginUserId);
-        if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
-            return ModifyDto.builder()
-                    .userId(member.getUserId())
-                    .userName(member.getUserName())
-                    .userEmail(member.getUserEmail())
-                    .address(member.getAddress())
-                    .tel(member.getTel())
-                    .introduce(member.getIntroduce())
-                    .build();
-        }
-        throw new RuntimeException("회원 정보를 찾을 수 없습니다: " + loginUserId);
-    }
-
     public Member getMember(String userId) {
         return memberRepository.findByUserId(userId).orElse(null);
+    }
+
+    public MemberDto getMemberDto(String userId) {
+        Optional<Member> optionalMember = memberRepository.findByUserId(userId);
+        if (optionalMember.isPresent()) return Member.fromEntity(optionalMember.get());
+        else return MemberDto.builder().userId("조회불가").build();
     }
 
     public boolean follow(String sellerId, CustomUserDetails user) {
@@ -135,5 +96,9 @@ public class MemberService implements IMemberService {
     public int unfollow(String sellerId, CustomUserDetails user) {
         Member seller = getMember(sellerId);
         return followService.unfollow(seller, user.getLoggedMember());
+    }
+
+    public boolean isExistedId(String userId) {
+        return memberRepository.existsByUserId(userId);
     }
 }

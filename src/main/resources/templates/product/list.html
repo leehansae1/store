@@ -68,7 +68,6 @@
         <h1 class="display-3 fw-bold">편안한 파도 위에서 거래를 즐기세요</h1>
         <p class="lead fs-5">WAVE Market은 중고 거래를 더 여유롭고 감성적으로 만들어 드립니다.</p>
     </div>
-    <div class="wave-animation"></div>
 </section>
 
 <!-- 배너 영역 (Swiper 슬라이더) -->
@@ -113,7 +112,7 @@
             <button id="filter-toggle-btn" class="btn btn-outline-primary">
                 <i class="bi bi-funnel-fill"></i> 필터
             </button>
-            <!-- 새 필터 사이드바 (초기에는 숨김) -->
+            <!-- 필터 사이드바 (초기에는 숨김) -->
             <div class="filter-sidebar">
                 <div class="major-categories">
                     <!-- 전체 버튼 -->
@@ -198,6 +197,13 @@
         <h2 class="mb-0">추천 상품</h2>
     </div>
 
+    <!-- 상품이 없을 시 -->
+    <div id="no-products-message" class="text-center" style="display: none;">
+        <img src="/img/no_search_result.jpg" alt="상품 없음" style="max-width: 900px;">
+        <p class="mt-3 no-result-text">검색 결과가 없습니다.</p>
+        <a href="/" class="btn btn-primary mt-2">이전</a>
+    </div>
+
     <!-- 상품 카드 영역 -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 product-container">
         <!-- 각 상품 카드 -->
@@ -228,18 +234,41 @@
     <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
 </footer>
 
-<!-- JavaScript 코드 -->
+<!-- 검색 or 필터 조회 시 상품이 없을 때 이미지 표시하기 -->
+<script>
+    const noProductsMessage = document.querySelector("#no-products-message");
+
+    const updateNoProductsMessage = () => {
+        const products = document.querySelectorAll(".product-item");
+        if ([...products].every(p => p.style.display === "none")) {
+            noProductsMessage.style.display = "block"; // 상품 없을 때 표시
+        } else {
+            noProductsMessage.style.display = "none"; // 상품 있으면 숨김
+        }
+    };
+    updateNoProductsMessage();
+
+    // 필터 버튼 클릭 시, 먼저 메시지 숨기고 1초 후 다시 체크
+    document.querySelectorAll(".subcategory-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            noProductsMessage.style.display = "none"; // 클릭 즉시 숨김
+            setTimeout(updateNoProductsMessage, 100); // 1초 후 다시 체크
+        });
+    });
+</script>
+<!-- 비회원 로그인 물어보기 -->
+<script>
+    document.querySelectorAll(".btn-need-login").forEach(b => {
+        b.addEventListener("click", e => {
+            if (!confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+<!-- 검색, 스와이퍼, 필터 사이드바 초기화 -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-
-        document.querySelectorAll(".btn-need-login").forEach(b => {
-            b.addEventListener("click", e => {
-                if (!confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                    e.preventDefault();
-                }
-            });
-        });
-
         // 1. 검색 기능 초기화
         const initSearch = () => {
             const searchBtn = document.querySelector("#search-btn");

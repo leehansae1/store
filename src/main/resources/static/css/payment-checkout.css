@@ -1,15 +1,27 @@
-/* 주문 요약 영역 스타일 수정 */
+/* 기본 폰트 및 배경 */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: linear-gradient(180deg, #e0f7fa, #ffffff);
+    min-height: 100vh;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .order-summary {
-    margin: 0 40px auto;      /* 상하 여백을 넉넉하게 */
-    padding: 0 20px;        /* 좌우 여백 추가 */
-    text-align: center;     /* 전체 영역을 가운데 정렬 */
+    margin: 0 40px auto; /* 상하 여백을 넉넉하게 */
+    padding: 0 20px; /* 좌우 여백 추가 */
+    text-align: center; /* 전체 영역을 가운데 정렬 */
 }
 
 /* 결제하기 제목 스타일 수정 */
 .order-summary-title {
-    font-size: 32px;        /* 폰트 크기를 크게 */
+    font-size: 32px; /* 폰트 크기를 크게 */
     font-weight: bold;
-    margin-bottom: 20px;    /* 제목과 아래 요소 사이에 충분한 간격 */
+    margin-bottom: 20px; /* 제목과 아래 요소 사이에 충분한 간격 */
     color: #333;
 }
 
@@ -50,12 +62,28 @@
     padding: 16px;
     text-align: right;
     margin-top: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);  /* 가벼운 그림자 효과 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 효과 */
 }
 
 .order-total p {
     font-size: 22px;
     font-weight: bold;
-    color: #00796b;  /* 세련된 티얼 계열 색상 */
+    color: #00796b; /* 세련된 티얼 계열 색상 */
     margin: 0;
+}
+
+/* 하단 파도 효과 */
+.wave-container {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    /*overflow: hidden;*/
+    line-height: 0;
+}
+
+.wave-container svg {
+    display: block;
+    width: 100%;
+    height: 150px;
 }

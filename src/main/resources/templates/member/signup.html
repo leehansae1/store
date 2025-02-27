@@ -73,13 +73,12 @@
 <!-- 메인 컨텐츠 -->
 <main class="container">
     <div class="row justify-content-center layout-box">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-10">
             <div class="card login-card shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title mb-4 text-center">회원가입</h3>
                     <!-- 회원가입 폼 -->
-                    <form id="signupForm" th:action="@{/member/signup}" method="post" enctype="multipart/form-data"
-                          th:object="${signupDto}">
+                    <form id="signupForm" th:action="@{/member/signup}" method="post" enctype="multipart/form-data">
                         <!-- 관리자 여부 토글 -->
                         <div class="mb-3">
                             <label class="form-label">관리자 권한 신청</label>
@@ -88,52 +87,69 @@
                                 <label class="form-check-label" for="adminToggle">관리자 신청</label>
                             </div>
                             <!-- hidden input: 기본값 ROLE_USER -->
-                            <input type="hidden" id="userRole" name="role" value="ROLE_USER">
+                            <input type="hidden" id="userRole" name="roleStr" value="ROLE_USER">
                         </div>
 
                         <!-- 관리자 인증 영역 (관리자 토글이 체크되면 보임) -->
-                        <div class="mb-3 blind" id="adminAuthSection">
+                        <div class="mb-3 blind form-group" id="adminAuthSection">
                             <label class="form-label">"관리자 비밀번호는 무엇입니까?"</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="adminAnswer" placeholder="답변 입력">
-                                <button type="button" class="btn btn-outline-primary" id="btn-admin-verify">인증하기</button>
-                            </div>
-                            <div id="adminAuthMsg" class="form-text text-danger"></div>
-                        </div>
-
-                        <!-- 아이디 -->
-                        <div class="mb-3">
-                            <label for="userId" class="form-label">아이디</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디 입력"
-                                       th:value="*{userId}" required>
-                                <button type="button" class="btn btn-outline-primary" id="btn-duplicate-id">중복확인
+                                <button type="button" class="btn btn-outline-primary" id="btn-admin-verify" disabled>
+                                    인증하기
                                 </button>
                             </div>
-                            <div class="invalid-feedback">아이디를 올바르게 입력해주세요.</div>
+                            <div id="adminAuthMsg" class="form-text text-secondary">답변을 입력해주세요.</div>
                         </div>
-                        <!-- 비밀번호 -->
-                        <div class="mb-3 position-relative">
-                            <label for="userPw" class="form-label">비밀번호</label>
-                            <input type="password" class="form-control" id="userPw" name="userPw" placeholder="비밀번호 입력"
-                                   required autocomplete="current-password">
-                            <button type="button" class="btn btn-link toggle-password" id="togglePassword"
-                                    aria-label="비밀번호 표시 전환">
-                                <i id="toggleIcon" class="bi bi-eye"></i>
-                            </button>
-                            <div class="invalid-feedback">비밀번호는 8자 이상이어야 합니다.</div>
+
+                        <!-- 아이디 & 비밀번호 (한 줄) -->
+                        <div class="mb-3 flex-row-group">
+                            <!-- 아이디 -->
+                            <div class="form-group">
+                                <label for="userId" class="form-label">아이디</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="userId" name="userId"
+                                           placeholder="아이디 입력">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-duplicate-id"
+                                            disabled>중복확인
+                                    </button>
+                                </div>
+                                <div id="idAuthMsg" class="form-text text-secondary">아이디는 최소 4자 이상 입력해야 합니다.</div>
+                            </div>
+                            <!-- 비밀번호 -->
+                            <div class="form-group position-relative">
+                                <label for="userPw" class="form-label">비밀번호</label>
+                                <input type="password" class="form-control" id="userPw" name="userPw"
+                                       placeholder="비밀번호 입력" autocomplete="current-password">
+                                <button type="button" class="btn btn-link toggle-password" id="togglePassword"
+                                        aria-label="비밀번호 표시 전환">
+                                    <i id="toggleIcon" class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.</div>
+                                <div class="valid-feedback">사용 가능한 비밀번호입니다.</div>
+                            </div>
                         </div>
-                        <!-- 프로필 이미지 -->
-                        <div class="mb-3">
-                            <label for="userProfile" class="form-label">프로필 이미지</label>
-                            <input type="file" class="form-control" id="userProfile" name="userProfile"
-                                   accept="image/*">
+
+
+                        <!-- 이름 & 프로필 이미지 (한 줄) -->
+                        <div class="mb-3 flex-row-group">
+                            <div class="form-group">
+                                <label for="userName" class="form-label">이름</label>
+                                <input type="text" class="form-control" id="userName" name="userName"
+                                       placeholder="이름 입력">
+                            </div>
+                            <div class="form-group">
+                                <label for="userProfile" class="form-label">프로필 이미지</label>
+                                <input type="file" class="form-control" id="userProfile" name="userProfile"
+                                       accept="image/*">
+                            </div>
                         </div>
+
                         <!-- 이메일 (3분할) -->
                         <div class="mb-3">
                             <label for="userEmailLocal" class="form-label">이메일</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="userEmailLocal" placeholder="사용자 이메일" required>
+                                <input type="text" class="form-control" id="userEmailLocal" placeholder="사용자 이메일">
                                 <span class="input-group-text">@</span>
                                 <select class="form-select" id="emailDomain">
                                     <option value="gmail.com">gmail.com</option>
@@ -141,66 +157,68 @@
                                     <option value="daum.net">daum.net</option>
                                     <option value="">직접 입력</option>
                                 </select>
-                                <button type="button" class="btn btn-outline-primary" id="btn-send-email">인증메일 발송</button>
+                                <input type="text" class="form-control" id="customEmailDomain" value=""
+                                       placeholder="도메인 직접 입력">
+                                <button type="button" class="btn btn-outline-primary" id="btn-send-email">인증메일 발송
+                                </button>
                             </div>
                             <!-- 이메일 인증번호 입력 영역: 기본적으로 숨김 처리 -->
                             <div id="emailConfirmArea" class="mt-2 blind">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="user-email-confirm" placeholder="인증번호 입력 (6자리)">
-                                    <button type="button" class="btn btn-outline-primary" id="btn-email-confirm">인증번호 확인</button>
+                                    <input type="text" class="form-control" id="user-email-confirm"
+                                           placeholder="인증번호 입력 (6자리)">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-email-confirm">인증번호
+                                        확인
+                                    </button>
                                 </div>
-                                <!-- 타이머 영역 추가 -->
-                                <div id="timer" class="mt-2 text-center text-muted"></div>
+                                <div>
+                                    <div id="emailStatusMsg" class="form-text text-danger">이메일 인증이 필요합니다.</div>
+                                    <!-- 타이머 영역 추가 -->
+                                    <div id="timer" class="mt-2 text-muted"></div>
+                                </div>
                             </div>
                             <input type="hidden" id="userEmail" name="userEmail">
-                            <div id="emailStatusMsg" class="form-text text-danger">이메일 인증이 필요합니다.</div>
                         </div>
 
-                        <!-- 이름 -->
+                        <!-- 직거래 지역 & 전화번호 한 줄 배치 -->
                         <div class="mb-3">
-                            <label for="userName" class="form-label">이름</label>
-                            <input type="text" class="form-control" id="userName" name="userName" placeholder="이름 입력"
-                                   th:value="*{userName}" required>
-                            <div class="invalid-feedback">이름을 입력해주세요.</div>
-                        </div>
-                        <!-- 직거래 지역 -->
-                        <div class="mb-3">
-                            <label for="address" class="form-label">직거래 가능 지역</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="address" name="address"
-                                       placeholder="직거래 지역 선택" th:value="*{address}" readonly>
-                                <button type="button" class="btn btn-outline-primary" id="btn-address">주소 검색
-                                </button>
+                            <div class="row g-2">
+                                <!-- 직거래 지역 -->
+                                <div class="col-md-6 col-12">
+                                    <label for="address" class="form-label">직거래 가능 지역</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="address" name="address"
+                                               placeholder="직거래 지역 선택" readonly>
+                                        <button type="button" class="btn btn-outline-primary" id="btn-address">주소 검색
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- 전화번호 -->
+                                <div class="col-md-6 col-12">
+                                    <label for="tel" class="form-label">전화번호</label>
+                                    <div class="input-group">
+                                        <input type="tel" class="form-control" id="tel" name="tel"
+                                               placeholder="전화번호 입력">
+                                    </div>
+                                    <small class="form-text text-muted">숫자만 입력해주세요. 자동으로 '-'가 추가됩니다. (예:
+                                        010-7742-8032)</small>
+                                </div>
                             </div>
                         </div>
-                        <!-- 전화번호 -->
-                        <div class="mb-3">
-                            <label for="tel" class="form-label">전화번호</label>
-                            <input type="tel" class="form-control" id="tel" name="tel" placeholder="전화번호 입력" th:value="*{tel}">
-                            <small class="form-text text-muted">숫자만 입력해주세요. 자동으로 '-'가 추가됩니다. (예: 010-7742-8032)</small>
-                        </div>
-                        <!-- 자기소개 -->
+
+                        <!-- 자기소개 (단독 한 줄) -->
                         <div class="mb-3">
                             <label for="introduce" class="form-label">자기소개</label>
                             <textarea class="form-control" id="introduce" name="introduce" rows="3"
-                                      placeholder="자기소개 입력" th:text="*{introduce}"></textarea>
+                                      placeholder="자기소개 입력"></textarea>
                         </div>
+
                         <!-- 회원가입 버튼 -->
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-signup">회원가입</button>
                         </div>
                     </form>
                     <hr>
-                    <!-- 소셜 로그인 버튼 -->
-                    <div class="text-center mb-3">
-                        <p>또는 소셜 계정으로 회원가입하기</p>
-                        <a href="/oauth2/authorization/google" class="btn btn-outline-danger me-2">
-                            <i class="bi bi-google"></i> Google
-                        </a>
-                        <a href="/oauth2/authorization/kakao" class="btn btn-outline-warning">
-                            <i class="bi bi-chat-dots"></i> Kakao
-                        </a>
-                    </div>
                     <!-- 로그인 링크 -->
                     <div class="text-center">
                         이미 계정이 있으신가요?
@@ -217,266 +235,251 @@
     <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
 </footer>
 
+<script src="/js/member/signup.js"></script>
+<script src="/js/util/search.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 플래그 변수들
-        let isAuth = false;         // 이메일 인증 완료 여부
-        let isIdChecked = false;    // 아이디 중복 확인 여부
-        let isAdminVerified = false; // 관리자 인증 여부
-        let timerInterval;          // 이메일 인증 타이머 인터벌
+    // 플래그 변수들
+    let isAuth = false;         // 이메일 인증 완료 여부
+    let timerInterval;          // 이메일 인증 타이머 인터벌
 
-        // 요소 선택
-        const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (있다면)
-        const btnDuplicateId = document.querySelector("#btn-duplicate-id");
-        const userIdInput = document.querySelector("#userId");
-        const btnSendEmail = document.querySelector("#btn-send-email");
-        const btnEmailConfirm = document.querySelector("#btn-email-confirm");
-        const emailConfirmArea = document.querySelector("#emailConfirmArea");
-        const userEmailLocal = document.querySelector("#userEmailLocal");
-        const emailDomain = document.querySelector("#emailDomain");
-        const userEmailConfirm = document.querySelector("#user-email-confirm");
-        const userEmailField = document.querySelector("#userEmail");
-        const emailStatusMsg = document.querySelector("#emailStatusMsg");
-        const signupForm = document.querySelector("#signupForm");
-        const passwordInput = document.querySelector("#userPw");
-        const togglePassword = document.querySelector("#togglePassword");
-        const toggleIcon = document.querySelector("#toggleIcon");
-        const searchBtn = document.querySelector("#search-btn");
-        const searchInput = document.querySelector("#search-input");
+    // 요소 선택
+    const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (있다면)
 
-        // 관리자 관련 요소
-        const adminToggle = document.querySelector("#adminToggle"); // 관리자 토글 스위치 (checkbox)
-        const adminAuthSection = document.querySelector("#adminAuthSection"); // 관리자 인증 영역 (숨김 처리됨)
-        const adminAnswerInput = document.querySelector("#adminAnswer"); // 관리자 인증 질문 답변 입력란
-        const btnAdminVerify = document.querySelector("#btn-admin-verify"); // 관리자 인증 확인 버튼
-        const adminAuthMsg = document.querySelector("#adminAuthMsg"); // 관리자 인증 상태 메시지
-        const userRoleField = document.querySelector("#userRole"); // hidden input, 기본 ROLE_USER
+    const passwordInput = document.querySelector("#userPw");
+    const togglePassword = document.querySelector("#togglePassword");
+    const toggleIcon = document.querySelector("#toggleIcon");
 
-        // URL 파라미터에 token이 있는지 확인 (이메일 인증 링크 클릭 시)
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("token");
-        if (token) {
-            // 실제 구현에서는 token 검증 API 호출 필요
+    const btnSendEmail = document.querySelector("#btn-send-email");
+    const btnEmailConfirm = document.querySelector("#btn-email-confirm");
+    const emailConfirmArea = document.querySelector("#emailConfirmArea");
+    const userEmailLocal = document.querySelector("#userEmailLocal");
+    const emailDomain = document.querySelector("#emailDomain");
+    const customDomainInput = document.querySelector("#customEmailDomain");
+    const userEmailConfirm = document.querySelector("#user-email-confirm");
+    const userEmailField = document.querySelector("#userEmail");
+    const emailStatusMsg = document.querySelector("#emailStatusMsg");
+
+    // 비밀번호 입력 시 한글 방지 & 실시간 유효성 검사
+    passwordInput.addEventListener("input", function () {
+        if (!noKoreanRegex.test(passwordInput.value)) {
+            passwordInput.value = passwordInput.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, "");
+        }
+
+        // 실시간 유효성 검사 적용
+        if (passwordRegex.test(passwordInput.value)) {
+            passwordInput.classList.remove("is-invalid");
+            passwordInput.classList.add("is-valid");
+        } else {
+            passwordInput.classList.remove("is-valid");
+            passwordInput.classList.add("is-invalid");
+        }
+    });
+
+    const userNameInput = document.querySelector("#userName");
+    // 이름 입력 시 실시간 유효성 검사 (비어있으면 유효하지 않음)
+    userNameInput.addEventListener("input", function () {
+        if (userNameInput.value.trim() === "") {
+            userNameInput.classList.add("is-invalid");
+        } else {
+            userNameInput.classList.remove("is-invalid");
+            userNameInput.classList.add("is-valid");
+        }
+    });
+
+    // 이메일 입력 시 한글 방지 및 유효성 검사
+    [userEmailLocal, customDomainInput].forEach(input => {
+        input.addEventListener("input", function () {
+            // 한글이 포함되었으면 제거
+            if (!noKoreanRegex.test(input.value)) {
+                input.value = input.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, "");
+            }
+            // 비어있으면 invalid 처리
+            if (input.value.trim() !== "") {
+                input.classList.add("is-valid");
+            }
+        });
+    });
+
+    // 비밀번호 토글 기능
+    togglePassword.addEventListener("click", function () {
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+        toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
+    });
+
+    // 이메일 전체 주소 업데이트 함수
+    function updateEmailField() {
+        const domain = customDomainInput.value !== "" ? customDomainInput.value.trim() : emailDomain.value.trim();
+        userEmailField.value = `${userEmailLocal.value.trim()}@${domain}`;
+    }
+
+    emailDomain.addEventListener("change", function () {
+        customDomainInput.value = "";
+        if (this.value === "") {
+            customDomainInput.style.display = "block";
+        } else {
+            // 다른 옵션 선택 시 기존 직접 입력 필드 제거
+            customDomainInput.value = "";
+            customDomainInput.style.display = "none";
+        }
+    });
+
+    // 타이머 시작 함수 (이메일 인증용, 5분 = 300초)
+    function startTimer(duration) {
+        let timer = duration;
+        clearInterval(timerInterval);
+
+        // 즉시 남은 시간 표시 (setInterval 실행 전)
+        const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+        const seconds = String(timer % 60).padStart(2, "0");
+        if (timerDisplay) {
+            timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+            timerDisplay.classList.remove("blind"); // 타이머 표시
+        }
+
+        // 1초 기다리지 않고 즉시 실행
+        timerInterval = setInterval(() => {
+            timer--;
+            const min = String(Math.floor(timer / 60)).padStart(2, "0");
+            const sec = String(timer % 60).padStart(2, "0");
+
+            if (timerDisplay) {
+                timerDisplay.textContent = `남은 시간: ${min}:${sec}`;
+            }
+
+            if (timer <= 0) {
+                clearInterval(timerInterval);
+                if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
+                isAuth = false;
+                userEmailConfirm.disabled = true;
+            }
+        }, 1000);
+    }
+
+    // 이메일 인증번호 요청
+    btnSendEmail.addEventListener("click", function (e) {
+        e.preventDefault();
+        updateEmailField();
+        const domain = customDomainInput.value !== ""
+            ? customDomainInput.value.trim() : emailDomain.value.trim();
+        console.log("domain", domain);
+        console.log("userEmailLocal", userEmailLocal.value);
+        if (userEmailLocal.value === "" || domain === "") {
+            alert("이메일 정보를 모두 입력해주세요.");
+            return;
+        }
+        console.log("요청 이메일:", userEmailField.value);
+        fetch("/mail/confirm", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"email": userEmailField.value})
+        })
+            .then(response => {
+                console.log("응답 상태:", response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log("서버 응답:", data);
+                alert("인증 메일이 발송되었습니다. 이메일을 확인하고 6자리 인증번호를 입력해주세요.");
+                emailConfirmArea.classList.remove("blind");
+                userEmailConfirm.disabled = false;
+                startTimer(300);
+                window.serverConfirmNumber = data.confirmNumber;
+            })
+            .catch(error => {
+                console.error("이메일 인증 요청 오류:", error);
+                alert("인증 메일 발송 중 오류가 발생했습니다.");
+            });
+    });
+
+    // 이메일 인증번호 확인
+    btnEmailConfirm.addEventListener("click", function (e) {
+        e.preventDefault();
+        const enteredCode = userEmailConfirm.value.trim();
+        if (enteredCode === window.serverConfirmNumber) {
+            alert("인증되었습니다.");
             isAuth = true;
+            clearInterval(timerInterval);
             emailStatusMsg.textContent = "이메일 인증 완료";
             emailStatusMsg.classList.remove("text-danger");
             emailStatusMsg.classList.add("text-success");
             btnSendEmail.disabled = true;
+            timerDisplay.classList.add("blind");
+        } else {
+            alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
+            isAuth = false;
+        }
+    });
+//======================================================================================================================
+    const signupForm = document.querySelector("#signupForm");
+    // 회원가입 폼 제출 시 유효성 검사
+    signupForm.addEventListener("submit", function (event) {
+        let valid = true;
+
+        // 만약 관리자로 토글되어 있다면 관리자 인증이 완료되었는지 확인
+        if (adminToggle.checked && !isAdminVerified) {
+            adminAuthMsg.classList.remove("text-secondary");
+            adminAuthMsg.classList.add("invalid-feedback");
+            adminAuthMsg.textContent
+                = adminAnswerInput.value === "" ? "답변을 입력해주세요." : "관리자 인증이 필요합니다.";
+            adminAuthMsg.style.display = "block";
+            adminAnswerInput.classList.add("is-invalid");
+            adminAnswerInput.focus();
+            valid = false;
         }
 
-        // 관리자 토글 이벤트: 체크되면 관리자 인증 영역을 보임, 해제되면 숨김 처리 및 기본 ROLE_USER로 설정
-        adminToggle.addEventListener("change", function () {
-            if (this.checked) {
-                adminAuthSection.classList.remove("blind");
-            } else {
-                adminAuthSection.classList.add("blind");
-                isAdminVerified = false;
-                userRoleField.value = "ROLE_USER";
-                adminAuthMsg.textContent = "";
-            }
-        });
-
-        // 관리자 인증 확인 버튼: AJAX로 백엔드에 입력한 답변을 검증
-        btnAdminVerify.addEventListener("click", function (e) {
-            e.preventDefault();
-            const answer = adminAnswerInput.value.trim();
-            if (!answer) {
-                adminAuthMsg.textContent = "답변을 입력해주세요.";
-                return;
-            }
-            // AJAX 요청: 관리자 인증 답변 검증 (예: /member/admin/verify)
-            fetch("/member/admin/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ answer: answer })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.verified) {
-                        adminAuthMsg.textContent = "관리자 인증 성공";
-                        adminAuthMsg.classList.remove("text-danger");
-                        adminAuthMsg.classList.add("text-success");
-                        isAdminVerified = true;
-                        // 관리자 인증이 성공하면 hidden input에 ROLE_ADMIN 설정
-                        userRoleField.value = "ROLE_ADMIN";
-                    } else {
-                        adminAuthMsg.textContent = "인증 실패: 답변이 일치하지 않습니다.";
-                        adminAuthMsg.classList.remove("text-success");
-                        adminAuthMsg.classList.add("text-danger");
-                        isAdminVerified = false;
-                        userRoleField.value = "ROLE_USER";
-                    }
-                })
-                .catch(error => {
-                    console.error("관리자 인증 요청 오류:", error);
-                    adminAuthMsg.textContent = "서버 오류가 발생했습니다.";
-                });
-        });
-
-        // 아이디 중복 확인
-        btnDuplicateId.addEventListener("click", function (e) {
-            e.preventDefault();
-            const userId = userIdInput.value.trim();
-            if (!userId) {
-                alert("아이디를 입력해주세요.");
-                return;
-            }
-            fetch("/member/check-duplicate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId })
-            })
-                .then(response => response.text())
-                .then(isDuplicate => {
-                    isDuplicate = (isDuplicate === "true");
-                    if (isDuplicate) {
-                        alert("이미 사용 중인 아이디입니다.");
-                        isIdChecked = false;
-                    } else {
-                        alert("사용 가능한 아이디입니다.");
-                        isIdChecked = true;
-                    }
-                })
-                .catch(error => {
-                    console.error("아이디 중복 확인 오류:", error);
-                    alert("서버 오류가 발생했습니다.");
-                });
-        });
-
-        // 비밀번호 토글 기능
-        togglePassword.addEventListener("click", function () {
-            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
-        });
-
-        // 검색 기능
-        const executeSearch = () => {
-            const searchWord = searchInput.value.trim();
-            if (searchWord) {
-                window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
-            }
-        };
-        searchBtn.addEventListener("click", (event) => {
-            event.preventDefault();
-            executeSearch();
-        });
-        searchInput.addEventListener("keypress", (event) => {
-            if (event.key === "Enter") {
-                executeSearch();
-            }
-        });
-
-        // 타이머 시작 함수 (이메일 인증용, 5분 = 300초)
-        function startTimer(duration) {
-            let timer = duration;
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
-                const seconds = String(timer % 60).padStart(2, "0");
-                if (timerDisplay) {
-                    timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
-                }
-                if (--timer < 0) {
-                    clearInterval(timerInterval);
-                    if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
-                    isAuth = false;
-                    userEmailConfirm.disabled = true;
-                }
-            }, 1000);
+        // id가 비어있으면
+        if (userIdInput.value.trim().length < 4) {
+            idAuthMsg.style.display = "block";
+            idAuthMsg.classList.remove("text-secondary");
+            idAuthMsg.classList.add("invalid-feedback");
+            userIdInput.classList.remove("is-valid");
+            userIdInput.classList.add("is-invalid");
+            valid = false;
+            userIdInput.focus();
+        } else if (!isIdChecked) { //중복 체크가 안되어 있으면
+            idAuthMsg.style.display = "block";
+            idAuthMsg.classList.remove("text-secondary");
+            idAuthMsg.classList.add("invalid-feedback");
+            userIdInput.classList.add("is-invalid");
+            valid = false;
+            userIdInput.focus();
         }
 
-        // 이메일 인증번호 요청
-        btnSendEmail.addEventListener("click", function (e) {
-            e.preventDefault();
-            const localPart = userEmailLocal.value.trim();
-            const domain = emailDomain.value.trim();
-            if (!localPart || !domain) {
-                alert("이메일 정보를 모두 입력해주세요.");
-                return;
-            }
-            const combinedEmail = localPart + "@" + domain;
-            userEmailField.value = combinedEmail;
-            console.log("요청 이메일:", combinedEmail);
-            fetch("/mail/confirm", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: combinedEmail })
-            })
-                .then(response => {
-                    console.log("응답 상태:", response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("서버 응답:", data);
-                    alert("인증 메일이 발송되었습니다. 이메일을 확인하고 6자리 인증번호를 입력해주세요.");
-                    emailConfirmArea.classList.remove("blind");
-                    userEmailConfirm.disabled = false;
-                    startTimer(300);
-                    window.serverConfirmNumber = data.confirmNumber;
-                })
-                .catch(error => {
-                    console.error("이메일 인증 요청 오류:", error);
-                    alert("인증 메일 발송 중 오류가 발생했습니다.");
-                });
-        });
+        // // password가 비어있으면
+        // if (passwordInput.value.trim().length < 8) {
+        //     passwordInput.classList.add("is-invalid");
+        //     valid = false;
+        // } else {
+        //     passwordInput.classList.remove("is-invalid");
+        // }
+        // // 이름이 비어있으면
+        // if (userNameInput.value.trim() === "") {
+        //     userNameInput.classList.add("is-invalid");
+        //     valid = false;
+        // } else {
+        //     userNameInput.classList.remove("is-invalid");
+        // }
+        //
+        // const local = userEmailLocal.value.trim();
+        // const dom = customDomainInput.value !== ""
+        //     ? customDomainInput.value.trim() : emailDomain.value.trim();
+        // // 이메일 입력값이 비어있으면 invalid 처리
+        // if (!local) {
+        //     userEmailLocal.classList.add("is-invalid");
+        //     valid = false;
+        // } else userEmailLocal.classList.remove("is-invalid");
+        // if (!dom) {
+        //     customDomainInput.classList.add("is-invalid");
+        //     valid = false;
+        // } else customDomainInput.classList.remove("is-valid");
+        //
+        // if (!isAuth) {
+        //     valid = false;
+        // }
 
-        // 이메일 인증번호 확인
-        btnEmailConfirm.addEventListener("click", function (e) {
-            e.preventDefault();
-            const enteredCode = userEmailConfirm.value.trim();
-            if (enteredCode === window.serverConfirmNumber) {
-                alert("인증되었습니다.");
-                isAuth = true;
-                clearInterval(timerInterval);
-                emailStatusMsg.textContent = "이메일 인증 완료";
-                emailStatusMsg.classList.remove("text-danger");
-                emailStatusMsg.classList.add("text-success");
-                btnSendEmail.disabled = true;
-            } else {
-                alert("인증번호가 일치하지 않습니다. 다시 시도해주세요.");
-                isAuth = false;
-            }
-        });
-
-        // 회원가입 폼 제출 시 유효성 검사
-        signupForm.addEventListener("submit", function (event) {
-            let valid = true;
-            if (userIdInput.value.trim().length < 4) {
-                userIdInput.classList.add("is-invalid");
-                valid = false;
-            } else {
-                userIdInput.classList.remove("is-invalid");
-            }
-            if (passwordInput.value.trim().length < 8) {
-                passwordInput.classList.add("is-invalid");
-                valid = false;
-            } else {
-                passwordInput.classList.remove("is-invalid");
-            }
-            const local = userEmailLocal.value.trim();
-            const dom = emailDomain.value.trim();
-            if (!local || !dom) {
-                userEmailLocal.classList.add("is-invalid");
-                valid = false;
-            } else {
-                userEmailLocal.classList.remove("is-invalid");
-            }
-            if (!isAuth) {
-                alert("회원가입 전에 이메일 인증을 완료해주세요.");
-                valid = false;
-            }
-            // 만약 관리자로 토글되어 있다면 관리자 인증이 완료되었는지 확인
-            if (adminToggle.checked && !isAdminVerified) {
-                alert("관리자로 가입하시려면 관리자 인증을 완료해주세요.");
-                valid = false;
-            }
-            if (!valid) {
-                event.preventDefault();
-                return;
-            }
-            console.log("회원가입 폼 제출, 이메일:", userEmailField.value);
-        });
+        if (!valid) event.preventDefault();
+        console.log("회원가입 폼 제출, 이메일:", userEmailField.value);
     });
 </script>
 

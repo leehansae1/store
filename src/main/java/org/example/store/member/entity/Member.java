@@ -13,11 +13,11 @@ import org.example.store.like_product.LikeProduct;
 import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.constant.Role;
 import org.example.store.member.dto.MemberDto;
-import org.example.store.member.dto.ModifyDto;
 import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
 
   @Column(unique = true)
@@ -32,10 +33,15 @@ public class Member {
   private String userId;
 
   private String userPw;
+
   private String userName;
+
   private String userProfile;
+
   private String userEmail;
+
   private String address;
+
   private String tel;
 
   @Enumerated(EnumType.STRING)
@@ -90,7 +96,7 @@ public class Member {
     this.role = role;
     this.regDate = regDate;
     this.introduce = introduce;
-    this.status = status != null ? status : MemberStatus.STATUS_ACTIVE;
+    this.status = status;
     this.faqList = faqList;
     this.chatList = chatList;
     this.chatRoomList = chatRoomList;
@@ -101,24 +107,12 @@ public class Member {
     this.paymentList = paymentList;
   }
 
-  public void updateInfo(ModifyDto modifyDto) {
-    this.userName  = modifyDto.getUserName();
-    this.userEmail = modifyDto.getUserEmail();
-    this.address   = modifyDto.getAddress();
-    this.tel       = modifyDto.getTel();
-    this.introduce = modifyDto.getIntroduce();
-  }
-
-  public void deleteMember() {
-    this.status = MemberStatus.STATUS_DELETED;
-  }
-
-  public void setUserPw(String encodedNewPassword) {
-    this.userPw = encodedNewPassword;
-  }
-
-  public void setUserProfile(String newProfilePath) {
-    this.userProfile = newProfilePath;
+  public void updateInfo(MemberDto memberDto) {
+    this.userName  = memberDto.getUserName();
+    this.userEmail = memberDto.getUserEmail();
+    this.address   = memberDto.getAddress();
+    this.tel       = memberDto.getTel();
+    this.introduce = memberDto.getIntroduce();
   }
 
   public static MemberDto fromEntity(Member member) {
