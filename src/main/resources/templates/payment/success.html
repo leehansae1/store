@@ -35,10 +35,10 @@
     </div>
 </div>
 
-<div class="box_section" style="width: 600px; text-align: left">
-    <b>Response Data :</b>
-    <div id="response" style="white-space: initial"></div>
-</div>
+<!--<div class="box_section" style="width: 600px; text-align: left">-->
+<!--    <b>Response Data :</b>-->
+<!--    <div id="response" style="white-space: initial"></div>-->
+<!--</div>-->
 
 <script>
     // 쿼리 파라미터 값을 서버로 전달해 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
@@ -64,7 +64,6 @@
         if (!response.ok) {
             throw {message: json.message, code: json.code};
         }
-
         return json;
     }
 
@@ -79,7 +78,7 @@
     confirm()
         .then(function (data) {
             // 여기서 data 는 json >> confirm() 함수가 json 을 return 했기 때문
-            document.querySelector("#response").innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
+            // document.querySelector("#response").innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
             console.log(data);
             // 결제 내역 저장 로직
             if (data.orderId != null) {

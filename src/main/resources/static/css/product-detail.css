@@ -48,6 +48,15 @@ body {
     font-size: 1.2rem;
 }
 
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
 /* 메인 컨텐츠 영역 */
 main.container {
     padding-top: 100px; /* 헤더 아래로 충분한 간격 */
@@ -297,6 +306,11 @@ main.container {
 
 .detail-box p {
    margin-top: 5px;
+}
+
+.product-info-card, .seller-info-card {
+    min-height: 400px;
+    max-height: 600px;
 }
 
 /* 카드 스타일 (상품 정보, 상점 정보 공통) */

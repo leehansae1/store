@@ -95,12 +95,12 @@
                     <div class="text-center mb-3 row">
                         <p>또는 소셜 계정으로 로그인하기</p>
                         <div class="d-flex justify-content-center">
-                        <a href="/oauth2/authorization/google" class="col-5 me-2 btn btn-outline-secondary">
-                            <i class="bi bi-google"></i> Google
-                        </a>
-                        <a href="/oauth2/authorization/kakao" class="col-5 btn btn-outline-warning">
-                            <i class="bi bi-chat-dots"></i> Kakao
-                        </a>
+                            <a href="/oauth2/authorization/google" class="col-5 me-2 btn btn-outline-secondary">
+                                <i class="bi bi-google"></i> Google
+                            </a>
+                            <a href="/oauth2/authorization/kakao" class="col-5 btn btn-outline-warning">
+                                <i class="bi bi-chat-dots"></i> Kakao
+                            </a>
                         </div>
                     </div>
                     <!-- 회원가입 링크 -->
@@ -119,44 +119,18 @@
     <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
 </footer>
 
+<script src="/js/util/search.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const togglePassword = document.querySelector("#togglePassword");
-        const passwordInput = document.querySelector("#userPw");
-        const toggleIcon = document.querySelector("#toggleIcon");
+    const togglePassword = document.querySelector("#togglePassword");
+    const passwordInput = document.querySelector("#userPw");
+    const toggleIcon = document.querySelector("#toggleIcon");
 
-        togglePassword.addEventListener("click", function () {
-            // 현재 비밀번호 입력란의 type을 확인 후 변경
-            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            // 아이콘 변경 (Bootstrap Icons 사용)
-            toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
-        });
-
-        // 1. 검색 기능 초기화
-        const initSearch = () => {
-            const searchBtn = document.querySelector("#search-btn");
-            const searchInput = document.querySelector("#search-input");
-
-            const executeSearch = () => {
-                const searchWord = searchInput.value.trim();
-                if (searchWord) {
-                    window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
-                }
-            };
-
-            searchBtn.addEventListener("click", (event) => {
-                event.preventDefault();
-                executeSearch();
-            });
-
-            searchInput.addEventListener("keypress", (event) => {
-                if (event.key === "Enter") {
-                    executeSearch();
-                }
-            });
-        };
-        initSearch();
+    togglePassword.addEventListener("click", function () {
+        // 현재 비밀번호 입력란의 type을 확인 후 변경
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+        // 아이콘 변경 (Bootstrap Icons 사용)
+        toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
     });
 </script>
 </body>

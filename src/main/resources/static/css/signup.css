@@ -142,7 +142,7 @@ main {
 /* 비밀번호 토글 */
 .toggle-password {
     position: absolute;
-    top: 60%;
+    top: 55%;
     right: 15px;
     transform: translateY(-50%);
     border: none;

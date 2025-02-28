@@ -18,7 +18,6 @@ public class MailController {
 
     @PostMapping("/confirm")
     public Map<String, Object> confirm(@RequestBody EmailDto emailDto) {
-        log.info("whathe fuck {}",emailDto);
         String targetEmail = emailDto.getEmail().replaceAll("^\"|\"$", "");
         log.info("Received email for confirmation: {}", targetEmail);
         String token = mailService.sendAuthMail(targetEmail);

@@ -1,4 +1,4 @@
-// Daum 우편번호 API
+// todo Daum 우편번호 API
 function DaumPostcode() {
     new daum.Postcode({
         oncomplete: function (data) {
@@ -14,11 +14,12 @@ document.querySelector("#btn-address").addEventListener("click", e => {
     e.preventDefault();
     DaumPostcode();
 });
-// ====================================================================================================================
-// 전화번호 입력 시 자동으로 '-' 추가
-document.querySelector("#tel").addEventListener("input", function (event) {
+// todo < 전화번호 >
+// 입력 시 자동으로 '-' 추가
+const phoneInput = document.querySelector("#tel");
+phoneInput.addEventListener("input", () => {
     let value = phoneInput.value.replace(/\D/g, ""); // 숫자만 남기기
-    // 하이픈 자동 추가 (010-xxxx-xxxx 또는 010-xxx-xxxx 형태)
+    // 하이픈 자동 추가 (010-xxxx-xxxx 형태)
     if (value.length >= 4 && value.length <= 7) {
         value = `${value.slice(0, 3)}-${value.slice(3)}`;
     } else if (value.length >= 8) {
@@ -26,8 +27,7 @@ document.querySelector("#tel").addEventListener("input", function (event) {
     }
     phoneInput.value = value; // 변환된 값 적용
 });
-// ====================================================================================================================
-// 관리자 관련 요소(for MEMBER - ROLE)
+// todo < 관리자 (for MEMBER - ROLE) >
 const adminToggle = document.querySelector("#adminToggle"); // 관리자 토글 스위치 (checkbox)
 const adminAuthSection = document.querySelector("#adminAuthSection"); // 관리자 인증 영역 (기본 숨김)
 
@@ -125,10 +125,9 @@ btnAdminVerify.addEventListener("click", function (e) {
             adminAuthMsg.textContent = "서버 오류가 발생했습니다.";
         });
 });
-// ====================================================================================================================
-// 아이디 & 비밀번호 영역
-const noKoreanRegex = /^[a-zA-Z0-9@!%*?&]*$/; // 한글 입력 방지 정규식
-
+// todo < 아이디 & 비밀번호 > 허용 문자 정규식
+const noAllowRegex = /^[a-zA-Z0-9~@$#!%*?&]*$/;  //  (한글, 기타 특수문자 제외)
+// todo < 아이디 >
 let isIdChecked = false; // 아이디 중복 인증 여부 >> 폼 제출 시 사용
 const userIdInput = document.querySelector("#userId");
 const idAuthMsg = document.querySelector("#idAuthMsg");
@@ -142,7 +141,7 @@ userIdInput.addEventListener("beforeinput", () => {
 
 // 아이디 입력 시 한글 방지 & 4자 이상 유효성 검사
 userIdInput.addEventListener("input", function () {
-    if (!noKoreanRegex.test(userIdInput.value)) {
+    if (!noAllowRegex.test(userIdInput.value)) {
         userIdInput.value = userIdInput.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, "");
     }
     if (isIdChecked) {
@@ -191,8 +190,7 @@ btnDuplicateId.addEventListener("click", (e) => {
                 isIdChecked = false;
             } else if (!json.isExisted) {
                 idAuthMsg.textContent = "사용 가능한 아이디입니다.";
-                idAuthMsg.classList.remove("invalid-feedback");
-                idAuthMsg.classList.remove("text-secondary");
+                idAuthMsg.classList.remove("invalid-feedback", "text-secondary");
                 idAuthMsg.classList.add("valid-feedback");
                 idAuthMsg.style.display = "block";
                 userIdInput.classList.remove("is-invalid");
@@ -205,6 +203,295 @@ btnDuplicateId.addEventListener("click", (e) => {
             alert("서버 오류가 발생했습니다.");
         });
 });
-// ====================================================================================================================
+// todo < 패스워드 >
 // 정규식 (영문, 숫자, 특수문자 포함 8~20자)
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~@$#!%*?&])[A-Za-z\d~@$!%*?&]{8,20}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~@$#!%*?&])[A-Za-z\d~@$#!%*?&]{8,20}$/;
+
+const passwordInput = document.querySelector("#userPw");
+const togglePassword = document.querySelector("#togglePassword");
+const toggleIcon = document.querySelector("#toggleIcon");
+const pwAuthMsg = document.querySelector("#pwAuthMsg");
+
+// 비밀번호 입력 시 한글, 비해당 특수문자 방지 & 실시간 유효성 검사
+passwordInput.addEventListener("input", function () {
+    if (!noAllowRegex.test(passwordInput.value)) {
+        passwordInput.value = passwordInput.value.replace(/[^a-zA-Z0-9~@$#!%*?&]/g, "");
+    }
+    // 실시간 유효성 검사 적용
+    if (passwordRegex.test(passwordInput.value)) {
+        pwAuthMsg.style.display = "block";
+        pwAuthMsg.textContent = "사용 가능한 패스워드입니다.";
+        pwAuthMsg.classList.remove("invalid-feedback", "text-secondary");
+        pwAuthMsg.classList.add("valid-feedback");
+        passwordInput.classList.remove("is-invalid");
+        passwordInput.classList.add("is-valid");
+    } else {
+        pwAuthMsg.style.display = "block";
+        pwAuthMsg.textContent = "비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.";
+        pwAuthMsg.classList.remove("valid-feedback");
+        passwordInput.classList.remove("is-valid");
+    }
+});
+
+// 비밀번호 토글 기능
+togglePassword.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    toggleIcon.className = type === "text" ? "bi bi-eye-slash" : "bi bi-eye";
+});
+// todo < 이름 >
+const userNameInput = document.querySelector("#userName");
+const nameAuthMsg = document.querySelector("#nameAuthMsg");
+userNameInput.addEventListener("input", () => {
+    if (userNameInput.value.length > 0) {
+        nameAuthMsg.classList.remove("text-secondary", "invalid-feedback");
+        nameAuthMsg.classList.add("valid-feedback");
+        userNameInput.classList.remove("is-invalid");
+        userNameInput.classList.add("is-valid");
+        nameAuthMsg.style.display = "block";
+    } else {
+        nameAuthMsg.classList.remove("valid-feedback");
+        userNameInput.classList.remove("is-valid");
+        nameAuthMsg.style.display = "block";
+    }
+});
+// todo < 이메일 >
+let isAuth = false;         // 이메일 인증 완료 여부
+
+const userEmailLocal = document.querySelector("#userEmailLocal");
+const emailDomain = document.querySelector("#emailDomain");
+const customDomainInput = document.querySelector("#customEmailDomain");
+const btnSendEmail = document.querySelector("#btn-send-email");
+const emailConfirmArea = document.querySelector("#emailConfirmArea");
+const userEmailConfirm = document.querySelector("#user-email-confirm");
+const btnEmailConfirm = document.querySelector("#btn-email-confirm");
+const emailAuthMsg = document.querySelector("#emailStatusMsg");
+const emailConfirmMsg = document.querySelector("#emailConfirmMsg");
+
+const userEmailField = document.querySelector("#userEmail");
+
+// 이메일 전체 주소 업데이트 함수
+function updateEmailField() {
+    const dom = getDomain();
+    userEmailField.value = `${userEmailLocal.value.trim()}@${dom}`;
+}
+
+// 도메인
+function getDomain() {
+    return customDomainInput.value !== "" ? customDomainInput.value.trim() : emailDomain.value.trim();
+}
+
+// 이메일 입력 시 비허용 문자 방지 및 유효성 검사
+const emailAllowRegex = /^[a-zA-Z0-9._%+-]*$/;
+
+// 빈 문자 방지
+const emailInputs = [userEmailLocal, customDomainInput];
+emailInputs.forEach(input => {
+    input.addEventListener("input", () => {
+        if (!emailAllowRegex.test(input.value)) {
+            input.value = input.value.replace(/[^a-zA-Z0-9._%+-]/g, "");
+        }
+        const domain = getDomain();
+        if (input.value.trim()) {
+            emailAuthMsg.style.display = "block";
+            emailAuthMsg.classList.remove("invalid-feedback", "text-secondary");
+            emailAuthMsg.classList.add("valid-feedback");
+            input.classList.remove("is-invalid");
+            input.classList.add("is-valid");
+            console.log(input);
+        } else {
+            console.log("인풋이 비었습니다", input.value);
+            emailAuthMsg.classList.remove("valid-feedback", "invalid-feedback");
+            input.classList.remove("is-valid");
+        }
+        if (userEmailLocal.value.trim() !== "" && domain) {
+            btnSendEmail.disabled = false;
+        } else {
+            btnSendEmail.disabled = true;
+            input.classList.remove("is-valid");
+        }
+    });
+});
+
+// 도메인 직접 입력 선택 시
+emailDomain.addEventListener("change", () => {
+    if (emailDomain.value === "") {
+        btnSendEmail.disabled = true;
+        customDomainInput.value = "";
+        customDomainInput.classList.remove("invalid-feedback", "valid-feedback");
+        customDomainInput.style.display = "block";
+    } else {
+        customDomainInput.style.display = "none";
+    }
+});
+
+// 이메일 인증번호 요청
+btnSendEmail.addEventListener("click", e => {
+    updateEmailField();
+    fetch("/mail/confirm", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({"email": userEmailField.value})
+    })
+        .then(response => {
+            console.log("응답 상태:", response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("서버 응답:", data);
+            alert("인증 메일이 발송되었습니다. 이메일을 확인하고 6자리 인증번호를 입력해주세요.");
+            emailConfirmArea.classList.remove("blind");
+            startTimer(300);
+            window.serverConfirmNumber = data.confirmNumber;
+        })
+        .catch(error => {
+            console.error("이메일 인증 요청 오류:", error);
+            alert("인증 메일 발송 중 오류가 발생했습니다.");
+        });
+});
+
+let timerInterval; // 이메일 인증 타이머 인터벌
+const timerDisplay = document.querySelector("#timer"); // 타이머 표시 영역 (있다면)
+// 타이머 시작 함수 (이메일 인증용, 5분 = 300초)
+function startTimer(duration) {
+    let timer = duration;
+    clearInterval(timerInterval);
+
+    // 즉시 남은 시간 표시 (setInterval 실행 전)
+    const minutes = String(Math.floor(timer / 60)).padStart(2, "0");
+    const seconds = String(timer % 60).padStart(2, "0");
+    if (timerDisplay) {
+        timerDisplay.textContent = `남은 시간: ${minutes}:${seconds}`;
+        timerDisplay.classList.remove("blind"); // 타이머 표시
+    }
+    // 1초 기다리지 않고 즉시 실행
+    timerInterval = setInterval(() => {
+        timer--;
+        const min = String(Math.floor(timer / 60)).padStart(2, "0");
+        const sec = String(timer % 60).padStart(2, "0");
+
+        if (timerDisplay) {
+            timerDisplay.textContent = `남은 시간: ${min}:${sec}`;
+        }
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            if (timerDisplay) timerDisplay.textContent = "인증 시간이 만료되었습니다.";
+            isAuth = false;
+            userEmailConfirm.disabled = true;
+            btnEmailConfirm.disabled = true;
+        }
+    }, 1000);
+}
+
+// 이메일 인증번호 확인
+btnEmailConfirm.addEventListener("click", e => {
+    e.preventDefault();
+
+    const enteredCode = userEmailConfirm.value.trim();
+    if (enteredCode === window.serverConfirmNumber) {
+        isAuth = true;
+        clearInterval(timerInterval);
+        emailConfirmMsg.textContent = "이메일 인증 완료";
+        emailConfirmMsg.classList.remove("invalid-feedback", "text-secondary");
+        emailConfirmMsg.classList.add("valid-feedback");
+        emailConfirmMsg.style.display = "block";
+        userEmailConfirm.classList.remove("is-invalid");
+        userEmailConfirm.classList.add("is-valid");
+        timerDisplay.classList.add("blind");
+        btnSendEmail.disabled = true;
+        btnEmailConfirm.disabled = true;
+        userEmailConfirm.disabled = true;
+        userEmailLocal.disabled = true;
+        customDomainInput.disabled = true;
+        emailDomain.disabled = true;
+    } else {
+        emailConfirmMsg.textContent = "인증번호가 일치하지 않습니다. 다시 시도해주세요.";
+        emailConfirmMsg.classList.remove("text-secondary");
+        emailConfirmMsg.classList.add("invalid-feedback");
+        userEmailConfirm.classList.add("is-invalid");
+        isAuth = false;
+    }
+});
+// todo 회원가입 폼 제출 시 유효성 검사
+const signupForm = document.querySelector("#signupForm");
+signupForm.addEventListener("submit", function (event) {
+    let valid = true;
+    // todo 관리자검사
+    if (adminToggle.checked && !isAdminVerified) {
+        adminAuthMsg.classList.remove("text-secondary");
+        adminAuthMsg.classList.add("invalid-feedback");
+        adminAuthMsg.textContent
+            = adminAnswerInput.value === "" ? "답변을 입력해주세요." : "관리자 인증이 필요합니다.";
+        adminAuthMsg.style.display = "block";
+        adminAnswerInput.classList.add("is-invalid");
+        adminAnswerInput.focus();
+        valid = false;
+    }
+    // todo 아이디검사
+    if (userIdInput.value.trim().length < 4) {
+        idAuthMsg.style.display = "block";
+        idAuthMsg.classList.remove("text-secondary");
+        idAuthMsg.classList.add("invalid-feedback");
+        userIdInput.classList.remove("is-valid");
+        userIdInput.classList.add("is-invalid");
+        valid = false;
+        userIdInput.focus();
+    } else if (!isIdChecked) { //중복 체크가 안되어 있으면
+        idAuthMsg.style.display = "block";
+        idAuthMsg.classList.remove("text-secondary");
+        idAuthMsg.classList.add("invalid-feedback");
+        userIdInput.classList.add("is-invalid");
+        valid = false;
+        userIdInput.focus();
+    }
+    // todo 패스워드 검사
+    if (!passwordRegex.test(passwordInput.value.trim())) {
+        pwAuthMsg.style.display = "block";
+        pwAuthMsg.classList.remove("text-secondary");
+        pwAuthMsg.classList.add("invalid-feedback");
+        passwordInput.classList.add("is-invalid");
+        valid = false;
+        passwordInput.focus();
+    }
+    // todo 이름 검사
+    if (userNameInput.value.length < 1) {
+        nameAuthMsg.classList.remove("text-secondary");
+        nameAuthMsg.classList.add("invalid-feedback");
+        userNameInput.classList.add("is-invalid");
+        valid = false;
+        userNameInput.focus();
+    }
+    // todo 이메일 검사
+    let fullInput = true;
+    if (!userEmailLocal.value.trim()) {
+        emailAuthMsg.style.display = "block";
+        emailAuthMsg.classList.add("invalid-feedback");
+        emailAuthMsg.classList.remove("text-secondary");
+        userEmailLocal.classList.add("is-invalid");
+        valid = false;
+        fullInput = false;
+        userEmailLocal.focus();
+    }
+    if (!getDomain()) {
+        emailAuthMsg.style.display = "block";
+        emailAuthMsg.classList.add("invalid-feedback");
+        emailAuthMsg.classList.remove("text-secondary");
+        customDomainInput.classList.add("is-invalid");
+        valid = false;
+        customDomainInput.focus();
+        fullInput = false;
+    }
+    if (fullInput) {
+        if (!isAuth) {
+            emailConfirmMsg.style.display = "block";
+            emailConfirmMsg.classList.add("invalid-feedback");
+            emailConfirmMsg.classList.remove("text-secondary");
+            userEmailConfirm.classList.add("is-invalid");
+            userEmailConfirm.focus();
+            valid = false;
+        }
+    }
+
+    if (!valid) event.preventDefault();
+    console.log("회원가입 폼 제출, 이메일:", userEmailField.value);
+});

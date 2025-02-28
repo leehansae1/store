@@ -28,7 +28,6 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
 
-  @Column(unique = true)
   @Id
   private String userId;
 

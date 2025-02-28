@@ -32,7 +32,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    private final String prefix = "/member";
+    private final String prefix = "member";
 
     // 회원가입 화면
     @GetMapping("/signup")
@@ -44,9 +44,7 @@ public class MemberController {
     @PostMapping("/signup")
     public String signup(@ModelAttribute MemberDto memberDto) {
         log.info("Received memberDto: {}", memberDto);
-        return memberService.signup(memberDto)
-                ? "redirect:member/login"
-                : prefix + "/signup";
+        return memberService.signup(memberDto) ? "redirect:member/login" : prefix + "/signup";
     }
 
     // 아이디 중복 검사
@@ -70,10 +68,10 @@ public class MemberController {
             request) {
         AuthenticationException exception
                 = (AuthenticationException) request.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        if (exception instanceof BadCredentialsException) {
-            bindingResult.reject("BadCredentials", "아이디 또는 패스워드를 확인해 주세요.");
-        } else if (exception instanceof UsernameNotFoundException) {
+        if (exception instanceof UsernameNotFoundException) {
             bindingResult.reject("UserNotFound", "사용자를 찾을 수 없습니다.");
+        } else if (exception instanceof BadCredentialsException) {
+            bindingResult.reject("BadCredentials", "아이디 또는 패스워드를 확인해 주세요.");
         } else if (exception != null) {
             bindingResult.reject("AuthenticationException");
         }

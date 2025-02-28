@@ -32,8 +32,10 @@ public class MemberService {
 
     public boolean signup(MemberDto memberDto) {
         // 프로필 이미지 파일 업로드 처리
-        String userProfilePath = FileUtil.saveAndRenameFile(memberDto.getProfile(), folderPath, 0);
-        memberDto.setUserProfile(userProfilePath);
+        if (memberDto.getProfile() != null && !memberDto.getProfile().isEmpty()) {
+            String userProfilePath = FileUtil.saveAndRenameFile(memberDto.getProfile(), folderPath, 0);
+            memberDto.setUserProfile(userProfilePath);
+        }
         // 패스워드 암호화
         String encodedPassword = bCryptPasswordEncoder.encode(memberDto.getUserPw());
         memberDto.setUserPw(encodedPassword);
