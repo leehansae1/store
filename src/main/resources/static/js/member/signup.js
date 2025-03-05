@@ -255,6 +255,17 @@ userNameInput.addEventListener("input", () => {
         nameAuthMsg.style.display = "block";
     }
 });
+// todo < 프로필 >
+const fileInput = document.querySelector('#profile');
+
+fileInput.addEventListener('change', e => {
+    let uploadedFile = e.target.files[0];
+    if (!uploadedFile.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드할 수 있습니다.');
+        fileInput.value = "";
+    }
+});
+
 // todo < 이메일 >
 let isAuth = false;         // 이메일 인증 완료 여부
 
@@ -296,20 +307,13 @@ emailInputs.forEach(input => {
             emailAuthMsg.style.display = "block";
             emailAuthMsg.classList.remove("invalid-feedback", "text-secondary");
             emailAuthMsg.classList.add("valid-feedback");
-            input.classList.remove("is-invalid");
             input.classList.add("is-valid");
-            console.log(input);
+            input.classList.remove("is-invalid");
         } else {
-            console.log("인풋이 비었습니다", input.value);
             emailAuthMsg.classList.remove("valid-feedback", "invalid-feedback");
             input.classList.remove("is-valid");
         }
-        if (userEmailLocal.value.trim() !== "" && domain) {
-            btnSendEmail.disabled = false;
-        } else {
-            btnSendEmail.disabled = true;
-            input.classList.remove("is-valid");
-        }
+        btnSendEmail.disabled = !(userEmailLocal.value.trim() !== "" && domain);
     });
 });
 
@@ -318,9 +322,11 @@ emailDomain.addEventListener("change", () => {
     if (emailDomain.value === "") {
         btnSendEmail.disabled = true;
         customDomainInput.value = "";
-        customDomainInput.classList.remove("invalid-feedback", "valid-feedback");
+        customDomainInput.classList.remove("is-invalid", "is-valid");
+        emailAuthMsg.classList.remove("valid-feedback");
         customDomainInput.style.display = "block";
     } else {
+        if (userEmailLocal.value.trim() !== "") btnSendEmail.disabled = false;
         customDomainInput.style.display = "none";
     }
 });

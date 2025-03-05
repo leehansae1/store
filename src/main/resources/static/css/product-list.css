@@ -14,7 +14,6 @@ body {
     overflow-x: hidden;
 }
 
-/* 헤더 (PC 우선) */
 .wave-navbar {
     width: 100vw;
     background: rgba(0, 123, 255, 0.85);
@@ -38,15 +37,6 @@ body {
     font-size: 1rem;
 }
 
-.form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-}
-
 #search-btn {
     position: absolute;
     right: 10px;
@@ -59,6 +49,15 @@ body {
     border: none;
     color: #007bff;
     font-size: 1.2rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
 }
 
 /* wave-hero 섹션이 항상 적절한 높이를 가지도록 설정 */

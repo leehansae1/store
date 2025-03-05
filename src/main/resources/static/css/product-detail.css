@@ -108,7 +108,7 @@ main.container {
 
 .swiper-pagination {
     position: static !important; /* 기본 절대 위치를 해제 */
-    margin-top: 10px;            /* 이미지와 페이지네이션 사이의 간격 조정 */
+    margin-top: 10px; /* 이미지와 페이지네이션 사이의 간격 조정 */
     text-align: center;
 }
 
@@ -143,13 +143,13 @@ main.container {
 
 .product-summary h2 {
     font-size: 2rem; /* 기존 설정 유지 */
-    font-weight: 700;  /* 굵게 */
+    font-weight: 700; /* 굵게 */
     margin-bottom: 15px;
 }
 
 .product-price {
-    font-size: 2.5rem;           /* 기존 설정 유지 */
-    font-weight: 700;          /* 굵게 */
+    font-size: 2.5rem; /* 기존 설정 유지 */
+    font-weight: 700; /* 굵게 */
     border-bottom: 2px solid #ddd;
     padding-bottom: 10px;
     margin-bottom: 15px;
@@ -172,7 +172,7 @@ main.container {
     font-size: 1.2rem; /* 필요 시 크기 조정 */
 }
 
-.post-date-text{
+.post-date-text {
     font-size: 1rem;
     color: #aaa;
 }
@@ -218,25 +218,25 @@ main.container {
 .btn-shop-manage {
     display: inline-block;
     width: 100%;
-    padding: 12px 0;            /* 세로 여백 조절 */
-    font-size: 1.2rem;          /* 텍스트 크기 */
+    padding: 12px 0; /* 세로 여백 조절 */
+    font-size: 1.2rem; /* 텍스트 크기 */
     font-weight: 600;
-    color: #fff;                /* 흰색 텍스트 */
-    background-color: #009688;  /* 기본 티얼 계열 색상 */
+    color: #fff; /* 흰색 텍스트 */
+    background-color: #009688; /* 기본 티얼 계열 색상 */
     border: none;
-    border-radius: 12px;        /* wave 시그니처 border-radius */
+    border-radius: 12px; /* wave 시그니처 border-radius */
     text-align: center;
     text-decoration: none;
     transition: background-color 0.3s ease;
 }
 
 .btn-shop-manage:hover {
-    background-color: #00796b;  /* 약간 어두운 티얼 계열 색상 */
+    background-color: #00796b; /* 약간 어두운 티얼 계열 색상 */
 }
 
 /* 채팅하기와 구매하기 버튼: 산뜻한 티얼 계열 */
 .btn-action, .btn-unfollow, .btn-follow {
-    background-color: #009688;  /* 기본 티얼 색상 */
+    background-color: #009688; /* 기본 티얼 색상 */
     border-color: #009688;
     color: #fff;
 }
@@ -249,38 +249,35 @@ main.container {
 .btn-unfollow:active,
 .btn-action:hover,
 .btn-action:focus,
-.btn-action:active{
-    background-color: #00796b;  /* 약간 어두운 티얼 색상 */
+.btn-action:active {
+    background-color: #00796b; /* 약간 어두운 티얼 색상 */
     border-color: #00796b;
 }
 
 /* 찜하기 버튼: outline 스타일, 활성화 시 핑크 색상 */
 .btn-outline-danger {
-    color: #e91e63;  /* 선명한 핑크 */
+    color: #e91e63; /* 선명한 핑크 */
     border-color: #e91e63;
     background-color: transparent;
 }
 
 .btn-outline-danger:hover,
 .btn-outline-danger:focus,
-.btn-outline-danger:active{
+.btn-outline-danger:active {
     background-color: #e91e63;
     color: #fff;
 }
 
-
-/* 판매자 정보 영역 */
 .footer-info {
-    box-sizing: content-box;
+    margin-top: 10px;
+    display: flex;
     border-top: 1px solid #555;
-    margin-top: 20px;
-    padding: 0;
 }
 
 /* 상품 설명 영역: 주 내용을 부각시키기 위해 고정 높이 및 스크롤 처리 */
 .product-description {
-    height: 220px;              /* 높이를 부여하여 내용이 주목되도록 (필요에 따라 조정) */
-    overflow-y: auto;           /* 내용이 넘칠 경우 스크롤 생성 */
+    height: 220px; /* 높이를 부여하여 내용이 주목되도록 (필요에 따라 조정) */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤 생성 */
     border-bottom: 1px solid #ddd;
     margin-bottom: 15px;
     padding-bottom: 10px;
@@ -296,7 +293,7 @@ main.container {
 
 .detail-box {
     flex: 1;
-    background-color: #f1f1f1;   /* 부드러운 배경색 */
+    background-color: #f1f1f1; /* 부드러운 배경색 */
     padding: 10px;
     border-radius: 12px;
     text-align: center;
@@ -305,20 +302,18 @@ main.container {
 }
 
 .detail-box p {
-   margin-top: 5px;
-}
-
-.product-info-card, .seller-info-card {
-    min-height: 400px;
-    max-height: 600px;
+    margin-top: 5px;
 }
 
 /* 카드 스타일 (상품 정보, 상점 정보 공통) */
 .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
     border: none;
-    border-radius: 12px;          /* wave의 시그니처 border-radius */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* 카드 제목 스타일 */
@@ -350,11 +345,15 @@ main.container {
     color: #777;
 }
 
-/* 모바일 대응: 카드 간 간격 조정 */
-@media (max-width: 576px) {
-    .footer-info .col-md-8,
-    .footer-info .col-md-4 {
-        margin-bottom: 15px;
+
+@media (max-width: 768px) {
+    .footer-info {
+        flex-direction: column;
+    }
+
+    .product-info-card,
+    .seller-info-card {
+        min-height: auto; /* 모바일에서는 자연스럽게 흐르도록 */
     }
 }
 

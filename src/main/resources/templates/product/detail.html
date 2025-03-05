@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,12 +19,12 @@
     <!-- Swiper CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-    <!-- 공통 스타일 (로그인, 메인, 업로드와 동일) -->
+    <!-- 커스텀 스타일 -->
     <link rel="stylesheet" href="/css/product-detail.css">
 </head>
 <body>
 
-<!-- 헤더: 로그인, 메인, 업로드와 동일 -->
+<!-- todo 헤더: 로그인, 메인, 업로드와 동일 -->
 <header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
@@ -41,7 +41,7 @@
                 <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
                 <th:block sec:authorize="isAuthenticated()">
                     <li class="nav-item me-3">
-                        <a class="btn btn-light" href="/shop">내 상점</a>
+                        <a class="btn btn-light" href="/shop/products">내 상점</a>
                     </li>
                     <li class="nav-item me-3">
                         <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
@@ -67,11 +67,10 @@
     </div>
 </header>
 
-
-<!-- 메인 컨텐츠 -->
+<!-- todo 메인 컨텐츠 -->
 <main class="container product-detail-container">
     <div class="row gx-2">
-        <!-- 상품 이미지 영역 (Swiper 슬라이더 적용) -->
+        <!-- todo 상품 이미지 영역 (Swiper 슬라이더 적용) -->
         <div class="col-md-5">
             <div class="product-images">
                 <div class="swiper my-swiper">
@@ -93,7 +92,7 @@
                 <div class="swiper-pagination"></div>
             </div>
         </div>
-        <!-- 오른쪽 영역: 상단 상품 요약 -->
+        <!-- todo 오른쪽 영역: 상단 상품 요약 -->
         <div class="col-md-7">
             <div class="product-summary">
                 <h2 th:text="${product.productName}">상품명</h2>
@@ -136,7 +135,7 @@
                     <div class="product-actions-meta my-3">
                         <div th:if="${#authentication.name eq member.userId}">
                             <!-- 로그인한 사용자와 판매자가 같은 경우 "내 상점관리" 버튼 표시 -->
-                            <a href="/product/manage" class="btn-shop-manage">내 상점관리</a>
+                            <a href="/shop/products" class="btn-shop-manage">내 상점관리</a>
                         </div>
                         <div th:unless="${#authentication.name eq member.userId}">
                             <!-- 로그인한 사용자와 판매자가 다른 경우 기존 버튼 표시 -->
@@ -181,24 +180,24 @@
         </div>
 
         <!-- 하단 영역: 상품 정보와 상점(판매자) 정보 -->
-        <div class="row footer-info mt-4">
+        <div class="row footer-info p-0">
             <!-- 상품 정보 영역 -->
             <div class="col-md-8 m-0 p-0">
                 <div class="card product-info-card p-3">
                     <h5 class="card-title">상품 정보</h5>
                     <!-- 상품 설명 영역: 주 내용 -->
                     <div class="product-description">
-                        <p th:text="${product.description}">상품 설명 내용이 여기에 표시됩니다.</p>
+                        <p th:text="${product.description?:''}">상품 설명 내용이 여기에 표시됩니다.</p>
                     </div>
                     <!-- 하단 박스 영    역: 직거래지역, 카테고리, 상품태그 -->
                     <div class="product-details d-flex justify-content-between">
                         <div class="detail-box">
-                            <strong>직거래지역</strong>
-                            <p th:text="${member.address}">지역 정보</p>
+                            <strong>직거래 지역</strong>
+                            <p th:text="${member.address?:'-'}">지역 정보</p>
                         </div>
                         <div class="detail-box">
                             <strong>카테고리</strong>
-                            <p th:text="${product.category}">카테고리</p>
+                            <p th:text="${product.category?:''}">카테고리</p>
                         </div>
                         <div class="detail-box">
                             <strong>상품태그</strong>
@@ -214,13 +213,13 @@
                     <div class="d-flex align-items-center mb-2">
                         <a th:unless="${#authentication.name == member.userId}"
                            th:href="@{|/shop/products/${product.productId}|}">
-                            <img th:src="|${member.userProfile != null ? member.userProfile : '/img/programmer.png'}|"
+                            <img th:src="|${member.userProfile != null ? member.userProfile : '/img/unknown.jpg'}|"
                                  alt="판매자"
                                  class="rounded-circle seller-profile">
                         </a>
                         <a th:if="${#authentication.name == member.userId}"
                            href="/shop/products">
-                            <img th:src="${member.userProfile}?:'/img/programmer.png'" alt="판매자 프로필"
+                            <img th:src="${member.userProfile}?:'/img/unknown.jpg'" alt="판매자 프로필"
                                  class="rounded-circle seller-profile">
                         </a>
                         <div class="ms-2">
@@ -264,7 +263,9 @@
     </svg>
 </div>
 
-<!-- Swiper & Search JS -->
+<!-- Search JS -->
+<script src="/js/util/search.js"></script>
+<!-- Swiper -->
 <script>
     const swiper = new Swiper('.my-swiper', {
         loop: true,
@@ -277,149 +278,135 @@
             prevEl: '.swiper-button-prev',
         },
     });
-
-    const searchBtn = document.querySelector("#search-btn");
-    const searchInput = document.querySelector("#search-input");
-
-    const executeSearch = () => {
-        const searchWord = searchInput.value.trim();
-        if (searchWord) {
-            window.location.href = `/product/list/${encodeURIComponent(searchWord)}`;
-        }
-    };
-
-    searchBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        executeSearch();
-    });
-
-    searchInput.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") {
-            executeSearch();
-        }
-    });
 </script>
 <script th:inline="javascript" th:unless="${#authentication.name eq member.userId}">
+    const isLoggedIn = /*[[${#authentication.name != 'anonymousUser'}]]*/ false;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const isLoggedIn = /*[[${#authentication.name != 'anonymousUser'}]]*/ false;
-
-        document.querySelectorAll(".btn-need-login").forEach(b => {
-            if (!isLoggedIn) {
-                b.addEventListener("click", (e) => {
-                    if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                        if (!b.classList.contains("nav-link")) window.location.href = "/member/login";
-                    } else e.preventDefault();
-                });
-            }
-        });
-
-        if (isLoggedIn) {
-
-            const chattingBtn = document.querySelector(".btn-chatting");
-            const paymentBtn = document.querySelector(".btn-payment");
-
-            chattingBtn.addEventListener("click", e => {
-                e.preventDefault();
-                window.location.href = '/chatRoom/' + productId;
-            });
-
-            paymentBtn.addEventListener("click", e => {
-                e.preventDefault();
-                window.location.href = '/product/payment/checkout/' + productId;
-            });
-
-            const likeBtn = document.querySelector('#likeBtn');
-            const productId = likeBtn.getAttribute('data-product-id');
-
-            likeBtn.addEventListener('click', () => {
-                const icon = likeBtn.querySelector('i');
-                // 두 번째 span 요소에 현재 찜 개수가 표시됨
-                const spans = likeBtn.querySelectorAll('span');
-                const likeCountSpan = spans[1];
-                // 현재 DOM에 표시된 찜 개수를 숫자로 읽어오기
-                let likeCount = parseInt(likeCountSpan.textContent) || 0;
-
-                const currentlyLiked = icon.classList.contains('bi-heart-fill');
-                const url = currentlyLiked ? `/product/unlike/${productId}` : `/product/like/${productId}`;
-                const method = currentlyLiked ? 'DELETE' : 'POST';
-                fetch(url, {method})
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("네트워크 응답이 정상이 아닙니다.");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.like) {
-                            likeBtn.classList.remove('btn-outline-danger');
-                            likeBtn.classList.add('btn-danger');
-                            icon.classList.remove('bi-heart');
-                            icon.classList.add('bi-heart-fill');
-                            likeCount++;
-                        } else if (data.unlike) {
-                            likeBtn.classList.remove('btn-danger');
-                            likeBtn.classList.add('btn-outline-danger');
-                            icon.classList.remove('bi-heart-fill');
-                            icon.classList.add('bi-heart');
-                            likeCount--;
-                        }
-                        likeCountSpan.textContent = likeCount;
-                    })
-                    .catch(error => {
-                        console.error("좋아요 처리 중 오류:", error);
-                        alert("좋아요 처리 중 오류가 발생했습니다.");
-                    });
-            });
-
-            // =========================
-            // 팔로우 기능 처리
-            // =========================
-            const followBtn = document.querySelector('#followBtn');
-            const sellerId = followBtn.getAttribute('data-seller-id');
-
-            followBtn.addEventListener("click", () => {
-                const currentState = followBtn.textContent.trim();
-                const url = `/member/follow/${sellerId}`;
-                let method = currentState === "팔로우" ? 'POST' : 'DELETE';
-
-                fetch(url, {method})
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("네트워크 응답이 정상이 아닙니다.");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        const followerCountElem = document.querySelector('#followerCount');
-                        let followCount = 0;
-                        if (followerCountElem) {
-                            // "팔로워 12" 같은 형식에서 숫자만 추출
-                            followCount = parseInt(followerCountElem.textContent.replace("팔로워", "").trim()) || 0;
-                        }
-
-                        if (data.isSaved) {
-                            followBtn.classList.remove('btn-follow');
-                            followBtn.classList.add('btn-unfollow');
-                            followBtn.textContent = "팔로잉";
-                            followCount++;
-                        } else if (data.isDelete) {
-                            followBtn.classList.remove('btn-unfollow');
-                            followBtn.classList.add('btn-follow');
-                            followBtn.textContent = "팔로우";
-                            followCount--;
-                        }
-                        if (followerCountElem) {
-                            followerCountElem.textContent = "팔로워 " + followCount;
-                        }
-                    })
-                    .catch(error => {
-                        console.error("팔로우 처리 중 오류:", error);
-                        alert("팔로우 처리 중 오류가 발생했습니다.");
-                    });
+    document.querySelectorAll(".btn-need-login").forEach(b => {
+        if (!isLoggedIn) {
+            b.addEventListener("click", (e) => {
+                if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                    if (!b.classList.contains("nav-link")) window.location.href = "/member/login";
+                } else e.preventDefault();
             });
         }
     });
+
+    if (isLoggedIn) {
+        // todo 채팅 페이지 이동
+        const chattingBtn = document.querySelector(".btn-chatting");
+        chattingBtn.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.href = '/chatRoom/' + productId;
+        });
+        // todo 구매 페이지 이동
+        const paymentBtn = document.querySelector(".btn-payment");
+        paymentBtn.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.href = '/product/payment/checkout/' + productId;
+        });
+        // todo 찜 기능 처리
+        const likeBtn = document.querySelector('#likeBtn');
+        const productId = likeBtn.getAttribute('data-product-id');
+
+        likeBtn.addEventListener('click', () => {
+            const icon = likeBtn.querySelector('i');
+            // 두 번째 span 요소에 현재 찜 개수가 표시됨
+            const spans = likeBtn.querySelectorAll('span');
+            const likeCountSpan = spans[1];
+            // 현재 DOM에 표시된 찜 개수를 숫자로 읽어오기
+            let likeCount = parseInt(likeCountSpan.textContent) || 0;
+
+            const currentlyLiked = icon.classList.contains('bi-heart-fill');
+            const url = currentlyLiked ? `/product/unlike/${productId}` : `/product/like/${productId}`;
+            const method = currentlyLiked ? 'DELETE' : 'POST';
+            fetch(url, {method})
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("네트워크 응답이 정상이 아닙니다.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.like) {
+                        likeBtn.classList.remove('btn-outline-danger');
+                        likeBtn.classList.add('btn-danger');
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                        likeCount++;
+                    } else if (data.unlike) {
+                        likeBtn.classList.remove('btn-danger');
+                        likeBtn.classList.add('btn-outline-danger');
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                        likeCount--;
+                    }
+                    likeCountSpan.textContent = likeCount;
+                })
+                .catch(error => {
+                    console.error("좋아요 처리 중 오류:", error);
+                    alert("좋아요 처리 중 오류가 발생했습니다.");
+                });
+        });
+
+        // todo 팔로우 기능 처리
+        const followBtn = document.querySelector('#followBtn');
+        const sellerId = followBtn.getAttribute('data-seller-id');
+
+        followBtn.addEventListener("click", () => {
+            const currentState = followBtn.textContent.trim();
+            const url = `/member/follow/${sellerId}`;
+            let method = currentState === "팔로우" ? 'POST' : 'DELETE';
+
+            fetch(url, {method})
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("네트워크 응답이 정상이 아닙니다.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const followerCountElem = document.querySelector('#followerCount');
+                    let followCount = 0;
+                    if (followerCountElem) {
+                        // "팔로워 12" 같은 형식에서 숫자만 추출
+                        followCount = parseInt(followerCountElem.textContent.replace("팔로워", "").trim()) || 0;
+                    }
+
+                    if (data.isSaved) {
+                        followBtn.classList.remove('btn-follow');
+                        followBtn.classList.add('btn-unfollow');
+                        followBtn.textContent = "팔로잉";
+                        followCount++;
+                    } else if (data.isDelete) {
+                        followBtn.classList.remove('btn-unfollow');
+                        followBtn.classList.add('btn-follow');
+                        followBtn.textContent = "팔로우";
+                        followCount--;
+                    }
+                    if (followerCountElem) {
+                        followerCountElem.textContent = "팔로워 " + followCount;
+                    }
+                })
+                .catch(error => {
+                    console.error("팔로우 처리 중 오류:", error);
+                    alert("팔로우 처리 중 오류가 발생했습니다.");
+                });
+        });
+    }
+</script>
+<script>
+    window.addEventListener('load', syncCardHeight);
+    window.addEventListener('resize', syncCardHeight);
+
+    function syncCardHeight() {
+        const productCard = document.querySelector('.product-info-card');
+        const sellerCard = document.querySelector('.seller-info-card');
+
+        const maxHeight = Math.max(productCard.offsetHeight, sellerCard.offsetHeight);
+        productCard.style.height = `${maxHeight}px`;
+        sellerCard.style.height = `${maxHeight}px`;
+    }
 </script>
 </body>
 </html>

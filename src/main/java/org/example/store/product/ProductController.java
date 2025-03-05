@@ -29,16 +29,8 @@ public class ProductController {
     @GetMapping("/list")
     public String getMainPage(Model model) {
         List<ProductDto> productDtoList = productService.getProductList("");
-        if (productDtoList.isEmpty()) {
-            log.info("No products found");
-            model.addAttribute("productList", null);
-        } else {
-            log.info("found {} products", productDtoList.size());
-            productDtoList.forEach(pL ->
-                    log.info("product {}", pL)
-            );
-            model.addAttribute("productList", productDtoList);
-        }
+        if (productDtoList.isEmpty()) model.addAttribute("productList", null);
+        else model.addAttribute("productList", productDtoList);
         return prefix + "/list";
     }
 
@@ -46,12 +38,8 @@ public class ProductController {
     @GetMapping("/list/{searchWord}")
     public String getSearchPage(@PathVariable String searchWord, Model model) {
         List<ProductDto> productDtoList = productService.getProductList(searchWord);
-        log.info("productDtoList == {}", productDtoList);
-        log.info("search {} products", productDtoList.size());
-        productDtoList.forEach(pL ->
-                log.info("product {}", pL)
-        );
-        model.addAttribute("productList", productDtoList);
+        if (productDtoList.isEmpty()) model.addAttribute("productList", null);
+        else model.addAttribute("productList", productDtoList);
         return prefix + "/list";
     }
 
@@ -66,9 +54,7 @@ public class ProductController {
     @PostMapping("/upload")
     @ResponseBody
     public Map<String, Integer> uploadProduct(ProductDto productDto, @RequestParam List<MultipartFile> imageFiles,
-                                              @AuthenticationPrincipal CustomUserDetails user
-                                              //// 밸리데이션 추가 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ) {
+                                              @AuthenticationPrincipal CustomUserDetails user) {
         int productId = productService.uploadProduct(productDto, imageFiles, user);
         return productId > 0 ? Map.of("isSaved", productId) : Map.of("isSaved", 0);
     }
@@ -105,16 +91,6 @@ public class ProductController {
         return prefix + "/detail";
     }
 
-
-    // 내 상품 관리 페이지
-    @GetMapping("/manage")
-    public String getManagePage(Model model,
-                                @AuthenticationPrincipal CustomUserDetails customUser) {
-        List<ProductDto> productDtoList = productService.getMyProducts(customUser);
-        model.addAttribute("productList", productDtoList);
-        return prefix + "/manage";
-    }
-
     // 좋아요 관련 로직
     @PostMapping("/like/{productId}")
     @ResponseBody
@@ -140,5 +116,4 @@ public class ProductController {
 
         return "payment/checkout";
     }
-
 }

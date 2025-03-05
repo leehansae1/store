@@ -22,5 +22,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "AND p.display = :display " +
             "ORDER BY p.postDate DESC")
     List<Product> findDisplayProducts(@NotNull String searchWord, boolean display);
+
+    @Query(value = "select count(*) from product where member_id = :userId and isSell = :isSell", nativeQuery = true)
+    int countBySellerAndIsSell(String userId, boolean isSell);
 }
 

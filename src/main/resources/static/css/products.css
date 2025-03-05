@@ -1,0 +1,478 @@
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e0f7fa; /* body와 동일한 배경색 */
+    margin: 0;
+    padding: 80px 0 0 0; /* 고정 헤더 높이 확보 */
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.wave-navbar {
+    width: 100vw;
+    background: rgba(0, 123, 255, 0.85);
+    backdrop-filter: blur(8px);
+    height: 80px;
+}
+
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+#search-input {
+    width: 100%;
+    height: 50px;
+    padding-right: 50px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+}
+
+#search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+/* main 요소가 가변적으로 확장되도록 설정 */
+main {
+    flex-grow: 1;
+    background-color: #e0f7fa;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+#shop-header {
+    width: 100%;
+}
+
+#shop-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 350px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    border-radius: 12px;
+}
+
+#shop-profile {
+    width: 100%;
+    max-width: 350px;
+    aspect-ratio: 1/1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+/* 배경 블러 */
+.profile-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px) brightness(30%);
+    z-index: 0;
+}
+
+/* 프로필 내용 */
+.profile-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 15px;
+}
+
+/* 프로필 이미지 */
+.profile-image {
+    width: 50%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 이름 */
+.profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+    color: #fff;
+}
+
+.profile-rating {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffcc00; /* 별 색상 */
+    margin: 0 0 10px 0;
+}
+
+#followerCount{
+    color: #fff;
+}
+
+#manage-account, #btn-logout {
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+#follow-toggle-btn{
+    padding: 6px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+#manage-account, .btn-follow {
+    border: 1px solid #007bff;
+    background-color: #fff;
+    color: #007bff;
+}
+
+#manage-account:hover, .btn-follow:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-unfollow {
+    border: 1px solid #fff;
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-unfollow:hover {
+    background-color: #fff;
+    color: #007bff;
+}
+
+#btn-logout {
+    border: 1px solid #f0ad4e;
+    background-color: #fff;
+    color: #f0ad4e;
+}
+
+#btn-logout:hover {
+    background-color: #f0ad4e;
+    color: #fff;
+}
+
+.empty-product {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.empty-product .empty-image {
+    width: 300px;
+    height: auto;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+#shop-info {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #555;
+}
+
+.shop-name {
+    font-size: 24px;
+    color: #333;
+    margin: 10px 0 5px;
+}
+
+.shop-divider {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 5px 0 35px 0;
+}
+
+.shop-detail div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.shop-detail i {
+    font-size: 18px;
+    color: #007bff;
+}
+
+.shop-intro {
+    font-size: 14px;
+    color: #888;
+    margin-top: 10px;
+    padding-left: 2px;
+    border-left: 3px solid #007bff;
+}
+
+/* 탭 메뉴 스타일 */
+#shop-tabs {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #f9f9f9;
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    width: 100%;
+    padding: 12px 0;
+    cursor: pointer;
+    border: none;
+    background: none;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+}
+
+.tab-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.tab-btn.active {
+    border-bottom: 3px solid #007bff;
+    color: #007bff;
+}
+
+/* 탭 컨텐츠 영역 */
+.tab-content {
+    display: none;
+    padding: 20px 0;
+    overflow: hidden;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+#product-detail {
+    width: 100%;
+}
+
+.product-list-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.product-list-header {
+    display: flex;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+}
+
+.header-cell, .product-cell {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 각 셀 너비 조정 (원하는 비율로 조정 가능) */
+.image-cell, .header-cell:nth-child(1) {
+    flex-basis: 200px;
+}
+
+.status-cell, .header-cell:nth-child(2) {
+    flex-basis: 100px;
+}
+
+.name-cell, .header-cell:nth-child(3) {
+    flex-basis: 200px;
+}
+
+.price-cell, .header-cell:nth-child(4) {
+    flex-basis: 100px;
+}
+
+.like-cell, .header-cell:nth-child(5) {
+    flex-basis: 80px;
+}
+
+.date-cell, .header-cell:nth-child(6) {
+    flex-basis: 150px;
+}
+
+.action-cell, .header-cell:nth-child(7) {
+    flex-basis: 120px;
+}
+
+.product-row {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+/* 마지막 행 아래 경계선 없애기 */
+.product-row:last-child {
+    border-bottom: none;
+}
+
+/* 각 셀 공통 스타일 */
+.product-cell {
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 이미지 셀 */
+.image-cell img {
+    width: 150px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+}
+
+/* 상품명 셀 */
+.name-cell a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.action-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px; /* 버튼 간격 */
+}
+
+.btn-option {
+    min-width: 100px;
+    max-width: 150px;
+    padding: 5px 8px; /* 기존보다 좁게 */
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.up-btn {
+    background-color: #ff6f61;
+}
+
+.edit-btn {
+    background-color: #4caf50;
+}
+
+.hide-btn {
+    background-color: #f0ad4e;
+}
+
+.btn-option:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+/* 반응형 처리 (좁아지면 버튼 가로로) */
+@media (max-width: 768px) {
+    .product-row {
+        flex-wrap: wrap;
+    }
+
+    .action-cell {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .product-cell {
+        flex-basis: 50%;
+    }
+
+    .image-cell {
+        flex-basis: 100%;
+    }
+}
+
+:root {
+    --wave-primary: #007bff; /* WAVE 시그니처 컬러 */
+}
+
+.name-cell a {
+    text-decoration: none;
+    color: var(--wave-primary);
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.name-cell a:hover,
+.name-cell a:active {
+    text-decoration: underline;
+    color: #0056b3; /* 더 진한 파란색으로 강조 */
+}
+
+/* 푸터 스타일 */
+.wave-footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}

@@ -1,5 +1,6 @@
 package org.example.store.shop;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.follow.FollowService;
@@ -12,6 +13,7 @@ import org.example.store.memberReview.ReviewDto;
 import org.example.store.memberReview.ReviewService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,29 +39,38 @@ public class ShopController {
     private final FollowService followService;
 
     // 바로 보이는 내상점 페이지 >> 내 상품 리스트 나열
-    @GetMapping("/products")
-    public String getMyProducts(@AuthenticationPrincipal CustomUserDetails user, Model model) {
-        List<ProductDto> productDtoList = productService.getMyProducts(user);
-        if (productDtoList.isEmpty()) log.info("상품이 없습니다");
-        else productDtoList.forEach(productDto ->
-                log.info("SHOP productDto: {}", productDto)
-        );
-        if (!productDtoList.isEmpty()) return "/product/list";
-        model.addAttribute("productList", productDtoList);
-        return "shop/products";
-    }
+    @GetMapping({"/products", "/products/{productId}"})
+    public String getMyProducts(@AuthenticationPrincipal @Nullable Object principal,
+                                @PathVariable(required = false) Integer productId, Model model) {
+        CustomUserDetails user = null;
+        if (principal instanceof CustomUserDetails) user = ((CustomUserDetails) principal);
+        else log.info("비회원 접근이에요");
 
-    // 타인의 내 상점 페이지 >> 상품 디테일에서 접근 됨
-    @GetMapping("/products/{productId}")
-    public String getSellerProducts(@PathVariable int productId, Model model) {
-        MemberDto memberDto = productService.getProductDto(productId).getSeller();
-        List<ProductDto> productDtoList
-                = productService.getSellerProducts(memberDto);
-        productDtoList.forEach(productDto ->
-                log.info("SHOP productDto: {}", productDto)
-        );
-        if (!productDtoList.isEmpty()) return "/product/list";
+        List<ProductDto> productDtoList;
+        MemberDto memberDto;
+        if (productId != null) { //판매자의 상점이라면
+            Product product = productService.getProduct(productId);
+            memberDto = Member.fromEntity(product.getSeller());
+            int followCount = followService.getFollowCount(product.getSeller());
+            boolean followState;
+            if (user != null) { //회원이라면
+                followState = followService.isFollowed(product.getSeller(), user.getLoggedMember());
+            } else followState = false;
+            memberDto.setFollowCount(followCount);
+            memberDto.setFollowState(followState);
+
+            productDtoList = productService.getSellerProducts(product.getSeller());
+        } else { //내 상점이라면
+            memberDto = Member.fromEntity(user.getLoggedMember());
+            productDtoList = productService.getMyProducts(user);
+        }
+        model.addAttribute("member", memberDto);
         model.addAttribute("productList", productDtoList);
+        // 공통
+        if (productDtoList.isEmpty()) return "shop/products";
+        int sellCount = productService.getSellTotalCount(productDtoList.getFirst().getSeller());
+        model.addAttribute("sellCount", sellCount);
+
         return "shop/products";
     }
 

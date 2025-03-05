@@ -1,0 +1,213 @@
+<!DOCTYPE html >
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WAVE Market 상점 관리 페이지입니다.">
+    <title>WAVE Market - 내 상점 관리</title>
+    <!-- 로고 -->
+    <link rel="icon" href="/img/wave-logo.png"/>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons (순수 CSS) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 -->
+    <link rel="stylesheet" href="/css/products.css">
+</head>
+<body th:data-logged-in="${#authentication.name != 'anonymousUser'}">
+
+<header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/wave-logo.png" alt="WAVE" height="90">
+            <span class="ms-2 fw-bold fs-4">WAVE</span>
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <li class="nav-item me-3">
+                        <a class="btn btn-light" href="/shop/products">내 상점</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                    </li>
+                </th:block>
+                <!-- 사용자가 로그인하지 않은 경우 '로그인' 버튼 표시 -->
+                <th:block sec:authorize="!isAuthenticated()">
+                    <li class="nav-item me-3">
+                        <a class="btn btn-light" href="/member/login">로그인</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link btn-need-login" href="/member/login">WAVE톡</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-need-login" href="/member/login">판매하기</a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="d-flex align-items-center flex-column" id="shop-header">
+        <div id="shop-container">
+            <section id="shop-profile" class="text-center">
+                <div class="profile-wrapper">
+                    <!-- 배경 (블러처리) -->
+                    <div class="profile-bg"
+                         th:style="'background-image: url(' + (${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg') + ');'">
+                    </div>
+                    <!-- 실제 프로필 정보 -->
+                    <div class="profile-content">
+                        <img class="profile-image"
+                             th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
+                             alt="프로필 이미지">
+                        <p class="profile-name" th:text="${member.userName}">여기에 회원명</p>
+                        <!-- todo 별점 평균내서 0.5으로 내림해서 별로 뿌리기 -->
+                        <p class="profile-rating">★★★★☆</p>
+                        <div th:if="${#authentication.name eq member.userId}">
+                            <button id="manage-account">내 계정 관리</button>
+                            <button id="btn-logout" class="btn" onclick="window.location.href='/member/logout'">
+                                로그아웃
+                            </button>
+                        </div>
+                        <div th:unless="${#authentication.name eq member.userId}">
+                            <p id="followerCount" th:text="|팔로워 ${member.followCount}|">팔로워 </p>
+                            <button
+                                    class="btn" id="follow-toggle-btn"
+                                    th:data-seller-id="${member.userId}"
+                                    th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
+                                    th:text="${member.followState}? '팔로잉':'팔로우'"
+                            >팔로우버튼
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="shop-info" class="text-start">
+                <!-- 상점 이름 + 구분선 -->
+                <h2 class="shop-name fw-bold" th:text="${member.userName}"></h2>
+                <hr class="shop-divider">
+
+                <!-- 상점 정보 3개 한줄 -->
+                <div class="shop-detail d-flex align-items-center gap-5">
+                    <div>
+                        <i class="bi bi-calendar-check"></i> 오픈일:
+                        <span th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd')}"></span>
+                    </div>
+                    <div>
+                        <i class="bi bi-box-seam"></i> 상품판매: <span th:text="${sellCount?:'0'} + '회'"></span></div>
+                    <div>
+                        <i class="bi bi-grid"></i> 상품등록:
+                        <span th:if="${#lists.isEmpty(productList)}">아직 상품이 없어요 😥</span>
+                        <span th:unless="${#lists.isEmpty(productList)}" th:text="${productList.size()} + '개'"></span>
+                    </div>
+                </div>
+
+                <!-- 상점 소개글 -->
+                <p class="shop-intro mt-3 text-muted"
+                   th:text="${member.introduce != null ? '&nbsp;' + member.introduce : '&nbsp;아직 소개글이 없습니다.'}">
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <section id="shop-tabs">
+        <button class="tab-btn active" data-tab="#products">상품</button>
+        <button class="tab-btn" data-tab="#reviews">상점 후기</button>
+        <button class="tab-btn" data-tab="#favorites">찜</button>
+        <button class="tab-btn" data-tab="#followings">팔로잉</button>
+        <button class="tab-btn" data-tab="#followers">팔로워</button>
+    </section>
+
+    <div th:if="${#lists.isEmpty(productList)}" id="products" class="empty-product tab-content">
+        <img src="/img/empty.png" alt="텅 빈 상점" class="empty-image">
+        <p>앗! 여기 아무것도 없어요... 얼른 상품을 채워주세요! 📦</p>
+    </div>
+
+    <section id="product-detail">
+        <div th:unless="${#lists.isEmpty(productList)}" id="products" class="tab-content">
+            <div class="product-list-header">
+                <div class="header-cell">사진</div>
+                <div class="header-cell">판매상태</div>
+                <div class="header-cell">상품명</div>
+                <div class="header-cell">가격</div>
+                <div class="header-cell">찜</div>
+                <div class="header-cell">최근수정일</div>
+                <div th:if="${#authentication.name eq member.userId}" class="header-cell">기능</div>
+            </div>
+
+            <div id="product-list" class="product-list-table">
+                <div class="product-row" th:each="product : ${productList}">
+                    <!-- 상품 이미지 -->
+                    <div class="product-cell image-cell">
+                        <a th:href="@{/product/detail/{id}(id=${product.productId})}">
+                            <img th:src="${product.thumbnailUrl}" alt="상품 이미지">
+                        </a>
+                    </div>
+
+                    <!-- 판매 상태 -->
+                    <div class="product-cell status-cell" th:text="${product.sell ? '판매완료' : '판매중'}">판매중</div>
+
+                    <!-- 상품명 -->
+                    <div class="product-cell name-cell">
+                        <a th:href="@{/product/detail/{id}(id=${product.productId})}"
+                           th:text="${product.productName}">상품명</a>
+                    </div>
+
+                    <!-- 가격 -->
+                    <div class="product-cell price-cell"
+                         th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">
+                        10,000원
+                    </div>
+
+                    <!-- 찜 -->
+                    <div class="product-cell like-cell">
+                        ❤️ <span th:text="${product.likeCount}">5</span>
+                    </div>
+
+                    <!-- 최근 수정일 -->
+                    <div class="product-cell date-cell">
+                        <span th:text="${#temporals.format(product.updateDate, 'yyyy-MM-dd')}"></span><br>
+                        <span th:text="${#temporals.format(product.updateDate, 'HH:mm')}"></span>
+                    </div>
+                    <!-- 기능 버튼들 -->
+                    <div th:if="${#authentication.name eq member.userId}" class="product-cell action-cell">
+                        <button class="up-btn btn-option">UP</button>
+                        <button class="edit-btn btn-option">수정</button>
+                        <button class="hide-btn btn-option">상품숨김</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="reviews" class="tab-content">서비스 준비중입니다:)</div>
+        <div id="favorites" class="tab-content">서비스 준비중입니다:)</div>
+        <div id="followings" class="tab-content">서비스 준비중입니다:)</div>
+        <div id="followers" class="tab-content">서비스 준비중입니다:)</div>
+    </section>
+</main>
+
+<footer class="wave-footer text-center py-4">
+    <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
+</footer>
+
+<!-- tab 마다 다른 기능 -->
+<script src="/js/shop/main.js"></script>
+</body>
+</html>

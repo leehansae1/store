@@ -93,6 +93,8 @@ public class ProductService {
             }
         } else product.incrementViews();
         productDto.setViews(product.getViews());
+        log.info("등록일 {}", product.getPostDate());
+        log.info("ux 시간 {}", DateUtils.getTimeAgo(product.getPostDate()));
         productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()));
         map.put("product", productDto);
         map.put("member", memberDto);
@@ -158,13 +160,23 @@ public class ProductService {
     // 내 물건 리스트 관리를 위한 조회 (상품리스트 관리 페이지)
     public List<ProductDto> getMyProducts(CustomUserDetails user) {
         List<Product> products = productRepository.findAllBySeller(user.getLoggedMember());
-        return Product.fromEntityList(products);
+        List<ProductDto> productDtoList = Product.fromEntityList(products);
+        productDtoList.forEach(productDto -> {
+            int likeCount = likeService.getLikeCount(ProductDto.toEntity(productDto));
+            productDto.setLikeCount(likeCount); //상품에 대한 찜 개수
+        });
+        return productDtoList;
     }
 
     // 판매자 물건 리스트 조회 (타인의 내 상점 안의 상품리스트)
-    public List<ProductDto> getSellerProducts(MemberDto memberDto) {
-        List<Product> products = productRepository.findAllBySeller(MemberDto.toEntity(memberDto));
-        return Product.fromEntityList(products);
+    public List<ProductDto> getSellerProducts(Member member) {
+        List<Product> products = productRepository.findAllBySeller(member);
+        List<ProductDto> productDtoList = Product.fromEntityList(products);
+        productDtoList.forEach(productDto -> {
+            int likeCount = likeService.getLikeCount(ProductDto.toEntity(productDto));
+            productDto.setLikeCount(likeCount); //상품에 대한 찜 개수
+        });
+        return productDtoList;
     }
 
     public boolean hideProduct(int productId, boolean isSell) {
@@ -176,5 +188,9 @@ public class ProductService {
         imageDto.setProductDto(Product.fromEntity(product));
         imageRepository.save(ImageDto.toEntity(imageDto));
         return product.isDisplay();
+    }
+
+    public int getSellTotalCount(MemberDto seller) {
+        return productRepository.countBySellerAndIsSell(seller.getUserId(), true);
     }
 }

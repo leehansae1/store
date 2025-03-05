@@ -32,7 +32,7 @@ public class SecurityConfig {
                                 "/", "/index", "/css/**", "/js/**", "/img/**", "/video/**",
                                 "/product/list/**", "/product/list", "/upload/**", "/product/detail/**",
                                 "/member/login", "/member/signup", "/member/admin/verify", "/member/check-duplicate",
-                                "/mail/**", "/external/**"
+                                "/mail/**", "/shop/**","/external/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

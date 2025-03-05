@@ -40,7 +40,7 @@
             </div>
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item me-3" sec:authorize="isAuthenticated()">
-                    <a class="btn btn-light" href="/shop">내 상점</a>
+                    <a class="btn btn-light" href="/shop/products">내 상점</a>
                 </li>
                 <li class="nav-item me-3" sec:authorize="!isAuthenticated()">
                     <a class="btn btn-light" href="/member/login">로그인</a>
@@ -160,10 +160,10 @@
                                     <option value="daum.net">daum.net</option>
                                     <option value="">직접 입력</option>
                                 </select>
-                                <input type="text" class="form-control" id="customEmailDomain" value=""
+                                <input type="text" class="form-control" id="customEmailDomain"
                                        placeholder="도메인 직접 입력">
-                                <button type="button" class="btn btn-outline-primary" id="btn-send-email" disabled>인증메일
-                                    발송
+                                <button type="button" class="btn btn-outline-primary" id="btn-send-email" disabled>
+                                    인증메일 발송
                                 </button>
                             </div>
                             <div id="emailStatusMsg" class="form-text text-secondary">필수 입력 항목입니다.</div>
@@ -243,6 +243,15 @@
     <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
 </footer>
 
+<script>
+    document.querySelectorAll(".btn-need-login").forEach(b => {
+        b.addEventListener("click", e => {
+            if (!confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 <script src="/js/member/signup.js"></script>
 <script src="/js/util/search.js"></script>
 </body>
