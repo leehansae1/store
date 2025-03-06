@@ -154,7 +154,9 @@
             </div>
 
             <div id="product-list" class="product-list-table">
-                <div class="product-row" th:each="product : ${productList}">
+                <div class="product-row"
+                     th:each="product : ${productList}"
+                     th:attr="data-product-id=${product.productId},data-post-date=${product.postDate}">
                     <!-- 상품 이미지 -->
                     <div class="product-cell image-cell">
                         <a th:href="@{/product/detail/{id}(id=${product.productId})}">
@@ -184,14 +186,22 @@
 
                     <!-- 최근 수정일 -->
                     <div class="product-cell date-cell">
-                        <span th:text="${#temporals.format(product.updateDate, 'yyyy-MM-dd')}"></span><br>
-                        <span th:text="${#temporals.format(product.updateDate, 'HH:mm')}"></span>
+                        <span th:text="${#temporals.format(product.postDate, 'yyyy-MM-dd')}"></span><br>
+                        <span th:text="${#temporals.format(product.postDate, 'HH:mm')}"></span>
                     </div>
                     <!-- 기능 버튼들 -->
                     <div th:if="${#authentication.name eq member.userId}" class="product-cell action-cell">
                         <button class="up-btn btn-option">UP</button>
-                        <button class="edit-btn btn-option">수정</button>
-                        <button class="hide-btn btn-option">상품숨김</button>
+                        <button class="edit-btn btn-option"
+                                th:data-modify-url="@{/product/modify/{productId}(productId=${product.productId})}">
+                            수정
+                        </button>
+                        <button class="hide-btn btn-option"
+                                th:text="${product.display} ? '숨기기' : '보이기'"
+                                th:data-hide-url="@{/product/hide/{id}(id=${product.productId})}"
+                                th:data-display="${product.display}">
+                        </button>
+
                     </div>
                 </div>
             </div>

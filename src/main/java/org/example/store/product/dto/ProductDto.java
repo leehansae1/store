@@ -36,8 +36,6 @@ public class ProductDto {
 
     private LocalDateTime postDate;
 
-    private LocalDateTime updateDate;
-
     private String tag;
 
     private String category;
@@ -79,7 +77,6 @@ public class ProductDto {
                 .tag(productDto.getTag())
                 .category(productDto.getCategory())
                 .display(productDto.isDisplay())
-                .updateDate(productDto.getUpdateDate())
 
                 .seller(MemberDto.toEntity(productDto.getSeller()))
                 .build();

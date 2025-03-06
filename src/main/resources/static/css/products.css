@@ -170,7 +170,6 @@ main {
     font-size: 16px;
     cursor: pointer;
     border-radius: 8px;
-    transition: all 0.2s;
 }
 
 #manage-account, .btn-follow {
@@ -407,7 +406,7 @@ main {
     padding: 5px 8px; /* 기존보다 좁게 */
     font-size: 16px;
     cursor: pointer;
-    border: none;
+    border: none #fff;
     border-radius: 8px;
     color: white;
     transition: background-color 0.2s, transform 0.1s;

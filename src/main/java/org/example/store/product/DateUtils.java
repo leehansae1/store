@@ -24,12 +24,6 @@ public class DateUtils {
                 }
             }
             return hoursBetween + "시간 전";
-        } else if (daysBetween == 1) {
-            return "1일 전";
-        } else if (daysBetween == 2) {
-            return "2일 전";
-        } else if (daysBetween == 3) {
-            return "3일 전";
         } else {
             return daysBetween + "일 전";
         }

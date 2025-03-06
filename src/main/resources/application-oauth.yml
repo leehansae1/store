@@ -10,17 +10,14 @@ spring:
               - email
               - profile
             redirect-uri: http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/google
-
           kakao:
-            client-id:
-            client-secret:
-            authorization-grant-type: authorization_code
+            client-id: 152381adddcbd6c3a4f5f35bbdffb136
             redirect-uri: http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
             scope:
-              - account_email
               - profile_nickname
               - profile_image
-
+              - account_email
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize

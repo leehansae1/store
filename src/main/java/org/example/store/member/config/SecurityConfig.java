@@ -1,6 +1,7 @@
 package org.example.store.member.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.service.OAuth2DetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,14 +15,19 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
     private final OAuth2DetailService oAuth2DetailService;
 
     @Bean
     public AuthenticationFailureHandler failureHandler() {
-        return new ForwardAuthenticationFailureHandler("/member/login");
+        return (request, response, exception) -> {
+            log.error("🔥 소셜 로그인 실패! 이유={}", exception.getMessage(), exception);
+            request.getRequestDispatcher("/member/login").forward(request, response);
+        };
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -56,6 +62,10 @@ public class SecurityConfig {
                         .userInfoEndpoint(
                                 userInfo -> userInfo.userService(oAuth2DetailService)
                         )
+                        .failureHandler((request, response, exception) -> {
+                            log.error("🔥 소셜 로그인 실패! 이유={}", exception.getMessage(), exception);
+                            request.getRequestDispatcher("/member/login").forward(request, response);
+                        })
                 );
         return httpSecurity.build();
     }

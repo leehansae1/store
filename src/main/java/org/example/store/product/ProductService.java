@@ -58,9 +58,7 @@ public class ProductService {
         List<ProductDto> productDtoList = Product.fromEntityList(productList);
         productDtoList.forEach(productDto ->
                 // n일전 or n시간전 or n분전 or 방금전 출력
-                productDto.setTimeAgo(productDto.getUpdateDate().equals(productDto.getPostDate())
-                        ? DateUtils.getTimeAgo(productDto.getUpdateDate())
-                        : DateUtils.getTimeAgo(productDto.getPostDate()))
+                productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()))
         );
         return productDtoList;
     }
@@ -179,18 +177,24 @@ public class ProductService {
         return productDtoList;
     }
 
-    public boolean hideProduct(int productId, boolean isSell) {
-        ProductDto productDto = getProductDto(productId);
-        if (isSell) productDto.setSell(true);
-        productDto.setDisplay(false);
-        Product product = productRepository.save(ProductDto.toEntity(productDto));
-        ImageDto imageDto = productDto.getImageDto();
-        imageDto.setProductDto(Product.fromEntity(product));
-        imageRepository.save(ImageDto.toEntity(imageDto));
+    @Transactional
+    public boolean toggleDisplay(int productId, boolean isSell) {
+        Product product = getProduct(productId);
+        if (isSell) product.completeSell();
+        product.changeDisplay();
+        log.info("is hide or display? {}", product.isDisplay());
         return product.isDisplay();
     }
 
     public int getSellTotalCount(MemberDto seller) {
         return productRepository.countBySellerAndIsSell(seller.getUserId(), true);
     }
+
+
+    @Transactional
+    public void upProduct(int productId) {
+        Product product = getProduct(productId);
+        product.updatePostDate();
+    }
+
 }

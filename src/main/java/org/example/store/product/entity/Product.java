@@ -53,11 +53,9 @@ public class Product {
 
     private boolean isSell;
 
+    @LastModifiedDate
     @CreatedDate
     private LocalDateTime postDate;
-
-    @LastModifiedDate
-    private LocalDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -78,11 +76,27 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
+    public void updatePostDate() {
+        this.postDate = LocalDateTime.now();
+    }
+
+    public void changeDisplay() {
+        this.display = !this.display;
+    }
+
+    public void incrementViews() {
+        this.views++; // this.views 필드의 값을 증가시킴
+    }
+
+    public void completeSell() {
+        this.isSell = true;
+    }
+
     @Builder
     public Product(int productId, int views, int price, boolean display, boolean isSell,
                    String productName, String description, String tag, String category,
-                   String productStatus, LocalDateTime postDate, LocalDateTime updateDate,
-                   String thumbnailUrl, Member seller,
+                   String productStatus, LocalDateTime postDate, String thumbnailUrl,
+                   Member seller,
                    List<ChatRoom> chatRoomList, List<LikeProduct> likeList,
                    Review review, List<Payment> paymentList, Image image) {
         this.productId = productId;
@@ -94,7 +108,6 @@ public class Product {
         this.category = category;
         this.productStatus = productStatus;
         this.postDate = postDate;
-        this.updateDate = updateDate;
         this.thumbnailUrl = thumbnailUrl;
         this.display = display;
         this.isSell = isSell;
@@ -105,10 +118,6 @@ public class Product {
         this.review = review;
         this.paymentList = paymentList;
         this.image = image;
-    }
-
-    public void incrementViews() {
-        this.views++; // this.views 필드의 값을 증가시킴
     }
 
     public static ProductDto fromEntity(Product product) {
@@ -125,8 +134,6 @@ public class Product {
                 .views(product.getViews())
                 .postDate(product.getPostDate())
                 .display(product.isDisplay())
-                .updateDate(product.getUpdateDate())
-                //.imageDto(Image.fromEntity(product.getImage())) //image 는 fromEntity 에만 있음
                 .seller(Member.fromEntity(product.getSeller()))
                 .build();
     }

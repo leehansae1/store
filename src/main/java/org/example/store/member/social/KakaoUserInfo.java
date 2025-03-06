@@ -10,7 +10,7 @@ public class KakaoUserInfo implements SocialUserInfo {
   @Override
   public String getEmail() {
     Map<String, Object> kakao_account = (Map<String, Object>) attribute.get("kakao_account");
-    return (String) kakao_account.get("email");
+    return (String) kakao_account.get("account_email");
   }
 
   @Override

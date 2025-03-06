@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,7 +68,7 @@ public class ProductController {
         redirectAttributes.addFlashAttribute("productDto", productDto);
         // isSelect 가 true 라면 업로드 페이지 문구를 수정에 맞게 바꾸기
         redirectAttributes.addFlashAttribute("isModify", productDto != null);
-        return "redirect:product/upload";
+        return "redirect:/product/upload";
     }
 
     // 상품 상세 페이지
@@ -115,5 +116,17 @@ public class ProductController {
         model.addAttribute("product", productDto);
 
         return "payment/checkout";
+    }
+
+    @PostMapping("/up/{productId}")
+    public ResponseEntity<?> upProduct(@PathVariable int productId) {
+        productService.upProduct(productId);
+        return ResponseEntity.ok().body("상품이 최신 순으로 정렬됩니다.");
+    }
+
+    @PostMapping("/hide/{productId}")
+    public ResponseEntity<?> toggleDisplay(@PathVariable int productId) {
+        productService.toggleDisplay(productId, false);
+        return ResponseEntity.ok().body("상태 변경 완료");
     }
 }

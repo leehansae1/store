@@ -40,7 +40,7 @@ public class PaymentService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             paymentDto.setApprovedAt(LocalDateTime.now().format(formatter));
         } else {
-            boolean isSell = productService.hideProduct(productDto.getProductId(),true); //판매완료, 상품숨기기
+            boolean isSell = productService.toggleDisplay(productDto.getProductId(),true); //판매완료, 상품숨기기
             if (isSell) log.info("숨김처리 완료");
         }
         Payment payment = paymentRepository.save(PaymentDto.toEntity(paymentDto));
