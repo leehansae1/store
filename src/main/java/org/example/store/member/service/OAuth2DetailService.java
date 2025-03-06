@@ -52,6 +52,7 @@ public class OAuth2DetailService extends DefaultOAuth2UserService {
                     .userId(socialUserInfo.getProviderId())
                     .userName(socialUserInfo.getName())
                     .userEmail(socialUserInfo.getEmail())
+                    .userProfile(socialUserInfo.getImageUrl())
                     .userPw(bCryptPasswordEncoder.encode(UUID.randomUUID().toString()))
                     .role(Role.ROLE_USER)
                     .status(MemberStatus.STATUS_ACTIVE)

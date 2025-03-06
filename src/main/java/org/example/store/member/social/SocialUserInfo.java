@@ -5,4 +5,5 @@ public interface SocialUserInfo {
     String getName();
     String getProvider();
     String getProviderId();
+    String getImageUrl();
 }

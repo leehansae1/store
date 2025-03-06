@@ -26,4 +26,9 @@ public class GoogleUserInfo implements SocialUserInfo {
   public String getProviderId() {
     return getProvider() + "_" + attribute.get("sub");
   }
+
+  @Override
+  public String getImageUrl() {
+    return (String) attribute.get("picture");
+  }
 }

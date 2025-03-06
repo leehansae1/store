@@ -8,9 +8,15 @@ public class KakaoUserInfo implements SocialUserInfo {
   private final Map<String, Object> attribute;
 
   @Override
+  public String getImageUrl(){
+    Map<String, Object> properties = (Map<String, Object>) attribute.get("properties");
+    return (String) properties.get("profile_image");
+  }
+
+  @Override
   public String getEmail() {
     Map<String, Object> kakao_account = (Map<String, Object>) attribute.get("kakao_account");
-    return (String) kakao_account.get("account_email");
+    return (String) kakao_account.get("email");
   }
 
   @Override
