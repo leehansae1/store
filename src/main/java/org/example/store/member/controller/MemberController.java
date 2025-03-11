@@ -10,6 +10,7 @@ import org.example.store.member.dto.MemberDto;
 import org.example.store.member.entity.Member;
 import org.example.store.member.repository.MemberRepository;
 import org.example.store.member.service.MemberService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,7 +45,7 @@ public class MemberController {
     @PostMapping("/signup")
     public String signup(@ModelAttribute MemberDto memberDto) {
         log.info("Received memberDto: {}", memberDto);
-        return memberService.signup(memberDto) ? "redirect:member/login" : prefix + "/signup";
+        return memberService.signup(memberDto) ? "redirect:/member/login" : "member/signup";
     }
 
     // 아이디 중복 검사
@@ -72,11 +73,8 @@ public class MemberController {
             bindingResult.reject("UserNotFound", "사용자를 찾을 수 없습니다.");
         } else if (exception instanceof BadCredentialsException) {
             bindingResult.reject("BadCredentials", "아이디 또는 패스워드를 확인해 주세요.");
-        } else if (exception != null) {
-            bindingResult.reject("AuthenticationException");
-        }
+        } else if (exception != null) bindingResult.reject("AuthenticationException");
         if (bindingResult.hasErrors()) {
-            log.info("로그인 실패: {}", bindingResult.getAllErrors());
             return prefix + "/login";
         }
         return "/index";
@@ -84,62 +82,39 @@ public class MemberController {
 
     // 회원 정보 조회
     @GetMapping("/info")
-    public String info(Authentication authentication, Model model) {
-        String currentUserId = authentication.getName();
-        log.info("Current User ID: {}", currentUserId);
-        Member member = memberService.findByUserId(currentUserId);
-        if (member == null) {
-            log.warn("No member found for userId: {}", currentUserId);
-            return "redirect:/?error=NoSuchUser";
-        }
-        log.info("Retrieved member: {}", member);
+    public String info(@AuthenticationPrincipal CustomUserDetails user, Model model) {
+        MemberDto member = memberService.getMemberDto(user.getLoggedMember().getUserId());
+        member.setUserPw("");
         model.addAttribute("member", member);
         return prefix + "/info";
     }
 
-    // 회원 정보 수정
-    @GetMapping("/modify")
-    public String modify(Model model, @AuthenticationPrincipal CustomUserDetails user) {
-        String loginUserId = user.getUsername();
-        MemberDto memberDto = memberService.getMemberDto(loginUserId);
-        model.addAttribute("member", memberDto);
-        return prefix + "/modify";
+    @PostMapping("/update-info")
+    @ResponseBody
+    public Map<String, Boolean> updateInfo(@AuthenticationPrincipal CustomUserDetails user,
+                                           @RequestBody Map<String, Object> requestData) {
+        String updateTarget = (String) requestData.get("updateTarget");
+        int category = (int) requestData.get("category");
+        boolean updated = memberService.updateMember(user, updateTarget, category);
+        return Map.of("updated", updated);
     }
 
-    @PostMapping("/modify")
-    public String modify(@ModelAttribute MemberDto memberDto) {
-        Member modifiedMember = memberService.modifiedMember(memberDto);
-        if (modifiedMember != null) {
-            log.info("회원 정보 수정 성공");
-            return "redirect:/member/logout";
-        } else {
-            log.info("회원 정보 수정 실패");
-            return "/member/modify";
-        }
+    // 현재 비밀번호 확인 (비밀번호 검증 후 반환)
+    @PostMapping("/verify-password")
+    @ResponseBody
+    public Map<String, Boolean> verifyPassword(@AuthenticationPrincipal CustomUserDetails user,
+                                               @RequestBody Map<String, String> password) {
+        boolean isVerified = memberService.verifyPassword(user.getLoggedMember().getUserId(), password.get("password"));
+        return Map.of("matched", isVerified);
     }
 
     // 회원 soft 탈퇴
     @PostMapping("/delete")
-    public String delete(@RequestParam("userPw") String userPw, Authentication authentication,
-                         Model model, RedirectAttributes redirectAttributes) {
-        String currentUserId = authentication.getName();
-        log.info("회원 삭제 요청, userId: {}", currentUserId);
-        boolean isDeleted = memberService.hideMember(currentUserId, userPw);
-        if (isDeleted) {
-            log.info("회원 삭제 성공, userId: {}", currentUserId);
-            redirectAttributes.addFlashAttribute("message", "계정이 삭제되었습니다.");
-            return "redirect:/";
-        }
-        log.warn("회원 삭제 실패, userId: {}", currentUserId);
-        redirectAttributes.addFlashAttribute("error", "삭제 실패: 패스워드가 일치하지 않습니다.");
-        return "redirect:/member/info";
-    }
-
-    // 관리자 계정 접속 시 탈퇴한 회원 조회 가능
-    @GetMapping("/admin/deleted-members")
-    public String deletedMembers(Model model) {
-        model.addAttribute("deletedMembers", memberService.getDeletedMembers());
-        return "/admin/deleted-members";
+    @ResponseBody
+    public Map<String, Boolean> delete(@AuthenticationPrincipal CustomUserDetails user) {
+        log.info("회원 삭제 요청, userId: {}", user.getLoggedMember().getUserId());
+        boolean isDeleted = memberService.hideMember(user.getLoggedMember().getUserId());
+        return Map.of("isDelete", isDeleted);
     }
 
     // 팔로우 & 언팔로우 기능
@@ -159,5 +134,12 @@ public class MemberController {
         log.info("언팔 요청");
         int deleteResult = memberService.unfollow(sellerId, user);
         return Map.of("isDelete", deleteResult > 0);
+    }
+
+    // 관리자 계정 접속 시 탈퇴한 회원 조회 가능
+    @GetMapping("/admin/deleted-members")
+    public String deletedMembers(Model model) {
+        model.addAttribute("deletedMembers", memberService.getDeletedMembers());
+        return "/admin/deleted-members";
     }
 }

@@ -17,6 +17,7 @@ import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -117,6 +118,7 @@ public class Member {
   public static MemberDto fromEntity(Member member) {
     return MemberDto.builder()
             .userId(member.getUserId())
+            .userPw(member.getUserPw())
             .userName(member.getUserName())
             .userProfile(member.getUserProfile())
             .userEmail(member.getUserEmail())

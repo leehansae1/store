@@ -114,7 +114,6 @@ public class ProductController {
         model.addAttribute("orderId", UUID.randomUUID().toString().substring(0, 8));
         ProductDto productDto = productService.getProductDto(productId);
         model.addAttribute("product", productDto);
-
         return "payment/checkout";
     }
 

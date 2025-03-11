@@ -1,39 +1,195 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title>회원 정보</title>
-  </head>
-  <body>
-    <h1>회원 정보</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WAVE Market 내 계정 관리 페이지입니다.">
+    <title>WAVE Market - 내 계정 관리</title>
+    <!-- 로고 -->
+    <link rel="icon" href="/img/wave-logo.png"/>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons (순수 CSS) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 -->
+    <link rel="stylesheet" href="/css/member/info.css">
+</head>
+<body>
 
-    <div>
-      <p>아이디: <span id="userId" th:text="${member.userId}"></span></p>
-      <p>이름: <span id="userName" th:text="${member.userName}"></span></p>
-      <p>이메일: <span id="userEmail" th:text="${member.userEmail}"></span></p>
-      <p>
-        주소:
-        <span id="address" th:text="${member.address}"></span>
-      </p>
-      <p>전화번호: <span id="tel" th:text="${member.tel}"></span></p>
-      <p>소개: <span id="introduce" th:text="${member.introduce}"></span></p>
+<header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/wave-logo.png" alt="WAVE" height="90">
+            <span class="ms-2 fw-bold fs-4">WAVE</span>
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item me-3">
+                    <a class="btn btn-light" href="/shop/products">내 상점</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                </li>
+            </ul>
+        </div>
     </div>
+</header>
 
-    <h2>정보 수정</h2>
-    <!-- 수정 버튼: userId를 쿼리 파라미터로 포함 -->
-    <a
-      th:href="'/member/modify?userId=' + ${member.userId}"
-      style="text-decoration: none; color: blue"
-      >수정하기</a
-    >
+<main class="container d-flex justify-content-center">
+    <div class="row justify-content-center layout-box">
+        <h3 class="card-title mb-4 text-center" th:text="|${member.userName}님의 회원정보|">내 계정 관리</h3>
+        <!-- 회원 정보 리스트 -->
+        <div id="account-info" class="wave-card">
+            <div class="info-item">
+                <span class="category">아이디</span>
+                <span th:text="${member.userId}" class="content"></span>
+            </div>
+            <div class="info-item">
+                <span class="category">이름</span>
+                <span th:text="${member.userName}" class="content"></span>
+                <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-category="2"
+                        data-field="userName">수정
+                </button>
+            </div>
+            <div class="info-item">
+                <span class="category">이메일</span>
+                <span th:text="${member.userEmail}" class="content"></span>
+            </div>
+            <div class="info-item">
+                <span class="category">주소</span>
+                <span th:text="${member.address}" class="content"></span>
+                <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-category="3"
+                        data-field="address">수정
+                </button>
+            </div>
+            <div class="info-item">
+                <span class="category">전화번호</span>
+                <span th:text="${member.tel}" class="content"></span>
+                <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-category="4"
+                        data-field="tel">수정
+                </button>
+            </div>
+            <div class="info-item">
+                <span class="category">자기소개</span>
+                <span th:text="${member.introduce}" class="content"></span>
+                <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-category="5"
+                        data-field="introduce">수정
+                </button>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3 btn-container">
+            <button class="btn hide-btn" data-bs-toggle="modal" data-bs-target="#deleteModal">회원 탈퇴</button>
+            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-userPw">비밀번호 변경</button>
+        </div>
+    </div>
+</main>
 
-    <h2>회원 삭제</h2>
-    <!-- 회원 삭제 폼 -->
-    <form action="/member/delete" method="post">
-      <input type="hidden" name="userId" th:value="${member.userId}" />
-      <label for="userPw">패스워드 입력 : </label>
-      <input type="password" id="userPw" name="userPw" required />
-      <button type="submit">삭제</button>
-    </form>
-  </body>
+<!-- 수정 모달 -->
+<div class="modal fade" id="editAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">정보 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- 여기에 동적으로 인풋 필드가 추가됨 -->
+            </div>
+            <input type="hidden" class="modal-category">  <!-- 수정할 카테고리 값 저장 -->
+            <div class="modal-footer">
+                <button class="btn btn-primary save-btn">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 패스워드 검증 모달 -->
+<div class="modal fade" id="verifyPwModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="verifyPasswordForm"> <!-- form 태그 추가 -->
+                <div class="modal-header">
+                    <h5 class="modal-title">비밀번호 검증</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="password" class="form-control" id="verify-password-input"
+                           placeholder="비밀번호를 입력해주세요" autocomplete="current-password">
+                    <small class="text-muted" id="password-guide">비밀번호를 입력해주세요.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary verify-btn" disabled>검증</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 비밀번호 변경 모달 -->
+<div class="modal fade" id="changePwModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">비밀번호 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="changePasswordForm">  <!-- ✅ 폼 추가 -->
+                <div class="modal-body">
+                    <!-- username 필드 (숨김 처리) -->
+                    <input type="text" class="d-none" id="username" autocomplete="username">
+
+                    <input type="password" class="form-control mb-2" id="new-password" placeholder="새 비밀번호 입력" autocomplete="new-password" required>
+                    <input type="password" class="form-control mb-2" id="confirm-password" placeholder="새 비밀번호 확인" autocomplete="new-password" required>
+                    <small class="text-secondary" id="guide-text">특수문자, 알파벳, 숫자를 이용하여 8~20자리 비밀번호를 만들어주세요.</small>
+                    <small class="text-success d-none" id="password-success">비밀번호가 일치합니다.</small>
+                    <small class="text-danger d-none" id="password-error">비밀번호가 일치하지 않습니다.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="saveNewPasswordBtn" disabled>저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 회원 탈퇴 모달 -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title bold">회원 탈퇴</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body d-flex flex-column ">
+                <p class="mb-1">정말 회원 탈퇴를 진행하시겠습니까?</p>
+                <strong>탈퇴 후 계정을 복구할 수 없습니다.</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger delete-account-btn">탈퇴</button>
+                <button type="button" class="btn btn-secondary rollback-btn">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="wave-footer text-center py-4">
+    <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
+</footer>
+
+<script src="/js/member/info.js"></script>
+</body>
 </html>

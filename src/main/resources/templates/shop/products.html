@@ -81,7 +81,7 @@
                         <!-- todo 별점 평균내서 0.5으로 내림해서 별로 뿌리기 -->
                         <p class="profile-rating">★★★★☆</p>
                         <div th:if="${#authentication.name eq member.userId}">
-                            <button id="manage-account">내 계정 관리</button>
+                            <button id="manage-account" onclick="window.location.href='/member/info'">내 계정 관리</button>
                             <button id="btn-logout" class="btn" onclick="window.location.href='/member/logout'">
                                 로그아웃
                             </button>

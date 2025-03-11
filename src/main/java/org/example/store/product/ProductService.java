@@ -190,7 +190,6 @@ public class ProductService {
         return productRepository.countBySellerAndIsSell(seller.getUserId(), true);
     }
 
-
     @Transactional
     public void upProduct(int productId) {
         Product product = getProduct(productId);

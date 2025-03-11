@@ -39,8 +39,7 @@ public class PaymentController {
     // 결제버튼 클릭 시 임시저장 ajax 처리
     @PostMapping("/payment/temporary-save")
     @ResponseBody
-    public Map<String, String> temporarySave(@RequestBody SaveDto saveDto,
-                                             HttpSession session) {
+    public Map<String, String> temporarySave(@RequestBody SaveDto saveDto, HttpSession session) {
         log.info(saveDto.toString()); //폼데이터를 통해서 상품아이디, 멤버아이디,이메일도 들어온다
         session.setAttribute("saveDto", saveDto); //세션은 성공 or 실패 시에 삭제
         return Map.of("데이터보내졌을까", "오케이.");
@@ -83,7 +82,6 @@ public class PaymentController {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(requestData.toString().getBytes(StandardCharsets.UTF_8));
         }
-
         try (InputStream responseStream
                      = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
              Reader reader
@@ -126,8 +124,7 @@ public class PaymentController {
     // 결제 성공, 실패 내역 저장
     @PostMapping("/payment/resultSave")
     @ResponseBody
-    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto,
-                                              HttpSession session) {
+    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto, HttpSession session) {
         SaveDto saveDto = (SaveDto) session.getAttribute("saveDto"); //임시저장 값 가져오기
         log.info("saveDto userId : {}", saveDto.getCustomerId());
         session.removeAttribute("saveDto"); //가져오면 세션삭제

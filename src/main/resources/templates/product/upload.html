@@ -458,7 +458,7 @@
                 const productId = json.isSaved;
                 console.log(productId);
                 if (productId > 0) window.location.href = `/product/detail/${productId}`;
-                else alert("잠시 후 다시 시도해주세요.");
+                else alert("필수 사항을 모두 입력해주세요.");
             })
             .catch(error => {
                 console.error("Error during form submission:", error);
