@@ -2,14 +2,24 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head class="head">
     <meta charset="utf-8"/>
-    <!-- 로고 -->
-    <link rel="icon" href="/img/wave-logo.png"/>
-    <link rel="stylesheet" href="/css/toss.css"/>
-    <link rel="stylesheet" href="/css/payment-checkout.css"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>상품 구매화면</title>
-    <!-- SDK 추가 -->
+    <title>상품 구매</title>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- 로고 -->
+    <link rel="icon" href="/img/wave-logo.png"/>
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 -->
+    <link rel="stylesheet" href="/css/toss.css"/>
+    <link rel="stylesheet" href="/css/product/payment-checkout.css"/>
+    <!-- Toss SDK 추가 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 
@@ -20,7 +30,7 @@
 
         <!-- 주문 요약 영역 추가 -->
         <div class="order-summary">
-            <h2 class="order-summary-title">결제하기</h2>
+            <h2 class="order-summary-title">상품 구매</h2>
             <div class="order-item">
                 <img src="https://via.placeholder.com/80" th:src="@{${product.thumbnailUrl}}" alt="상품 이미지">
                 <div class="order-item-info">
@@ -34,17 +44,33 @@
                 </p>
             </div>
         </div>
-        <!-- // 주문 요약 영역 끝 -->
 
         <!-- 결제 UI -->
         <div id="payment-method"></div>
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
         <!-- 결제하기 버튼 -->
-        <div class="result wrapper">
+        <div class="result wrapper d-flex">
             <button class="button btn-lg" id="payment-button" style="margin-top: 30px">
                 결제하기
             </button>
+            <button class="button btn-outline-primary btn-lg" id="back-btn" style="margin-top: 30px">
+                돌아가기
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 세션이 있다면 토스트 띄워주기. 세션이 없다면 초기화면이기에 안띄워도 됨. -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="session-expired-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">알림</strong>
+            <small>방금</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ⏰ 결제 시간이 만료되었습니다. 다시 시도해주세요.
         </div>
     </div>
 </div>
@@ -57,27 +83,38 @@
     </svg>
 </div>
 
+<div id="payment-timer"></div>
 <script th:inline="javascript">
+    const productId = /*[[${product.productId}]]*/ 0;
+    const isSaveDtoExists = /*[[${saveDtoExists}]]*/ false;
+
+    if (isSaveDtoExists) {
+        const toastEl = document.querySelector('#session-expired-toast');
+        const toast = new bootstrap.Toast(toastEl, {delay: 5000});
+        toast.show();
+    }
+
+    document.querySelector("#back-btn").addEventListener("click", e => {
+        e.preventDefault();
+        window.location.href = `/product/detail/${productId}`;
+    });
+
     main();
 
     async function main() {
         const button = document.querySelector("#payment-button");
         const price = /*[[${product.price}]]*/ 0;
-        const productId = /*[[${product.productId}]]*/ 0;
-
         const userId = /*[[${#authentication.principal.loggedMember.userId}]]*/ "";
-
         const userName = /*[[${#authentication.principal.loggedMember.userName}]]*/ "";
-
         const userEmail = /*[[${#authentication.principal.loggedMember.userEmail}]]*/ "";
         const productName = /*[[${product.productName}]]*/ "";
 
         const userTel = /*[[${#authentication.principal.loggedMember.tel}]]*/ null;
-        let tel = "01012345678";
+        let tel = "";
         if (userTel !== null) {
             tel = userTel.replaceAll("-", "");
-            console.log("tel", tel);
         }
+
         const amount = {
             currency: "KRW",
             value: price,
@@ -87,54 +124,76 @@
         const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
         const customerKey = /*[[${orderId}]]*/ "";
         const tossPayments = TossPayments(clientKey);
-        // 회원 결제
-        const widgets = tossPayments.widgets({customerKey,});
+        const widgets = tossPayments.widgets({customerKey});
 
-        // ------  주문서의 결제 금액 설정 ------
-        // TODO: 위젯의 결제금액을 결제하려는 금액으로 초기화하세요.
-        // TODO: renderPaymentMethods, renderAgreement, requestPayment 보다 반드시 선행되어야 합니다.
         await widgets.setAmount(amount);
 
         await Promise.all([
-            // ------  결제 UI 렌더링 ------
             widgets.renderPaymentMethods({
                 selector: "#payment-method",
-                // 렌더링하고 싶은 결제 UI의 variantKey
-                // 결제 수단 및 스타일이 다른 멀티 UI를 직접 만들고 싶다면 계약이 필요해요.
                 variantKey: "DEFAULT",
             }),
-            // ------  이용약관 UI 렌더링 ------
             widgets.renderAgreement({
                 selector: "#agreement",
                 variantKey: "AGREEMENT",
-            }),
+            })
         ]);
 
         const baseUrl = window.location.origin;
 
-        // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
+        // 타이머 설정 (5분)
+        const TIMER_DURATION = 300;
+        let remainingTime = TIMER_DURATION;
+        let timerInterval;
+        const timerContainer = document.querySelector("#payment-timer");
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            timerContainer.innerText = `⏳ 결제 가능 시간: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function startTimer() {
+            // 기존 타이머가 있다면 삭제 후 초기화
+            if (timerInterval) clearInterval(timerInterval);
+            remainingTime = TIMER_DURATION;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                updateTimerDisplay();
+
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerContainer.innerText = "⏳ 결제 시간이 만료되었습니다. 페이지를 새로고침합니다.";
+                    location.reload();
+                }
+            }, 1000);
+        }
+
         button.addEventListener("click", async function () {
             const sendData = {
                 orderId: customerKey,
                 customerEmail: userEmail,
                 amount: price,
-                productId: productId, //product 의 id
+                productId: productId,
                 customerId: userId,
                 orderName: productName
             };
-            //임시 저장해놓자(나중에 비교해볼거 + 멤버, 상품아이디)
+
+            // 임시 저장 요청 (saveDto 생성)
             fetch(baseUrl + "/payment/temporary-save", {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                method: "post",
+                headers: {"Content-Type": "application/json"},
+                method: "POST",
                 body: JSON.stringify(sendData),
             })
                 .then(resp => resp.json())
                 .then(json => {
-                    console.log("여기타면 성공")
-                    console.log(json);
-                });
+                    if (json.isSaved) {
+                        timerContainer.style.display = "block";
+                        startTimer(); //타이머 시작 (5분)
+                    }
+                })
+                .catch(e => console.log("음..", e));
 
             await widgets.requestPayment({
                 orderId: customerKey,

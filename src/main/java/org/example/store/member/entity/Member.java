@@ -17,7 +17,6 @@ import org.example.store.memberReview.Review;
 import org.example.store.payment.Payment;
 import org.example.store.product.entity.Product;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -33,6 +32,8 @@ public class Member {
   private String userId;
 
   private String userPw;
+
+  private int randomId;
 
   private String userName;
 
@@ -81,11 +82,12 @@ public class Member {
   private List<Payment> paymentList;
 
   @Builder
-  public Member(String userId, String userPw, String userName, String userProfile, String userEmail,
+  public Member(String userId, String userPw, String userName, String userProfile, String userEmail, int randomId,
                 String address, String tel, Role role, LocalDateTime regDate, String introduce,
                 MemberStatus status, List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList,
                 List<Product> productList, List<Follow> followList, List<LikeProduct> likeProductList,
                 List<Review> reviewList, List<Payment> paymentList) {
+    this.randomId = randomId;
     this.userId = userId;
     this.userPw = userPw;
     this.userName = userName;
@@ -107,14 +109,6 @@ public class Member {
     this.paymentList = paymentList;
   }
 
-  public void updateInfo(MemberDto memberDto) {
-    this.userName  = memberDto.getUserName();
-    this.userEmail = memberDto.getUserEmail();
-    this.address   = memberDto.getAddress();
-    this.tel       = memberDto.getTel();
-    this.introduce = memberDto.getIntroduce();
-  }
-
   public static MemberDto fromEntity(Member member) {
     return MemberDto.builder()
             .userId(member.getUserId())
@@ -128,6 +122,7 @@ public class Member {
             .role(member.getRole())
             .regDate(member.getRegDate())
             .status(member.getStatus())
+            .randomId(member.getRandomId())
             .build();
   }
 }

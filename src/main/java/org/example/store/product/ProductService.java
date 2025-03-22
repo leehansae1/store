@@ -7,12 +7,16 @@ import org.example.store.like_product.LikeService;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.dto.MemberDto;
+import org.example.store.memberReview.Review;
+import org.example.store.memberReview.ReviewDto;
+import org.example.store.memberReview.ReviewRepository;
 import org.example.store.product.dto.ImageDto;
 import org.example.store.product.dto.ProductDto;
 import org.example.store.product.entity.Image;
 import org.example.store.product.entity.Product;
 import org.example.store.product.repository.ImageRepository;
 import org.example.store.product.repository.ProductRepository;
+import org.example.store.util.DateUtils;
 import org.example.store.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,8 @@ public class ProductService {
 
     private final FollowService followService;
 
+    private final ReviewRepository reviewRepository;
+
     //product 가 필요할 때
     public Product getProduct(int productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
@@ -46,20 +52,21 @@ public class ProductService {
     public ProductDto getProductDto(int productId) {
         Product product = getProduct(productId);
         ProductDto productDto = Product.fromEntity(product);
+        productDto.getSeller().setUserPw("");
         productDto.setImageDto(Image.fromEntity(product.getImage()));
         return productDto;
     }
 
     // 검색키워드로 상품 조회 -- image 테이블은 참조할 필요 없음
     public List<ProductDto> getProductList(String searchWord) {
-        // LIKE 쿼리 대체
         List<Product> productList = productRepository
                 .findDisplayProducts(searchWord, true);
         List<ProductDto> productDtoList = Product.fromEntityList(productList);
-        productDtoList.forEach(productDto ->
-                // n일전 or n시간전 or n분전 or 방금전 출력
-                productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()))
-        );
+        productDtoList.forEach(productDto -> {
+            // n일전 or n시간전 or n분전 or 방금전 출력
+            productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()));
+            productDto.getSeller().setUserPw(""); //비밀번호 삭제
+        });
         return productDtoList;
     }
 
@@ -71,12 +78,14 @@ public class ProductService {
         Product product = getProduct(productId);
 
         ProductDto productDto = Product.fromEntity(product);
+        productDto.getSeller().setUserPw(""); //비밀번호 삭제
 
         int likeCount = likeService.getLikeCount(product);
         productDto.setLikeCount(likeCount); //상품에 대한 찜 개수
 
         // 판매자 계정 dto
         MemberDto memberDto = Member.fromEntity(product.getSeller());
+        memberDto.setUserPw(""); //비밀번호 삭제
         int followCount = followService.getFollowCount(product.getSeller());
         memberDto.setFollowCount(followCount); //팔로우 수
 
@@ -91,11 +100,29 @@ public class ProductService {
             }
         } else product.incrementViews();
         productDto.setViews(product.getViews());
-        log.info("등록일 {}", product.getPostDate());
-        log.info("ux 시간 {}", DateUtils.getTimeAgo(product.getPostDate()));
         productDto.setTimeAgo(DateUtils.getTimeAgo(productDto.getPostDate()));
         map.put("product", productDto);
         map.put("member", memberDto);
+
+        List<Review> reviewList = reviewRepository.findAllBySeller(product.getSeller());
+        map.put("reviewCount", reviewList.size());
+        List<ReviewDto> reviewDtoList;
+
+        // 리뷰 개수가 3개 이상이면 3개만 가져오고, 그렇지 않으면 전체 리스트 변환
+        if (reviewList.size() > 2) {
+            reviewDtoList = new ArrayList<>(3);
+            for (int i = 0; i < 3; i++) {
+                reviewDtoList.add(Review.fromEntity(reviewList.get(i)));
+                log.info("몇번찍히는지 보자 {}", reviewList.get(i));
+            }
+        } else reviewDtoList = Review.fromEntityList(reviewList); //0~2개
+
+        reviewDtoList.forEach(reviewDto -> {
+            reviewDto.getReviewer().setUserPw("");
+            reviewDto.getSeller().setUserPw("");
+            reviewDto.getProductDto().getSeller().setUserPw("");
+        });
+        map.put("reviewList", reviewDtoList);
 
         // 상품 이미지 테이블 조회
         // 프론트에서 값을 꺼낼 때 리스트로 꺼내면 더 간단하기 때문에 image 도메인을 리스트로 변환
@@ -194,6 +221,10 @@ public class ProductService {
     public void upProduct(int productId) {
         Product product = getProduct(productId);
         product.updatePostDate();
+    }
+
+    public int countBySeller(Member seller) {
+        return productRepository.countBySeller(seller);
     }
 
 }

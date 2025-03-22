@@ -16,6 +16,7 @@ public class MemberDto {
 
     private String userId;
     private String userPw;
+    private int randomId;
     private String userName;
     private MultipartFile profile;
     private String userEmail;
@@ -27,14 +28,18 @@ public class MemberDto {
     private MemberStatus status;
     private int followCount;
     private boolean followState;
+    private int productCount;
 
     private String userProfile;
     private String roleStr;
 
     @Builder
     public MemberDto(String userId, String userPw, String userName, String userProfile, MultipartFile profile,
-                     String userEmail, String address, Role role, String tel, LocalDateTime regDate,
-                     String introduce, MemberStatus status, int followCount, boolean followState, String roleStr) {
+                     String userEmail, String address, Role role, String tel, LocalDateTime regDate, int randomId,
+                     String introduce, MemberStatus status, int followCount, boolean followState, String roleStr,
+                     int productCount) {
+        this.productCount = productCount;
+        this.randomId = randomId;
         this.roleStr = roleStr;
         this.profile = profile;
         this.userId = userId;
@@ -54,6 +59,7 @@ public class MemberDto {
 
     public static Member toEntity(MemberDto memberDto) {
         return Member.builder()
+                .randomId(memberDto.getRandomId())
                 .userId(memberDto.getUserId())
                 .userPw(memberDto.getUserPw())
                 .userName(memberDto.getUserName())

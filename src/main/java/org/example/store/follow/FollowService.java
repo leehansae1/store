@@ -26,6 +26,7 @@ public class FollowService {
         Follow savedfollow = followRepository.save(follow);
         return Follow.fromEntity(savedfollow) != null;
     }
+
     // 삭제
     @Transactional
     public int unfollow(Member seller, Member follower) {
@@ -51,7 +52,10 @@ public class FollowService {
                 memberDtoList.add(Member.fromEntity(follow.getFollower()))
         );
         if (memberDtoList.isEmpty()) log.info("팔로워가 없어용,,,");
-        else memberDtoList.forEach(m -> log.info("memberList == {}", m));
+        else memberDtoList.forEach(memberDto -> {
+            memberDto.setFollowCount(followRepository.countBySeller(MemberDto.toEntity(memberDto)));
+            memberDto.setUserPw("");
+        });
         return memberDtoList;
     }
 
@@ -62,9 +66,11 @@ public class FollowService {
         followList.forEach(follow ->
                 memberDtoList.add(Member.fromEntity(follow.getSeller()))
         );
-
         if (memberDtoList.isEmpty()) log.info("팔로잉이 없어용,,,");
-        else memberDtoList.forEach(m -> log.info("memberList == {}", m));
+        else memberDtoList.forEach(memberDto -> {
+            memberDto.setFollowCount(followRepository.countBySeller(MemberDto.toEntity(memberDto)));
+            memberDto.setUserPw("");
+        });
         return memberDtoList;
     }
 }

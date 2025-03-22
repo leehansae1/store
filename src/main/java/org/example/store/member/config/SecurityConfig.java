@@ -2,6 +2,7 @@ package org.example.store.member.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.store.member.handler.CustomAuthenticationFailureHandler;
 import org.example.store.member.service.OAuth2DetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -28,9 +28,9 @@ public class SecurityConfig {
         };
     }
 
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
+                                           CustomAuthenticationFailureHandler failureHandler) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf.disable()) // 🔥 CSRF 비활성화 (POST 요청 문제 해결)
                 .authorizeHttpRequests(auth -> auth
@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .passwordParameter("userPw")
                         .loginProcessingUrl("/member/login")
                         .defaultSuccessUrl("/", true) // 🔥 이전 페이지로 리디렉트
-                        .failureUrl("/member/login?error=true")
+                        .failureHandler(failureHandler)
                         .permitAll()
                 )
                 .logout(auth -> auth

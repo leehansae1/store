@@ -53,7 +53,6 @@ public class Product {
 
     private boolean isSell;
 
-    @LastModifiedDate
     @CreatedDate
     private LocalDateTime postDate;
 

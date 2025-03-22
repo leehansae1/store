@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-    <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <!-- 커스텀 스타일 -->
-    <link rel="stylesheet" href="/css/product-detail.css">
+    <link rel="stylesheet" href="/css/product/product-detail.css">
 </head>
 <body>
 
@@ -29,7 +29,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="/img/wave-logo.png" alt="WAVE" height="90">
-            <span class="ms-2 fw-bold fs-4">WAVE</span>
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
@@ -69,9 +69,9 @@
 
 <!-- todo 메인 컨텐츠 -->
 <main class="container product-detail-container">
-    <div class="row gx-2">
+    <div class="row">
         <!-- todo 상품 이미지 영역 (Swiper 슬라이더 적용) -->
-        <div class="col-md-5">
+        <div class="col-md-5 image-container">
             <div class="product-images">
                 <div class="swiper my-swiper">
                     <div class="swiper-wrapper">
@@ -93,7 +93,7 @@
             </div>
         </div>
         <!-- todo 오른쪽 영역: 상단 상품 요약 -->
-        <div class="col-md-7">
+        <div class="col-md-7 info-container">
             <div class="product-summary">
                 <h2 th:text="${product.productName}">상품명</h2>
                 <h4 class="product-price">
@@ -102,9 +102,9 @@
                 </h4>
 
                 <!-- 액션 버튼 및 메타 정보 영역 -->
-                <div class="product-actions-meta my-3">
+                <div class="product-actions mt-3">
 
-                    <!-- 메타 정보 영역 (조회수, 등록일, 새상품 등) -->
+                    <!-- 메타 정보 영역 (조회수, 등록일등록일, 새상품 등) -->
                     <div class="meta-info">
                         <!-- 상단: 조회수 및 등록일 -->
                         <div class="info-details d-flex align-items-center">
@@ -121,7 +121,6 @@
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-clock me-1"></i>
                                 <span th:text="${product.timeAgo}">방금 전</span>
-                                <span class="post-date-text">(등록일 기준)</span>
                             </div>
                         </div>
                         <!-- 하단: 상품 상태 (단독으로 표시) -->
@@ -132,14 +131,14 @@
                         </div>
                     </div>
                     <!-- 액션 버튼 영역 -->
-                    <div class="product-actions-meta my-3">
+                    <div class="product-actions-meta">
                         <div th:if="${#authentication.name eq member.userId}">
                             <!-- 로그인한 사용자와 판매자가 같은 경우 "내 상점관리" 버튼 표시 -->
                             <a href="/shop/products" class="btn-shop-manage">내 상점관리</a>
                         </div>
                         <div th:unless="${#authentication.name eq member.userId}">
                             <!-- 로그인한 사용자와 판매자가 다른 경우 기존 버튼 표시 -->
-                            <div class="d-flex product-action-buttons mb-2">
+                            <div class="d-flex product-action-buttons">
                                 <!-- 찜하기 버튼 -->
                                 <th:block sec:authorize="isAuthenticated()">
                                     <button id="likeBtn" class="btn flex-fill"
@@ -212,7 +211,7 @@
                     <h5 class="card-title">상점 정보</h5>
                     <div class="d-flex align-items-center mb-2">
                         <a th:unless="${#authentication.name == member.userId}"
-                           th:href="@{|/shop/products/${product.productId}|}">
+                           th:href="@{|/shop/products/${member.randomId}|}">
                             <img th:src="|${member.userProfile != null ? member.userProfile : '/img/unknown.jpg'}|"
                                  alt="판매자"
                                  class="rounded-circle seller-profile">
@@ -234,7 +233,7 @@
                                     sec:authorize="isAuthenticated()"
                                     th:unless="${#authentication.name == member.userId}"
                                     class="btn btn-follow w-100" id="followBtn"
-                                    th:data-seller-id="${member.userId}"
+                                    th:data-seller-id="${member.randomId}"
                                     th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
                                     th:text="${member.followState}? '팔로잉':'팔로우'"
                             >팔로우버튼
@@ -242,26 +241,72 @@
                             <button
                                     sec:authorize="!isAuthenticated()"
                                     class="btn btn-follow btn-need-login w-100"
-                                    th:data-seller-id="${member.userId}"
+                                    th:data-seller-id="${member.randomId}"
                                     th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
                                     th:text="${member.followState}? '팔로잉':'팔로우'"
                             >팔로우버튼
                             </button>
                         </th:block>
                     </div>
+                    <section id="product-reviews">
+                        <h3 class="review-title">상점 후기
+                            <span th:text="${reviewCount}"></span>
+                        </h3>
+
+                        <!-- 리뷰 리스트 출력 -->
+                        <div id="review-container" class="review-list">
+                            <th:block th:if="${#lists.isEmpty(reviewList)}">
+                                <p class='no-review-text'>등록된 후기가 없습니다 😥</p>
+                            </th:block>
+
+                            <th:block th:unless="${#lists.isEmpty(reviewList)}"
+                                      th:each="review, iterStat : ${reviewList}">
+                                <div class="review-item" th:classappend="${iterStat.index > 1} ? 'hidden-review'">
+                                    <a th:href="@{|/shop/products/${review.reviewer.randomId}|}">
+                                        <div>
+                                            <!-- 리뷰 작성자 프로필 및 정보 -->
+                                            <div class="review-user d-flex">
+                                                <div>
+                                                    <img class="review-profile"
+                                                         th:src="${review.reviewer.userProfile} ?: '/img/unknown.jpg'"
+                                                         alt="프로필 이미지">
+                                                </div>
+                                                <div>
+                                                    <p class="review-name" th:text="${review.reviewer.userName}">사용자
+                                                        이름</p>
+                                                    <p class="review-rating">
+                                                        <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span><span
+                                                            th:if="${review.rating < 5}"
+                                                            th:each="i : ${#numbers.sequence(1, 5 - review.rating)}">☆</span>
+                                                    </p>
+                                                </div>
+                                                <!-- 후기 작성일 -->
+                                                <div class="review-content">
+                                                    <p class="review-date"
+                                                       th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="review-text" th:text="${review.reviewText}">후기 내용</p>
+                                    </a>
+                                </div>
+                            </th:block>
+                        </div>
+                        <!-- 더보기 버튼 -->
+                        <button id="showMoreReviews" class="btn w-100 mt-2" style="display: none;">
+                            상점 후기 더보기
+                        </button>
+                    </section>
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<!-- 하단 파도 효과 -->
-<div class="wave-container">
-    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path fill="#e6f2ff" fill-opacity="1"
-              d="M0,192L48,181.3C96,171,192,149,288,138.7C384,128,480,128,576,144C672,160,768,192,864,208C960,224,1056,224,1152,208C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    </svg>
-</div>
+
+<footer class="wave-footer text-center py-4">
+    <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
+</footer>
 
 <!-- Search JS -->
 <script src="/js/util/search.js"></script>
@@ -277,6 +322,15 @@
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
+        watchOverflow: false
+    });
+    document.querySelector('.swiper-pagination').classList.remove("swiper-pagination-lock");
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            document.querySelectorAll(".swiper-pagination-bullet").forEach(bullet => {
+                bullet.style.setProperty("display", "inline-block", "important");
+            });
+        }, 100);
     });
 </script>
 <script th:inline="javascript" th:unless="${#authentication.name eq member.userId}">
@@ -394,7 +448,22 @@
                 });
         });
     }
+    document.addEventListener("DOMContentLoaded", () => {
+        const hiddenReviews = document.querySelectorAll(".hidden-review");
+        const showMoreBtn = document.querySelector("#showMoreReviews");
+        const randomId = /*[[${member.randomId}]]*/ "";
+        // 3개 이상이면 버튼 보이기
+        if (hiddenReviews.length > 0) {
+            showMoreBtn.style.display = "block";
+        }
+
+        showMoreBtn.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.href = `/shop/products/${randomId}`;
+        });
+    });
 </script>
+<!-- todo 카드 높이 맞추기 -->
 <script>
     window.addEventListener('load', syncCardHeight);
     window.addEventListener('resize', syncCardHeight);

@@ -1,3 +1,16 @@
+// todo < 비회원 접근 >
+const isLoggedIn = document.body.getAttribute('data-logged-in') === 'true';
+
+document.querySelectorAll(".btn-need-login").forEach(b => {
+    if (!isLoggedIn) {
+        b.addEventListener("click", (e) => {
+            if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                if (!b.classList.contains("nav-link")) window.location.href = "/member/login";
+            } else e.preventDefault();
+        });
+    }
+});
+
 // todo < tab 숨기기/보이기 >
 const tabs = document.querySelectorAll(".tab-btn");
 const contents = document.querySelectorAll(".tab-content");
@@ -23,19 +36,6 @@ tabs.forEach(tab => {
 
 // 페이지 처음 열리면 기본으로 '상품' 탭 열기
 showTab('#products');
-
-// todo < 비회원 접근 >
-const isLoggedIn = document.body.getAttribute('data-logged-in') === 'true';
-
-document.querySelectorAll(".btn-need-login").forEach(b => {
-    if (!isLoggedIn) {
-        b.addEventListener("click", (e) => {
-            if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
-                if (!b.classList.contains("nav-link")) window.location.href = "/member/login";
-            } else e.preventDefault();
-        });
-    }
-});
 
 // todo < UP 버튼 이벤트 >
 document.querySelectorAll('.up-btn').forEach(upBtn => {
@@ -101,12 +101,17 @@ const followerCountElem = document.querySelector("#followerCount");
 
 // 팔로우 관련 요소가 없으면 아예 아무 처리도 안 함
 if (followBtn || followerCountElem) {
-    if (isLoggedIn) followBtn.classList.add("btn-need-login");
+    if (!isLoggedIn) followBtn.classList.add("btn-need-login");
     else followBtn.classList.remove("btn-need-login");
 
     followBtn.addEventListener("click", e => {
         e.preventDefault();
-
+        if (followBtn.classList.contains("btn-need-login")) {
+            if (confirm("로그인 후 사용 가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = "/member/login";
+                return;
+            } else return;
+        }
         const sellerId = followBtn.getAttribute('data-seller-id');
         const currentState = followBtn.textContent.trim();
         const url = `/member/follow/${sellerId}`;
@@ -140,6 +145,43 @@ if (followBtn || followerCountElem) {
             .catch(error => {
                 console.error("팔로우 처리 중 오류:", error);
                 alert("팔로우 처리 중 오류가 발생했습니다.");
+            });
+    });
+}
+
+// todo 프로필 이미지 변경 및 기존 이미지 삭제
+const profileImg = document.querySelector(".profile-image");
+const profileInput = document.querySelector("#profile-input");
+
+if (profileInput) {
+    profileImg.addEventListener("click", () => {
+        profileInput.click();
+    })
+
+    profileInput.addEventListener("change", e => {
+        console.log(e);
+
+        const file = e.target.files[0];
+        if (!file.type.match("image.*")) {
+            alert("이미지 파일만 가능합니다");
+            return;
+        }
+        const formData = new FormData();
+        formData.append("profileImage", file);
+        console.log("file: ", profileInput.value);
+        console.log("formData: ", formData);
+        fetch("/member/update-profile", {
+            method: "POST",
+            body: formData,
+        })
+            .then(resp => resp.json())
+            .then(json => {
+                console.log(json.updated);
+                if (json.updated) location.reload();
+                else alert("잠시 후 다시 시도해주세요.");
+            })
+            .catch(error => {
+                console.log(error);
             });
     });
 }

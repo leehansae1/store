@@ -25,7 +25,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="/img/wave-logo.png" alt="WAVE" height="90">
-            <span class="ms-2 fw-bold fs-4">WAVE</span>
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
@@ -93,6 +93,7 @@
         <div class="d-flex justify-content-between mt-3 btn-container">
             <button class="btn hide-btn" data-bs-toggle="modal" data-bs-target="#deleteModal">회원 탈퇴</button>
             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-userPw">비밀번호 변경</button>
+            <button class="btn back-btn" onclick="window.location.href='/shop/products'">돌아가기</button>
         </div>
     </div>
 </main>
@@ -146,7 +147,7 @@
                 <h5 class="modal-title">비밀번호 변경</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="changePasswordForm">  <!-- ✅ 폼 추가 -->
+            <form id="changePasswordForm">
                 <div class="modal-body">
                     <!-- username 필드 (숨김 처리) -->
                     <input type="text" class="d-none" id="username" autocomplete="username">
@@ -190,6 +191,7 @@
     <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
 </footer>
 
+<script src="/js/util/search.js"></script>
 <script src="/js/member/info.js"></script>
 </body>
 </html>

@@ -13,7 +13,6 @@ import org.example.store.memberReview.ReviewDto;
 import org.example.store.memberReview.ReviewService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
-import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,31 +38,37 @@ public class ShopController {
     private final FollowService followService;
 
     // 바로 보이는 내상점 페이지 >> 내 상품 리스트 나열
-    @GetMapping({"/products", "/products/{productId}"})
+    @GetMapping({"/products", "/products/{randomId}"})
     public String getMyProducts(@AuthenticationPrincipal @Nullable Object principal,
-                                @PathVariable(required = false) Integer productId, Model model) {
-        CustomUserDetails user = null;
+                                @PathVariable(required = false) String randomId, Model model) {
+
+        CustomUserDetails user;
         if (principal instanceof CustomUserDetails) user = ((CustomUserDetails) principal);
-        else log.info("비회원 접근이에요");
+        else {
+            user = null;
+            log.info("비회원 접근이에요");
+        }
 
         List<ProductDto> productDtoList;
         MemberDto memberDto;
-        if (productId != null) { //판매자의 상점이라면
-            Product product = productService.getProduct(productId);
-            memberDto = Member.fromEntity(product.getSeller());
-            int followCount = followService.getFollowCount(product.getSeller());
+        if (randomId != null) { //판매자의 상점이라면
+            Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
+            memberDto = Member.fromEntity(member);
+            int followCount = followService.getFollowCount(member);
             boolean followState;
+
             if (user != null) { //회원이라면
-                followState = followService.isFollowed(product.getSeller(), user.getLoggedMember());
+                followState = followService.isFollowed(member, user.getLoggedMember());
             } else followState = false;
             memberDto.setFollowCount(followCount);
             memberDto.setFollowState(followState);
 
-            productDtoList = productService.getSellerProducts(product.getSeller());
+            productDtoList = productService.getSellerProducts(member);
         } else { //내 상점이라면
             memberDto = Member.fromEntity(user.getLoggedMember());
             productDtoList = productService.getMyProducts(user);
         }
+        memberDto.setUserPw("");
         model.addAttribute("member", memberDto);
         model.addAttribute("productList", productDtoList);
         // 공통
@@ -78,10 +83,16 @@ public class ShopController {
     @PostMapping("/reviews/{userId}")
     @ResponseBody
     public Map<String, Object> getReviews(@PathVariable String userId) {
+        log.info("userId {}", userId);
         List<ReviewDto> reviewDtoList = reviewService.getReviewList(memberService.getMember(userId));
         if (reviewDtoList.isEmpty()) log.info("후기가 없어용");
-        else reviewDtoList.forEach(r -> log.info("SHOP reviewDto: {}", r));
-        return reviewDtoList.isEmpty()
+        else reviewDtoList.forEach(r -> {
+            log.info("SHOP reviewDto: {}", r);
+            r.getReviewer().setUserPw("");
+            r.getSeller().setUserPw("");
+            r.getProductDto().getSeller().setUserPw("");
+        });
+        return !reviewDtoList.isEmpty()
                 ? Map.of("reviewList", reviewDtoList, "isList", true)
                 : Map.of("isList", false);
     }
@@ -93,24 +104,36 @@ public class ShopController {
         List<ProductDto> productDtoList = likeService.getLikeProducts(customUser);
         if (productDtoList.isEmpty()) log.info("찜한 상품이 없어요");
         else productDtoList.forEach(productDto -> log.info("SHOP productDto: {}", productDto));
-        return productDtoList.isEmpty()
-                ? Map.of("productList", productDtoList, "isList", true)
-                : Map.of("isList", false);
+        return !productDtoList.isEmpty()
+                ? Map.of("productList", productDtoList, "isList", true, "count", productDtoList.size())
+                : Map.of("isList", false, "count", "0");
     }
 
     // 구독자
-    @PostMapping("/followers/{userId}")
+    @PostMapping("/followers/{randomId}")
     @ResponseBody
-    public List<MemberDto> getAllFollowers(@PathVariable String userId) {
-        Member member = memberService.getMember(userId);
-        return followService.getAllFollowers(member);
+    public Map<String, Object> getAllFollowers(@PathVariable String randomId) {
+        Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
+        List<MemberDto> memberList = followService.getAllFollowers(member);
+        memberList.forEach(memberDto ->
+                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)))
+        );
+        return memberList.isEmpty()
+                ? Map.of("isEmpty", true, "count", "0")
+                : Map.of("isEmpty", false, "memberList", memberList, "count", memberList.size());
     }
 
     // 내가 구독한 사람
-    @PostMapping("/followings/{userId}")
+    @PostMapping("/followings/{randomId}")
     @ResponseBody
-    public List<MemberDto> getAllSeller(@PathVariable String userId) {
-        Member member = memberService.getMember(userId);
-        return followService.getAllSeller(member);
+    public Map<String, Object> getAllSeller(@PathVariable String randomId) {
+        Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
+        List<MemberDto> memberList = followService.getAllSeller(member);
+        memberList.forEach(memberDto ->
+                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)))
+        );
+        return memberList.isEmpty()
+                ? Map.of("isEmpty", true, "count", "0")
+                : Map.of("isEmpty", false, "memberList", memberList, "count", memberList.size());
     }
 }

@@ -6,6 +6,7 @@ import org.example.store.member.constant.MemberStatus;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.entity.Member;
 import org.example.store.member.repository.MemberRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,27 +18,27 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CustomUserDetailsService implements UserDetailsService{
+public class CustomUserDetailsService implements UserDetailsService {
 
-  private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-  @Override
-  public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-      // DB에서 userId에 해당하는 사용자를 조회
-      Optional<Member> optionalMember = memberRepository.findByUserId(userId);
+    @Override
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        Optional<Member> optionalMember = memberRepository.findByUserId(userId);
 
-      if(optionalMember.isPresent()) {
-        Member member = optionalMember.get();
-
-        // DELETED 상태라면 로그인할 수 없게 처리
-        if (member.getStatus() == MemberStatus.STATUS_DELETED) {
-          throw new DisabledException("더 이상 사용할 수 없는 아이디입니다.");
+        if (optionalMember.isEmpty()) {
+            log.warn("🚨 [로그인 실패] 존재하지 않는 사용자 userId: {}", userId);
+            throw new BadCredentialsException("존재하지 않는 아이디입니다.");
         }
 
-        // 사용자가 존재하고 ACTIVE 상태라면 반환
-        return new CustomUserDetails(member);        
-      }
-      // 사용자가 없으면 예외
-      throw new UsernameNotFoundException("아이디 패스워드를 확인해주세요.");
-    } 
-  }
+        Member member = optionalMember.get();
+
+        if (member.getStatus() == MemberStatus.STATUS_DELETED) {
+            log.warn("🚨 [로그인 실패] 탈퇴한 계정 시도 userId: {}", userId);
+            throw new DisabledException("이 계정은 탈퇴 처리되었습니다. 새로운 계정을 생성하세요.");
+        }
+
+        return new CustomUserDetails(member);
+    }
+}
+

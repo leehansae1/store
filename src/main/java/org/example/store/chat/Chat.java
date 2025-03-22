@@ -62,9 +62,15 @@ public class Chat {
     }
     public static List<ChatDto> fromEntityList(List<Chat> chatList) {
         List<ChatDto> chatDtoList = new ArrayList<>();
-        chatList.forEach(chat ->
-                chatDtoList.add(fromEntity(chat))
-        );
+        chatList.forEach(chat -> chatDtoList.add(fromEntity(chat)));
         return chatDtoList;
     }
 }
+
+
+
+
+
+
+
+

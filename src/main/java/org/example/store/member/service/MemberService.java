@@ -11,7 +11,6 @@ import org.example.store.member.entity.Member;
 import org.example.store.member.repository.MemberRepository;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
-import org.example.store.product.entity.Product;
 import org.example.store.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +49,11 @@ public class MemberService {
         } else return MemberDto.builder().userId("조회불가").build();
     }
 
+    public Member getMemberByRandomId(int randomId) {
+        Optional<Member> optionalMember = memberRepository.findByRandomId(randomId);
+        return optionalMember.orElseGet(() -> Member.builder().userId("조회불가").build());
+    }
+
     public boolean signup(MemberDto memberDto) {
         // 프로필 이미지 파일 업로드 처리
         if (memberDto.getProfile() != null && !memberDto.getProfile().isEmpty()) {
@@ -63,6 +68,9 @@ public class MemberService {
                 memberDto.getRoleStr().equals("ROLE_USER") ? Role.ROLE_USER : Role.ROLE_ADMIN
         );
         memberDto.setStatus(MemberStatus.STATUS_ACTIVE);
+        // userID 외 사용자를 조회할 고유한 값 만들어주기
+        String randomId = UUID.randomUUID().toString().replaceAll("[^0-9]", "");
+        memberDto.setRandomId(Integer.parseInt(randomId.substring(0, 8)));
 
         Member member = memberRepository.save(MemberDto.toEntity(memberDto));
         return Member.fromEntity(member) != null;
@@ -73,12 +81,12 @@ public class MemberService {
     }
 
     public boolean follow(String sellerId, CustomUserDetails user) {
-        Member seller = getMember(sellerId);
+        Member seller = getMemberByRandomId(Integer.parseInt(sellerId));
         return followService.follow(seller, user.getLoggedMember());
     }
 
     public int unfollow(String sellerId, CustomUserDetails user) {
-        Member seller = getMember(sellerId);
+        Member seller = getMemberByRandomId(Integer.parseInt(sellerId));
         return followService.unfollow(seller, user.getLoggedMember());
     }
 
@@ -86,13 +94,24 @@ public class MemberService {
         return memberRepository.existsByUserId(userId);
     }
 
-    public void updateImage(String userId, MultipartFile file) {
-        FileUtil.saveAndRenameFile(file, folderPath, 0);
+    public boolean updateImage(CustomUserDetails user, MultipartFile file) {
+        MemberDto memberDto = getMemberDto(user.getLoggedMember().getUserId());
+        FileUtil.deleteFile(null, user.getLoggedMember().getUserProfile());
+        String fileName = FileUtil.saveAndRenameFile(file, folderPath, 0);
+        memberDto.setUserProfile(fileName);
+        Member updatedUser = memberRepository.save(MemberDto.toEntity(memberDto));
+        // 강제로 SecurityContext 업데이트
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                new CustomUserDetails(updatedUser),
+                null,
+                user.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return updatedUser.getUserProfile().equals(fileName);
     }
 
     public boolean updateMember(CustomUserDetails user, String updateTarget, int category) {
         MemberDto member = Member.fromEntity(user.getLoggedMember());
-        log.info("여기를 몇번 오는지 보자");
         switch (category) {
             case 1:
                 member.setUserPw(bCryptPasswordEncoder.encode(updateTarget));
@@ -117,7 +136,8 @@ public class MemberService {
                 null,
                 user.getAuthorities()
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (category == 1) SecurityContextHolder.clearContext();
+        else SecurityContextHolder.getContext().setAuthentication(authentication);
         return updatedUser.getUserId().equals(member.getUserId());
     }
 

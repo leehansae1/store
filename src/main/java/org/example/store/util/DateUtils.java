@@ -1,4 +1,4 @@
-package org.example.store.product;
+package org.example.store.util;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

@@ -1,6 +1,7 @@
 package org.example.store.product;
 
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
@@ -84,6 +85,8 @@ public class ProductController {
         Map<String, Object> resultMap = productService.getProductDetail(productId, member);
         model.addAttribute("product", resultMap.get("product"));
         model.addAttribute("member", resultMap.get("member"));
+        model.addAttribute("reviewList", resultMap.get("reviewList"));
+        model.addAttribute("reviewCount", resultMap.get("reviewCount"));
         List<String> imageList;
         if (resultMap.get("imageList") != null) {
             imageList = (List<String>) resultMap.get("imageList");
@@ -110,10 +113,12 @@ public class ProductController {
     }
 
     @GetMapping("/payment/checkout/{productId}")
-    public String checkout(Model model, @PathVariable int productId, @AuthenticationPrincipal CustomUserDetails user) {
+    public String checkout(Model model, @PathVariable int productId, HttpSession session) {
         model.addAttribute("orderId", UUID.randomUUID().toString().substring(0, 8));
         ProductDto productDto = productService.getProductDto(productId);
         model.addAttribute("product", productDto);
+        boolean isSaveDtoExists = session.getAttribute("saveDto") != null;
+        model.addAttribute("saveDtoExists", isSaveDtoExists); // JS에서 사용할 값
         return "payment/checkout";
     }
 

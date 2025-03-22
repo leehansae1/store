@@ -1,0 +1,79 @@
+/* 팔로워/팔로잉 리스트 */
+.follow-list {
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개 */
+    gap: 20px;
+    justify-content: center;
+}
+
+.follower-title, .following-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    border-left: 5px solid #007bff;
+    padding-left: 10px;
+}
+
+.follow-item {
+    text-decoration: none;
+}
+
+/* 팔로우 카드 */
+.follow-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+    min-width: 180px;
+}
+
+.follow-card:hover {
+    transform: translateY(-3px);
+}
+
+.follow-profile {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.follow-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.follow-name:hover {
+    text-decoration: underline;
+}
+
+.follow-info {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 반응형: 태블릿에서는 2개씩 정렬 */
+@media (max-width: 1024px) {
+    .follow-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 반응형: 모바일에서는 1개씩 정렬 */
+@media (max-width: 600px) {
+    .follow-list {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

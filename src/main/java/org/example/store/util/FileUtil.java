@@ -59,14 +59,20 @@ public class FileUtil {
 
     public static void deleteFile(Image image, String thumbnailPath) {
         log.info("thumbnailPath: {}", thumbnailPath);
-        List<String> imageStrList = Image.toStrList(image);
-        log.info("imageStrList: {}", imageStrList);
-        try {
-            Files.deleteIfExists(Path.of("C:\\" + thumbnailPath));
+        if (image != null) {
+            List<String> imageStrList = Image.toStrList(image);
+            log.info("imageStrList: {}", imageStrList);
             for (String imageStr : imageStrList) {
-                Files.deleteIfExists(Path.of("C:\\" + imageStr)); //나머지도
+                try {
+                    Files.deleteIfExists(Path.of("C:\\" + imageStr)); //나머지도
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 log.info("이미지 파일 삭제");
             }
+        }
+        try {
+            Files.deleteIfExists(Path.of("C:\\" + thumbnailPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

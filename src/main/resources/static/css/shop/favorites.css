@@ -1,0 +1,95 @@
+/* todo 찜한 상품 */
+.favorites-list {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.favorites-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    border-left: 5px solid #007bff;
+    padding-left: 10px;
+}
+
+.favorite-item {
+    display: flex;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: transform 0.2s ease-in-out;
+    width: calc(50% - 10px); /* 한 줄에 두 개씩 배치 */
+    align-items: stretch; /* 높이를 자동으로 맞추기 */
+}
+
+.favorite-content {
+    flex-grow: 1;
+    align-items: stretch;
+}
+
+.favorite-item:hover {
+    transform: translateY(-3px);
+}
+
+.favorite-image {
+    max-width: 120px; /* 최대 너비 제한 */
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.favorite-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-left: 15px;
+}
+
+.favorite-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.favorite-real-price {
+    font-size: 22px;
+    color: #333;
+    flex-grow: 1;
+}
+
+.favorite-price {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+}
+
+.remove-favorite-btn {
+    font-size: 14px;
+    border: none;
+    align-self: start;
+}
+
+.no-favorites-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.favorite-postDate {
+    justify-self: end;
+    margin: 0;
+    color: #888;
+}
+
+@media (max-width: 768px) {
+    .favorite-item {
+        width: 100%; /* 좁은 화면에서는 한 줄에 하나씩 */
+    }
+}

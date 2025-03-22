@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.dto.CustomUserDetails;
+import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,36 +27,44 @@ public class ChatRoomController {
     @GetMapping("/chatRoom/{productId}") // productId 는 해당상품, 판매자 조회 시 필요
     public String getChatRoomList(@PathVariable int productId, Model model,
                                   @AuthenticationPrincipal CustomUserDetails user) {
-        Map<String, Object> resultMap
-                = chatRoomService.getChatRoomListAndExist(user, productId);
+        Map<String, Object> resultMap = chatRoomService.getChatRoomListAndExist(user, productId);
 
         List<ChatRoomDto> chatRoomDtos = (List<ChatRoomDto>) resultMap.get("chatRoomList");
         List<ChatDto> chatDtos = (List<ChatDto>) resultMap.get("chatList");
-        if (chatRoomDtos != null) {
-            chatRoomDtos.forEach(r -> log.info("chatRoomList 결과 값 {}", r));
-            model.addAttribute("chatRoomList", chatRoomDtos);
-        }
-        if (chatDtos != null) {
-            log.info("chatList === {}",chatDtos);
-            model.addAttribute("chatList", chatDtos);
-        }
-        return "chatRoom";
+        model.addAttribute("sellerRandomId", resultMap.get("sellerRandomId"));
+        model.addAttribute("sellerName", resultMap.get("sellerName"));
+        model.addAttribute("roomId", resultMap.get("roomId"));
+        model.addAttribute("product", resultMap.get("product"));
+        chatRoomDtos.forEach(chatRoomDto -> log.info("chatRoomDto === {}", chatRoomDto.toString()));
+        model.addAttribute("chatRoomList", chatRoomDtos);
+        model.addAttribute("chatList", chatDtos.isEmpty() ? new ArrayList<>() : chatDtos);
+        return "chatting/chatRoom";
     }
 
     // 기존 채팅방 조회 >> 없으면 문구하나 정도 띄우기, 아니면 모달로 알려주기?
     @GetMapping("/chatRoom")
     public String getChatRoomList(Model model, @AuthenticationPrincipal CustomUserDetails user) {
-        List<ChatRoomDto> chatRoomDtoList
-                = chatRoomService.getChatRoomList(user);
-        if (chatRoomDtoList == null) model.addAttribute("isExist", false);
+        List<ChatRoomDto> chatRoomDtoList = chatRoomService.getChatRoomList(user);
         // 채팅방 list 없으면 자바스크립트로 아예 접근 막거나 채팅이없다 이런 메시지를 채팅방 대신 띄우기
-        chatRoomDtoList.forEach(chatRoomDto -> {
-            log.info("chatRoomDto == {}", chatRoomDto);
-            log.info("안읽은 개수 {}", chatRoomDto.getUnreadCount());
-        });
+        chatRoomDtoList.forEach(chatRoomDto -> log.info("chatRoomDto === {}", chatRoomDto.toString()));
         model.addAttribute("chatRoomList", chatRoomDtoList);
-        return "chatRoom";
+        return "chatting/chatRoom";
     }
+
+    @DeleteMapping("/chatRoom/delete/{roomId}")
+    @ResponseBody
+    public Map<String, Boolean> delete(@PathVariable int roomId) {
+        boolean isDelete = chatRoomService.deleteChatRoom(roomId);
+        return Map.of("isDelete", isDelete);
+    }
+
+    @PostMapping("/chatRoom/product/{roomId}")
+    @ResponseBody
+    public Map<String, Object> getProductByRoomId(@PathVariable int roomId) {
+        ProductDto productDto = chatRoomService.getProductByRoomId(roomId);
+        return Map.of("product", productDto, "isProduct", productDto.getProductId() > 0);
+    }
+
 
     // 채팅 쓰기
     @PostMapping("/chatRoom/writeChat/{roomId}")
@@ -72,6 +83,6 @@ public class ChatRoomController {
     public String writePaymentResult(@PathVariable int productId,
                                      @AuthenticationPrincipal CustomUserDetails user) {
         return chatRoomService.writePaymentResult(productId, user) != null
-                ? "redirect:chatRoom/" + productId : "/";
+                ? "redirect:/chatting/chatRoom/" + productId : "/";
     }
 }

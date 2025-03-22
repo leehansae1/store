@@ -20,13 +20,13 @@ public class ChatController {
 
     // 방번호로 채팅방 조회, 채팅내역 가져오기 + 읽음 처리
     @PostMapping("/chat/list/{roomId}")
-    public Map<String, Object> getList(@PathVariable int roomId,
+    public Map<String, Object> getList(@PathVariable String roomId,
                                        @AuthenticationPrincipal CustomUserDetails user) {
-        List<ChatDto> chatDtoList
-                = chatService.getList(user.getLoggedMember(), roomId);
+        log.info("roomId {}", roomId);
+        log.info("user {}", user.getLoggedMember().getUserId());
+        List<ChatDto> chatDtoList = chatService.getList(user.getLoggedMember(), Integer.parseInt(roomId));
 
-        return chatDtoList != null
-                ? Map.of("chatList", chatDtoList, "success", true)
-                : Map.of("success", false);
+        if (chatDtoList != null) return Map.of("chatList", chatDtoList, "success", true);
+        else return Map.of("success", false);
     }
 }

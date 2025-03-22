@@ -33,7 +33,7 @@ public class ChatRoom {
     private Product product;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<Chat> chatList;
+    private List<Chat> chatList = new ArrayList<>();
 
     @Builder
     public ChatRoom(int roomId, List<Chat> chatList,
@@ -52,7 +52,6 @@ public class ChatRoom {
                 .roomId(chatRoom.getRoomId())
                 .toUser(Member.fromEntity(chatRoom.getToUser()))
                 .fromUser(Member.fromEntity(chatRoom.getFromUser()))
-                .chatDtoList(new ArrayList<>())
                 .build();
     }
     public static List<ChatRoomDto> fromEntityList(List<ChatRoom> chatRooms) {

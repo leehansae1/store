@@ -25,7 +25,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="/img/wave-logo.png" alt="WAVE" height="90">
-            <span class="ms-2 fw-bold fs-4">WAVE</span>
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
@@ -82,20 +82,24 @@
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-login">로그인</button>
                         </div>
-                        <!-- 로그인 실패 시 에러 메시지 (fade-in 효과 적용) -->
+                        <!-- 로그인 실패 시 에러 메시지 -->
                         <div th:if="${param.error}" class="alert alert-danger fade-in" role="alert">
-                            아이디 또는 비밀번호가 잘못되었습니다.
+                            <span th:text="${param.error}">아이디 또는 비밀번호가 잘못되었습니다.</span>
                         </div>
                     </form>
                     <hr>
-                    <!-- 소셜 로그인 버튼 -->
-                    <div class="text-center mb-3 row">
-                        <p>또는 소셜 계정으로 로그인하기</p>
-                        <div class="d-flex justify-content-center">
-                            <a href="http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google" class="col-5 me-2 btn btn-outline-secondary">
+                    <!-- 소셜 로그인 버튼 (한 줄로 배치) -->
+                    <div class="mb-3">
+                        <p class="text-center">또는 소셜 계정으로 로그인하기</p>
+                        <div class="d-flex justify-content-between">
+                            <!-- 구글 로그인 버튼 -->
+                            <a href="http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google"
+                               class="btn btn-secondary flex-grow-1 me-2 text-center">
                                 <i class="bi bi-google"></i> Google
                             </a>
-                            <a href="http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/kakao" class="col-5 btn btn-outline-warning">
+                            <!-- 카카오 로그인 버튼 -->
+                            <a href="http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/kakao"
+                               class="btn btn-warning flex-grow-1 text-center">
                                 <i class="bi bi-chat-dots"></i> Kakao
                             </a>
                         </div>

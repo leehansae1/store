@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WAVE Market - 중고 거래 플랫폼</title>
+    <!-- 구글 폰트 (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- 로고 -->
+    <link rel="icon" href="/img/wave-logo.png"/>
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Swiper CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- 커스텀 스타일 -->
+    <link rel="stylesheet" href="/css/chatting/chatting.css">
+</head>
+<body th:data-random-id="${#authentication.principal.loggedMember.randomId}">
+<header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/wave-logo.png" alt="WAVE" height="90">
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <div class="search-container position-relative me-4">
+                <input id="search-input" class="form-control" type="search" placeholder="검색 (상품, 카테고리, 태그)"
+                       aria-label="Search">
+                <button id="search-btn" class="btn btn-primary search-btn"><i class="bi bi-search"></i></button>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
+                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-outline-light" href="/shop/products">내 상점</a>
+                </li>
+                <li class="nav-item me-3" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-light" href="/chatRoom">WAVE톡</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<main class="row">
+    <div class="chat-container container">
+        <!-- 좌측 채팅방 목록 -->
+        <div class="chat-list">
+            <h2>WAVE톡</h2>
+            <th:block th:if="${#lists.isEmpty(chatRoomList)}">
+                <div class="empty-chatRoom">
+                    <p class="text-center">"이런! 아직 시작된 대화가 없어요.</p>
+                    <p class="text-center">📨 첫 메시지를 보내보세요!" </p>
+                </div>
+            </th:block>
+            <ul id="chatRoomList">
+                <li class="chat-room" th:each="room : ${chatRoomList}"
+                    th:data-product-id="${room.productDto.productId}">
+                    <div class="chat-room-info"
+                         th:data-room-id="${room.roomId}">
+                        <!-- 사용자가 판매자라면 -->
+                        <a th:if="${#authentication.principal.loggedMember.randomId eq room.productDto?.seller?.randomId}"
+                           class="profile-link" th:href="@{|/shop/products/${room.fromUser?.randomId}|}">
+                            <img th:src="${room.fromUser.userProfile ?: '/img/unknown.jpg'}"
+                                 alt="프로필" class="chat-user-profile">
+                        </a>
+                        <!-- 사용자가 구매자라면 -->
+                        <a th:unless="${#authentication.principal.loggedMember.randomId eq room.productDto.seller?.randomId}"
+                           class="profile-link" th:href="@{|/shop/products/${room.toUser?.randomId}|}">
+                            <img th:src="${room.toUser.userProfile ?: '/img/unknown.jpg'}"
+                                 alt="프로필" class="chat-user-profile">
+                        </a>
+                        <div class="chat-room-text">
+                            <div class="room-info-container-1">
+                                <!-- 사용자가 판매자라면 -->
+                                <span th:if="${#authentication.principal.loggedMember.randomId eq room.productDto.seller.randomId}"
+                                      class="chat-user" th:text="${room.fromUser.userName}">
+                                </span>
+                                <!-- 사용자가 구매자라면 -->
+                                <span th:unless="${#authentication.principal.loggedMember.randomId eq room.productDto.seller.randomId}"
+                                      class="chat-user" th:text="${room.toUser.userName}">
+                                </span>
+                                <span class="chat-unread" th:if="${room.unreadCount > 0}"
+                                      th:text="${room.unreadCount}"></span>
+                            </div>
+                            <div class="room-info-container-2">
+                                <span class="chat-last-msg" th:text="${room.latestMessage ?: ''}"></span>
+                                <span class="chat-comma" >・</span>
+                                <span class="chat-last-time" th:text="${room.latestTimeStr}"></span>
+                            </div>
+                        </div>
+
+                        <div class="delete-chat-btn">
+                            <i class="bi bi-trash" th:data-room-id="${room.roomId}"></i>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 우측 채팅창 -->
+        <div class="chat-window">
+            <div class="chat-header blind">
+                <span id="chatTitle" th:text="${sellerName?:''}" th:data-room-id="${roomId}">
+                </span>
+
+                <!-- 상품 정보 카드 -->
+                <div class="chat-product-card" th:data-product-id="${product?.productId}">
+                    <img th:src="${product?.thumbnailUrl}" alt="상품 이미지" class="chat-product-image">
+                    <div class="chat-product-info">
+                        <p class="chat-product-name" th:text="${product?.productName}"></p>
+                        <p class="chat-product-price"
+                           th:text="${#numbers.formatInteger(product?.price, 0, 'COMMA') + '원'}"></p>
+                    </div>
+                    <!-- 구매하기 버튼 -->
+                    <a th:href="@{|/product/payment/checkout/${product?.productId}|}" class="chat-buy-btn">구매하기</a>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <p class="no-chat text-center" th:if="${#lists.isEmpty(chatList)}">대화방을 선택해주세요.</p>
+
+                <th:block th:each="chat, iterStat : ${chatList}">
+                    <!-- 현재 메시지의 날짜 -->
+                    <th:block th:with="currentDate=${#temporals.format(chat.chatDate, 'yyyyMMdd')}">
+
+                        <!-- 날짜가 바뀌면 chat-date div 추가 -->
+                        <th:block
+                                th:if="${iterStat.index == 0 or #temporals.format(chatList[iterStat.index - 1].chatDate, 'yyyyMMdd') != currentDate}">
+                            <div class="chat-date" th:text="${#temporals.format(chat.chatDate, 'yyyy년 M월 dd일')}"></div>
+                        </th:block>
+
+                        <div th:classappend="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId} ? 'chat-right' : 'chat-left'">
+                            <th:block
+                                    th:unless="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId}">
+                                <span class="chat-content" th:text="${chat.content}"></span>
+                                <div class="chat-info">
+                                    <span class="chat-time" th:text="${chat.chatDate}"></span>
+                                </div>
+                            </th:block>
+                            <th:block
+                                    th:if="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId}">
+                                <div class="chat-info">
+                                    <span class="chat-unread-indicator" th:if="${!chat.read}">1</span>
+                                    <span class="chat-time" th:text="${chat.chatDate}"></span>
+                                </div>
+                                <span class="chat-content" th:text="${chat.content}"></span>
+                            </th:block>
+                        </div>
+                    </th:block>
+                </th:block>
+            </div>
+            <div class="chat-input blind">
+                <input type="text" id="chatInput" placeholder="메시지를 입력하세요...">
+                <button id="sendBtn">전송</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+<!-- Footer -->
+<footer class="wave-footer text-center py-4">
+    <p class="mb-0 text-muted">&copy; 2025 WAVE Market. All rights reserved.</p>
+</footer>
+
+<script src="/js/util/search.js"></script>
+<script src="/js/chatting/chatting.js"></script>
+</body>
+</html>

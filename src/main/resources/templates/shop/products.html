@@ -17,7 +17,10 @@
     <!-- Bootstrap Icons (순수 CSS) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- 커스텀 스타일 -->
-    <link rel="stylesheet" href="/css/products.css">
+    <link rel="stylesheet" href="/css/shop/products.css">
+    <link rel="stylesheet" href="/css/shop/reviews.css">
+    <link rel="stylesheet" href="/css/shop/favorites.css">
+    <link rel="stylesheet" href="/css/shop/follow.css">
 </head>
 <body th:data-logged-in="${#authentication.name != 'anonymousUser'}">
 
@@ -25,7 +28,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="/img/wave-logo.png" alt="WAVE" height="90">
-            <span class="ms-2 fw-bold fs-4">WAVE</span>
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
@@ -74,9 +77,20 @@
                     </div>
                     <!-- 실제 프로필 정보 -->
                     <div class="profile-content">
-                        <img class="profile-image"
+                        <th:block th:if="${#authentication.principal.loggedMember.randomId eq member.randomId}">
+                        <img class="profile-image my-image"
                              th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
                              alt="프로필 이미지">
+                        </th:block>
+                        <th:block th:unless="${#authentication.principal.loggedMember.randomId eq member.randomId}">
+                            <img class="profile-image"
+                                 th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
+                                 alt="프로필 이미지">
+                        </th:block>
+                        <th:block sec:authorize="isAuthenticated()">
+                        <input th:if="${#authentication.principal.loggedMember.randomId eq member.randomId}"
+                               type="file" name="profileImage" id="profile-input" style="display: none"/>
+                        </th:block>
                         <p class="profile-name" th:text="${member.userName}">여기에 회원명</p>
                         <!-- todo 별점 평균내서 0.5으로 내림해서 별로 뿌리기 -->
                         <p class="profile-rating">★★★★☆</p>
@@ -90,7 +104,7 @@
                             <p id="followerCount" th:text="|팔로워 ${member.followCount}|">팔로워 </p>
                             <button
                                     class="btn" id="follow-toggle-btn"
-                                    th:data-seller-id="${member.userId}"
+                                    th:data-seller-id="${member.randomId}"
                                     th:classappend="${member.followState}? 'btn-unfollow':'btn-follow'"
                                     th:text="${member.followState}? '팔로잉':'팔로우'"
                             >팔로우버튼
@@ -131,7 +145,7 @@
     <section id="shop-tabs">
         <button class="tab-btn active" data-tab="#products">상품</button>
         <button class="tab-btn" data-tab="#reviews">상점 후기</button>
-        <button class="tab-btn" data-tab="#favorites">찜</button>
+        <button th:if="${#authentication.name eq member.userId}" class="tab-btn" data-tab="#favorites">찜</button>
         <button class="tab-btn" data-tab="#followings">팔로잉</button>
         <button class="tab-btn" data-tab="#followers">팔로워</button>
     </section>
@@ -143,13 +157,14 @@
 
     <section id="product-detail">
         <div th:unless="${#lists.isEmpty(productList)}" id="products" class="tab-content">
+            <h3 class="product-title">상품</h3>
             <div class="product-list-header">
                 <div class="header-cell">사진</div>
                 <div class="header-cell">판매상태</div>
                 <div class="header-cell">상품명</div>
                 <div class="header-cell">가격</div>
                 <div class="header-cell">찜</div>
-                <div class="header-cell">최근수정일</div>
+                <div th:if="${#authentication.name eq member.userId}" class="header-cell">최근수정일</div>
                 <div th:if="${#authentication.name eq member.userId}" class="header-cell">기능</div>
             </div>
 
@@ -159,18 +174,21 @@
                      th:attr="data-product-id=${product.productId},data-post-date=${product.postDate}">
                     <!-- 상품 이미지 -->
                     <div class="product-cell image-cell">
-                        <a th:href="@{/product/detail/{id}(id=${product.productId})}">
+                        <a th:if="${!product.sell}" th:href="@{/product/detail/{id}(id=${product.productId})}">
                             <img th:src="${product.thumbnailUrl}" alt="상품 이미지">
                         </a>
+                        <img th:if="${product.sell}" th:src="${product.thumbnailUrl}" alt="상품 이미지">
                     </div>
 
                     <!-- 판매 상태 -->
-                    <div class="product-cell status-cell" th:text="${product.sell ? '판매완료' : '판매중'}">판매중</div>
+                    <div th:unless="${product.sell}" class="product-cell status-cell">판매중</div>
+                    <div th:if="${product.sell}" class="product-cell-sell status-cell">판매완료</div>
 
                     <!-- 상품명 -->
                     <div class="product-cell name-cell">
-                        <a th:href="@{/product/detail/{id}(id=${product.productId})}"
+                        <a th:unless="${product.sell}" th:href="@{/product/detail/{id}(id=${product.productId})}"
                            th:text="${product.productName}">상품명</a>
+                        <span th:if="${product.sell}" th:text="${product.productName}">상품명</span>
                     </div>
 
                     <!-- 가격 -->
@@ -185,32 +203,64 @@
                     </div>
 
                     <!-- 최근 수정일 -->
-                    <div class="product-cell date-cell">
+                    <div th:if="${#authentication.name eq member.userId}" class="product-cell date-cell">
                         <span th:text="${#temporals.format(product.postDate, 'yyyy-MM-dd')}"></span><br>
                         <span th:text="${#temporals.format(product.postDate, 'HH:mm')}"></span>
                     </div>
                     <!-- 기능 버튼들 -->
                     <div th:if="${#authentication.name eq member.userId}" class="product-cell action-cell">
-                        <button class="up-btn btn-option">UP</button>
-                        <button class="edit-btn btn-option"
-                                th:data-modify-url="@{/product/modify/{productId}(productId=${product.productId})}">
-                            수정
-                        </button>
-                        <button class="hide-btn btn-option"
-                                th:text="${product.display} ? '숨기기' : '보이기'"
-                                th:data-hide-url="@{/product/hide/{id}(id=${product.productId})}"
-                                th:data-display="${product.display}">
-                        </button>
+                        <th:block th:if="${product.sell}">
+                            <button class="btn-no-option" disabled>UP</button>
+                            <button class="btn-no-option" disabled
+                                    th:data-modify-url="@{/product/modify/{productId}(productId=${product.productId})}">
+                                수정
+                            </button>
+                            <button class="btn-no-option" disabled
+                                    th:text="${product.display} ? '숨기기' : '보이기'"
+                                    th:data-hide-url="@{/product/hide/{id}(id=${product.productId})}"
+                                    th:data-display="${product.display}">
+                            </button>
+                        </th:block>
+                        <th:block th:if="${!product.sell}">
+                            <button class="up-btn btn-option">UP</button>
+                            <button class="edit-btn btn-option"
+                                    th:data-modify-url="@{/product/modify/{productId}(productId=${product.productId})}">
+                                수정
+                            </button>
+                            <button class="hide-btn btn-option"
+                                    th:text="${product.display} ? '숨기기' : '보이기'"
+                                    th:data-hide-url="@{/product/hide/{id}(id=${product.productId})}"
+                                    th:data-display="${product.display}">
+                            </button>
+                        </th:block>
 
                     </div>
                 </div>
             </div>
         </div>
-        <div id="reviews" class="tab-content">서비스 준비중입니다:)</div>
-        <div id="favorites" class="tab-content">서비스 준비중입니다:)</div>
-        <div id="followings" class="tab-content">서비스 준비중입니다:)</div>
-        <div id="followers" class="tab-content">서비스 준비중입니다:)</div>
+        <div id="reviews" class="tab-content">
+            <h3 class="review-title">상점 후기</h3>
+            <div id="review-container" class="review-list" th:data-user-id="${member.userId}">
+            </div>
+        </div>
+        <div th:if="${#authentication.name eq member.userId}" id="favorites" class="tab-content">
+            <h3 class="favorites-title">찜한 상품 <span id="favorites-count">0</span></h3>
+            <div id="favorites-container" class="favorites-list">
+            </div>
+        </div>
+        <div id="followings" class="tab-content">
+            <h3 class="following-title">팔로잉 <span id="following-count">0</span></h3>
+            <div id="following-container" class="follow-list">
+            </div>
+        </div>
+        <div id="followers" class="tab-content">
+            <h3 class="follower-title">팔로워 <span id="follower-count">0</span></h3>
+            <div id="follower-container" class="follow-list" th:data-random-id="${member.randomId}">
+            </div>
+        </div>
     </section>
+
+
 </main>
 
 <footer class="wave-footer text-center py-4">
@@ -218,6 +268,10 @@
 </footer>
 
 <!-- tab 마다 다른 기능 -->
+<script src="/js/util/search.js"></script>
 <script src="/js/shop/main.js"></script>
+<script src="/js/shop/reviews.js"></script>
+<script src="/js/shop/favorites.js"></script>
+<script src="/js/shop/follow.js"></script>
 </body>
 </html>

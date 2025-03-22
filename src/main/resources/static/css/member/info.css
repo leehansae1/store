@@ -149,7 +149,7 @@ main {
     color: white;
 }
 
-.btn-warning:hover {
+.btn-container .btn-warning:hover, .btn-warning:active, .btn-warning:focus {
     background-color: #ec971f;
     color: white;
 }
@@ -160,8 +160,19 @@ main {
     color: white;
 }
 
-.hide-btn:hover {
+.btn-container .hide-btn:hover, .hide-btn:active, .hide-btn:focus {
     background-color: #c82333;
+    color: white;
+}
+
+.back-btn {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+}
+
+.btn-container .back-btn:hover, .back-btn:active, .back-btn:focus {
+    background-color: #45a049;
     color: white;
 }
 
@@ -207,3 +218,4 @@ main {
 .content {
     width: 600px;
 }
+

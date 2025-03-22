@@ -17,7 +17,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- 커스텀 스타일 (CSS) -->
-    <link rel="stylesheet" href="/css/product-upload.css">
+    <link rel="stylesheet" href="/css/product/product-upload.css">
 </head>
 <body>
 
@@ -26,7 +26,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="/img/wave-logo.png" alt="WAVE" height="90">
-            <span class="ms-2 fw-bold fs-4">WAVE</span>
+            <span class="ms-2 fw-bold fs-2">WAVE</span>
         </a>
         <div class="collapse navbar-collapse justify-content-end">
             <div class="search-container position-relative me-4">
@@ -37,13 +37,13 @@
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <!-- 사용자가 로그인한 경우 '내 상점' 버튼 표시 -->
                 <li class="nav-item me-3">
-                    <a class="btn btn-light" href="/shop/products">내 상점</a>
+                    <a class="btn btn-outline-light" href="/shop/products">내 상점</a>
                 </li>
                 <li class="nav-item me-3">
                     <a class="btn btn-outline-light" href="/chatRoom">WAVE톡</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-outline-light" href="/product/upload">판매하기</a>
+                    <a class="btn btn-light" href="/product/upload">판매하기</a>
                 </li>
             </ul>
         </div>
@@ -193,13 +193,11 @@
 
 <script th:inline="javascript">
     const productStateSelect = document.querySelector("#productStatus");
-    const defaultOption = document.querySelector(".non-select");
     productStateSelect.addEventListener("click", () => {
         if (productStateSelect.childElementCount > 7) {
             document.querySelector(".modify-option").remove();
             return;
         }
-        // defaultOption.selected = false;
     });
 
     let uploadedFiles = [];
@@ -350,28 +348,17 @@
         if (subCategories[selectedMajor]) {
             subCategories[selectedMajor].forEach(subCat => {
                 const option = document.createElement('option');
+
                 if (subCat === "아우터") {
-                    if (selectedMajor === "남성의류") {
-                        option.value = "남성아우터";
-                    } else if (selectedMajor === "여성의류") {
-                        option.value = "여성아우터";
-                    } else {
-                        option.value = subCat;
-                    }
-                    option.textContent = "아우터";
-                } else {
-                    option.value = subCat;
-                    option.textContent = subCat;
-                }
-                if (subCat === "바지") {
-                    if (selectedMajor === "남성의류") {
-                        option.value = "남성바지";
-                    } else if (selectedMajor === "여성의류") {
-                        option.value = "여성바지";
-                    } else {
-                        option.value = subCat;
-                    }
-                    option.textContent = "바지";
+                    if (selectedMajor === "남성의류") option.value = "남성아우터";
+                    else if (selectedMajor === "여성의류") option.value = "여성아우터";
+                    else option.value = subCat;
+                    option.textContent = "아우터"; // 실제 보여지는 텍스트
+                } else if (subCat === "바지") {
+                    if (selectedMajor === "남성의류") option.value = "남성바지";
+                    else if (selectedMajor === "여성의류") option.value = "여성바지";
+                    else option.value = subCat;
+                    option.textContent = "바지"; // 실제 보여지는 텍스트
                 } else {
                     option.value = subCat;
                     option.textContent = subCat;
@@ -466,5 +453,6 @@
             });
     });
 </script>
+<script src="/js/util/search.js"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.entity.Member;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.util.List;
 
 @Service
@@ -21,27 +22,22 @@ public class ChatService {
     }
 
     public List<ChatDto> getList(Member member, int roomId) {
-        List<Chat> chatList = chatRepository.findAllByChatRoom_RoomId(roomId);
-        // 읽음 처리를 위해 다시 저장
+        // 읽음 처리
+        chatRepository.markMessagesAsRead(roomId, member.getUserId());
+        // 해당 채팅방의 메시지를 모두 조회
+        List<Chat> chatList = chatRepository.findAllByChatRoom_RoomIdOrderByChatId(roomId);
 
-        chatList.forEach(chat -> {
-            if (!chat.getWriter().getUserId().equals(member.getUserId())) {
-                Chat newChat = Chat.builder()
-                        .chatId(chat.getChatId()) //업데이트 쿼리가 나갈 수 있도록 아이디저장
-                        .isRead(true) //읽음 처리
-                        .writer(chat.getWriter())
-                        .content(chat.getContent())
-                        .chatRoom(chat.getChatRoom())
-                        .chatDate(chat.getChatDate())
-                        .build();
-                chatRepository.save(newChat);
-            }
+        List<ChatDto> chatDtoList = Chat.fromEntityList(chatList);
+        chatDtoList.forEach(chatDto -> {
+            chatDto.getWriter().setUserPw("");
+            log.info("chatDto == {}", chatDto);
         });
-        return Chat.fromEntityList(chatList);
+        return chatDtoList;
     }
 
-    public List<ChatDto> justCountUnread(int roomId) {
-        List<Chat> chatList = chatRepository.findAllByChatRoom_RoomId(roomId);
-        return Chat.fromEntityList(chatList);
+    public int getUnreadMessageCount(int roomId, String userId) {
+        log.info("roomId {}", roomId);
+        log.info("userId {}", userId);
+        return chatRepository.countUnreadMessages(roomId, userId);
     }
 }

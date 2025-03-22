@@ -25,5 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = "select count(*) from product where member_id = :userId and isSell = :isSell", nativeQuery = true)
     int countBySellerAndIsSell(String userId, boolean isSell);
+
+    int countBySeller(Member seller);
 }
 

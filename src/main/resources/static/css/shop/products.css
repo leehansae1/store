@@ -114,6 +114,7 @@ main {
     background-size: cover;
     background-position: center;
     filter: blur(20px) brightness(30%);
+    background-color: #c9e2ff;
     z-index: 0;
 }
 
@@ -132,9 +133,14 @@ main {
 .profile-image {
     width: 50%;
     max-width: 250px;
+    min-width: 125px;
     aspect-ratio: 1/1;
     object-fit: cover;
     border-radius: 50%;
+}
+
+.my-image:hover {
+    cursor: pointer;
 }
 
 /* 이름 */
@@ -150,11 +156,11 @@ main {
     align-items: center;
     font-size: 18px;
     font-weight: 600;
-    color: #ffcc00; /* 별 색상 */
+    color: #ffcc00;
     margin: 0 0 10px 0;
 }
 
-#followerCount{
+#followerCount {
     color: #fff;
 }
 
@@ -166,7 +172,7 @@ main {
     transition: all 0.2s;
 }
 
-#follow-toggle-btn{
+#follow-toggle-btn {
     padding: 6px 24px;
     font-size: 16px;
     cursor: pointer;
@@ -179,7 +185,7 @@ main {
     color: #007bff;
 }
 
-#manage-account:hover, .btn-follow:hover {
+#manage-account:hover, .btn-follow:hover, .profile-content #manage-account:active, .profile-content .btn-follow:active {
     background-color: #007bff;
     color: #fff;
 }
@@ -190,7 +196,7 @@ main {
     color: #fff;
 }
 
-.btn-unfollow:hover {
+.profile-content .btn-unfollow:hover, .btn-unfollow:active {
     background-color: #fff;
     color: #007bff;
 }
@@ -201,7 +207,7 @@ main {
     color: #f0ad4e;
 }
 
-#btn-logout:hover {
+.profile-content #btn-logout:hover {
     background-color: #f0ad4e;
     color: #fff;
 }
@@ -227,13 +233,13 @@ main {
 .shop-name {
     font-size: 24px;
     color: #333;
-    margin: 10px 0 5px;
+    margin: 10px 0 10px;
 }
 
 .shop-divider {
     border: none;
     height: 1px;
-    background-color: #ddd;
+    background-color: #aaa;
     margin: 5px 0 35px 0;
 }
 
@@ -241,17 +247,17 @@ main {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 15px;
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
 .shop-detail i {
-    font-size: 18px;
+    font-size: 22px;
     color: #007bff;
 }
 
 .shop-intro {
-    font-size: 14px;
+    font-size: 18px;
     color: #888;
     margin-top: 10px;
     padding-left: 2px;
@@ -300,8 +306,18 @@ main {
     display: block;
 }
 
+/* todo 상품리스트 */
 #product-detail {
     width: 100%;
+}
+
+/* 후기 섹션 타이틀 */
+.product-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    border-left: 5px solid #007bff;
+    padding-left: 10px;
 }
 
 .product-list-table {
@@ -319,7 +335,7 @@ main {
     border-radius: 8px 8px 0 0;
 }
 
-.header-cell, .product-cell {
+.header-cell, .product-cell, .product-cell-sell {
     flex: 1;
     text-align: center;
     font-size: 18px;
@@ -332,6 +348,7 @@ main {
 
 .status-cell, .header-cell:nth-child(2) {
     flex-basis: 100px;
+    font-weight: bold;
 }
 
 .name-cell, .header-cell:nth-child(3) {
@@ -368,10 +385,15 @@ main {
 }
 
 /* 각 셀 공통 스타일 */
-.product-cell {
+.product-cell, .product-cell-sell {
     padding: 10px;
     text-align: center;
     font-size: 18px;
+}
+
+.product-cell-sell {
+    font-weight: bold;
+    color: #ff6f61;
 }
 
 /* 이미지 셀 */
@@ -401,16 +423,23 @@ main {
     gap: 6px; /* 버튼 간격 */
 }
 
-.btn-option {
+.btn-option, .btn-no-option {
     min-width: 100px;
     max-width: 150px;
     padding: 5px 8px; /* 기존보다 좁게 */
     font-size: 16px;
-    cursor: pointer;
     border: none #fff;
     border-radius: 8px;
     color: white;
+}
+
+.btn-option {
     transition: background-color 0.2s, transform 0.1s;
+    cursor: pointer;
+}
+
+.btn-no-option {
+    background-color: #c9e2ff;
 }
 
 .up-btn {
@@ -443,6 +472,10 @@ main {
     }
 
     .product-cell {
+        flex-basis: 50%;
+    }
+
+    .product-cell-sell {
         flex-basis: 50%;
     }
 

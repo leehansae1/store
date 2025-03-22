@@ -6,14 +6,18 @@ import lombok.Setter;
 import lombok.ToString;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.dto.MemberDto;
+import org.example.store.member.entity.Member;
 import org.example.store.product.dto.ProductDto;
+import org.example.store.product.entity.Product;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Setter
 @Getter
 @ToString
+@Builder
 public class ChatRoomDto {
     private int roomId;
 
@@ -27,16 +31,11 @@ public class ChatRoomDto {
 
     private int unreadCount;
 
-    @Builder
-    public ChatRoomDto(int roomId, List<ChatDto> chatDtoList, ProductDto productDto,
-                       MemberDto fromUser, MemberDto toUser, int unreadCount) {
-        this.roomId = roomId;
-        this.fromUser = fromUser;
-        this.toUser = toUser;
-        this.productDto = productDto;
-        this.chatDtoList = chatDtoList;
-        this.unreadCount = unreadCount;
-    }
+    private String latestMessage;
+
+    private LocalDateTime latestMessageTime;
+
+    private String latestTimeStr;
 
     public static ChatRoom toEntity(ChatRoomDto chatRoomDto) {
 
@@ -45,15 +44,20 @@ public class ChatRoomDto {
                 .toUser(MemberDto.toEntity(chatRoomDto.getToUser()))
                 .fromUser(MemberDto.toEntity(chatRoomDto.getFromUser()))
                 .roomId(chatRoomDto.getRoomId())
-                .chatList(new ArrayList<>())
+                .chatList(chatRoomDto.getChatDtoList() == null ? new ArrayList<>() : ChatDto.toEntityList(chatRoomDto.getChatDtoList()))
                 .build();
     }
 
-    public static List<ChatRoom> toEntityList(List<ChatRoomDto> chatRoomDtos) {
-        List<ChatRoom> chatRooms = new ArrayList<>();
-        chatRoomDtos.forEach(chatRoomDto ->
-                chatRooms.add(toEntity(chatRoomDto))
-        );
-        return chatRooms;
+    public static ChatRoomDto fromProjection(ChatRoomProjection projection) {
+        ChatRoom chatRoom = projection.getChatRoom();
+
+        return ChatRoomDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .fromUser(Member.fromEntity(chatRoom.getFromUser()))
+                .toUser(Member.fromEntity(chatRoom.getToUser()))
+                .productDto(Product.fromEntity(chatRoom.getProduct()))
+                .latestMessage(projection.getLatestMessage() != null ? projection.getLatestMessage() : "")
+                .latestMessageTime(projection.getLatestMessageTime())
+                .build();
     }
 }

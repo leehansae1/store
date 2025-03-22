@@ -86,18 +86,6 @@ body {
     font-size: 1.25rem;
 }
 
-/*!* 파도 애니메이션 *!*/
-/*.wave-animation {*/
-/*    position: absolute;*/
-/*    bottom: 0;*/
-/*    left: 0;*/
-/*    width: 100%;*/
-/*    height: 80px;*/
-/*    background: url("../img/missing.jpg") repeat-x;*/
-/*    background-size: cover;*/
-/*    animation: wave 10s linear infinite;*/
-/*}*/
-
 @keyframes wave {
     from {
         transform: translateX(0);
@@ -261,9 +249,9 @@ main {
 }
 
 #no-products-message img {
-    max-width: 1200px;
+    max-width: 500px;
     width: 100%;
-    height: auto;
+    aspect-ratio: 1/1;
 }
 
 #no-products-message .no-result-text {
@@ -299,14 +287,8 @@ main {
 
 .card-img-top {
     width: 100%;
-    height: 200px; /* 원하는 고정 높이 */
+    aspect-ratio: 1;
     object-fit: cover; /* 이미지가 카드 영역에 맞게 꽉 차도록, 비율을 유지하면서 잘라냄 */
-}
-
-@media (min-width: 768px) {
-    .card-img-top {
-        height: 250px;
-    }
 }
 
 @media (min-width: 992px) {

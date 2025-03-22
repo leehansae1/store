@@ -11,6 +11,22 @@ body {
     overflow-x: hidden;
 }
 
+#payment-timer {
+    position: fixed;
+    top: 10px;
+    left: 50%; /* 가로 중앙 */
+    transform: translateX(-50%); /* 중앙 정렬 */
+    background: rgba(51, 154, 240, 0.85);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 99999999;
+    display: none;
+}
+
+
 .order-summary {
     margin: 0 40px auto; /* 상하 여백을 넉넉하게 */
     padding: 0 20px; /* 좌우 여백 추가 */
@@ -70,6 +86,22 @@ body {
     font-weight: bold;
     color: #00796b; /* 세련된 티얼 계열 색상 */
     margin: 0;
+}
+
+.result {
+    justify-content: center;
+}
+
+.result #back-btn {
+    background: #fff;
+    color: #1b64da;
+    border: 1px solid #1b64da;
+}
+
+.result #back-btn:active, .result #back-btn:hover {
+    background: #eee;
+    color: #0f3a7a;
+    border-color: #0f3a7a;
 }
 
 /* 하단 파도 효과 */

@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const editModal = document.querySelector("#editAccountModal");
     const saveBtn = document.querySelector(".save-btn");
 
-    // todo < 각 모달마다 다른 값 >
+    // todo < 항목마다 다른 값 >
     document.querySelectorAll(".edit-btn").forEach(button => {
         button.addEventListener("click", function () {
             let category = this.getAttribute("data-category");
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // todo 각 모달 마다 유효성 검사
+    // todo < 각 항목의 유효성 검사 >
     editModal.addEventListener("shown.bs.modal", () => {
         let modalInput = document.querySelector("#modal-input");
         modalInput.focus();
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // todo < 테스트 완료 > 전화번호 하이픈 자동완성
+    // todo < 전화번호 하이픈 자동완성 >
     function formatPhoneNumber(event) {
         let input = event.target;
         let numbers = input.value.replace(/\D/g, ""); // 숫자만 추출
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         input.value = formattedNumber;
     }
 
-    // todo < 테스트 완료 >
+    // todo < 정보수정 저장 >
     saveBtn.addEventListener("click", () => {
         console.log("saveBtn 클릭됨!"); // 콘솔 확인
 
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(json);
                 if (json.updated) {
                     alert("비밀번호가 변경되었습니다. 다시 로그인 해주세요.");
-                    window.location.href = "/member/logout"; // 로그아웃 후 다시 로그인 요구
+                    window.location.href = "/member/login"; //세션에서 이미 사용자 지움
                 } else {
                     alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
                     newPasswordInput.focus();

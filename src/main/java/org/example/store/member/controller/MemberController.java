@@ -1,27 +1,16 @@
 package org.example.store.member.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.member.dto.LoginDto;
 import org.example.store.member.dto.MemberDto;
-import org.example.store.member.entity.Member;
-import org.example.store.member.repository.MemberRepository;
 import org.example.store.member.service.MemberService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -64,20 +53,31 @@ public class MemberController {
         return prefix + "/login";
     }
 
-    @PostMapping("/login")
-    public String login(@Valid @ModelAttribute LoginDto loginDto, BindingResult bindingResult, HttpServletRequest
-            request) {
-        AuthenticationException exception
-                = (AuthenticationException) request.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        if (exception instanceof UsernameNotFoundException) {
-            bindingResult.reject("UserNotFound", "사용자를 찾을 수 없습니다.");
-        } else if (exception instanceof BadCredentialsException) {
-            bindingResult.reject("BadCredentials", "아이디 또는 패스워드를 확인해 주세요.");
-        } else if (exception != null) bindingResult.reject("AuthenticationException");
-        if (bindingResult.hasErrors()) {
-            return prefix + "/login";
-        }
-        return "/index";
+    // 팔로우 & 언팔로우 기능
+    @PostMapping("/follow/{sellerId}")
+    @ResponseBody
+    public Map<String, Boolean> follow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails
+            user) {
+        log.info("팔로우 요청");
+        boolean isSaved = memberService.follow(sellerId, user);
+        return Map.of("isSaved", isSaved);
+    }
+
+    @DeleteMapping("/follow/{sellerId}")
+    @ResponseBody
+    public Map<String, Boolean> unFollow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails
+            user) {
+        int deleteResult = memberService.unfollow(sellerId, user);
+        return Map.of("isDelete", deleteResult > 0);
+    }
+
+    @PostMapping("/update-profile")
+    @ResponseBody
+    public Map<String, Boolean> updateProfile(@AuthenticationPrincipal CustomUserDetails user,
+                                              @RequestBody MultipartFile profileImage) {
+        log.info("profileImage: {}", profileImage);
+        boolean updated = memberService.updateImage(user, profileImage);
+        return Map.of("updated", updated);
     }
 
     // 회원 정보 조회
@@ -115,25 +115,6 @@ public class MemberController {
         log.info("회원 삭제 요청, userId: {}", user.getLoggedMember().getUserId());
         boolean isDeleted = memberService.hideMember(user.getLoggedMember().getUserId());
         return Map.of("isDelete", isDeleted);
-    }
-
-    // 팔로우 & 언팔로우 기능
-    @PostMapping("/follow/{sellerId}")
-    @ResponseBody
-    public Map<String, Boolean> follow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails
-            user) {
-        log.info("팔로우 요청");
-        boolean isSaved = memberService.follow(sellerId, user);
-        return Map.of("isSaved", isSaved);
-    }
-
-    @DeleteMapping("/follow/{sellerId}")
-    @ResponseBody
-    public Map<String, Boolean> unFollow(@PathVariable String sellerId, @AuthenticationPrincipal CustomUserDetails
-            user) {
-        log.info("언팔 요청");
-        int deleteResult = memberService.unfollow(sellerId, user);
-        return Map.of("isDelete", deleteResult > 0);
     }
 
     // 관리자 계정 접속 시 탈퇴한 회원 조회 가능
