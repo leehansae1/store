@@ -2,24 +2,28 @@
 
 ## 📢 프로젝트 개요 (Overview)
 
-**Project Wave**는 사용자들이 안전하고 편리하게 중고 거래를 할 수 있는 웹 플랫폼입니다. 판매자와 구매자는 실시간으로 상품 정보를 확인하고, 원활한 거래를 진행할 수 있습니다. 소셜 로그인 및 안전한 결제 시스템을 통해 신뢰 기반의 거래 환경을 제공합니다.
+**Project Wave**는 번개장터를 벤치마킹한 중고거래 플랫폼이며, 어떠한 예외처리도 용납하지 않는 안정성과 완성도가 높은 플랫폼입니다.
 
 - **주요 목표**:
   - 안전하고 신뢰성 있는 중고 거래 환경 제공
-  - 채팅 및 원활한 상품 검색 기능 제공
-  - 사용자 인증을 위한 소셜 로그인 시스템 구현
-  - 안전한 결제 시스템 도입
+  - 상점 관리 페이지를 통한 통합 정보 조회 제공
+  - 구매자 판매자 간의 채팅 기능 제공
+  - 소셜 로그인 시스템 구현
+  - Toss Payments 결제 시스템 도입
 
 - **주요 기능**:
-  - 상품 등록 및 검색
+  - 상품 (등록, 수정, 검색, 필터)
   - 채팅
-  - 결제 시스템
-  - 회원 관리 (회원 가입, 로그인, 프로필 관리)
+  - 결제 (Toss API 활용, 결제내역 조회)
+  - 회원 (회원 가입, 로그인, 수정, soft 탈퇴)
   - 소셜 로그인 (Google, Kakao)
+  - 후기, 별점
+  - 찜, 팔로우
+  - 상점 관리(회원, 상품)
 
 ### **📆**프로젝트 기간
 
-2025.01.16 ~ 2025.02.20
+2025.01.20 ~ 2025.03.20
 
 ## 📌 기술 스택 (Tech Stack)
 
@@ -28,49 +32,39 @@
 - **데이터베이스**: Oracle
 - **보안**: JWT (JSON Web Token), OAuth2 (소셜 로그인), BCrypt 암호화
 - **빌드 도구**: Gradle
-
+- **배포**: AWS EC2, Elastic IP
+- **테스트**: Postman
 
 ## 📌 데이터 흐름 (Data Flow)
-사용자가 로그인 요청을 보냄 → Controller가 요청을 받음
-Service 계층이 비즈니스 로직 처리 → Repository에서 DB 조회
-DB에서 데이터 반환 후, 응답 생성 → Controller에서 JSON 형태로 반환
+사용자가 요청을 보냄 → Controller가 요청을 받은 뒤 Service 계층 연결
+Service 계층이 비즈니스 로직 처리, 필요 시 타 패키지 Service 참조 → Repository에서 DB 조회
+DB에서 데이터 반환 후, 응답 생성 → Controller에서 JSON or 템플릿 이동 형태로 반환
 
-[Client] -> [Controller] -> [DTO] -> [Service] -> [Entity] -> [Repository] -> [Database]
-                     ↳ [Config] (Security, Password Encoding, JWT)
-
-
-
-## ✅ 기대 효과 (Expected Benefits)
-- 안전한 중고 거래 환경 제공 (소셜 로그인, 결제 시스템 도입)
-- 사용자 경험(UX) 개선을 위한 채팅 및 검색 기능 제공
-- 확장성 고려 (추후 모바일 앱 연동 및 기능 확장 가능)
-- MVC(Model-View-Controller) 패턴 기반 설계
-- RESTful API를 활용한 백엔드 & 프론트엔드 통신
+[Client] - [Controller] - [DTO] - [Service] - [Entity] - [Repository] - [Database]
 
 ## 📌 프로젝트 구조 (Project Structure)
 
 ```plaintext
 project-wave
 ├── 📂 src/main/java/org/example/store
-│     ├── 📂 chat              # 채팅 관련 로직
-│     ├── 📂 chatRoom          # 채팅방 관리 기능
-│     ├── 📂 follow            # 팔로우 기능
-│     ├── 📂 like_product      # 상품 찜하기 기능
-│     ├── 📂 member            # 회원 관련 기능 (로그인, 회원가입 등)      
-│     ├── 📂 memberReview      # 회원 리뷰 기능
-│     ├── 📂 payment           # 결제 기능
-│     ├── 📂 shop              # 쇼핑몰 관련 기능
-│     ├── 📂 social            # OAuth2 기반 소셜 로그인
-│     ├── 📂 utils             # 공통적으로 사용하는 유틸리티 클래스
+│     ├── 📂 chat                  # 채팅 생성, 채팅 목록 조회
+│     ├── 📂 chatRoom              # 채팅 내역, 상품 정보, 구매성공 메시지 및 이미지가 담기는 채팅방
+│     ├── 📂 follow                # 팔로우/취소, 사용자/타인의 팔로우, 팔로잉 목록 조회
+│     ├── 📂 like_product          # 상품 찜/취소, 사용자가 찜한 상품 목록 조회
+│     ├── 📂 member                # 회원가입, (소셜)로그인, 회원수정, soft탈퇴
+│     ├── 📂 memberReview          # 결제 후 후기, 별점 작성, 사용자/타인 상점의 후기 목록 조회
+│     ├── 📂 payment               # 결제 기능, 구매내역 조회
+│     ├── 📂 shop                  # 통합 정보 조회(회원, 상품, 찜, 팔로워/팔로잉)
+│     ├── 📂 product               # 상품 등록, 검색, 수정, up, 숨기기/보이기, 
+│     ├── 📂 util                  # 폴더 & 파일 생성 및 삭제, 직관적인 날짜 출력(ex: n일 전, n시간 전, 방금 전, n분 전)
 │
 ├── 📂 src/main/resources
-│     ├── 📂 static            # 정적 리소스 (CSS, JS, 이미지)
-│     ├── 📂 templates         # Thymeleaf 템플릿 (HTML 뷰)
-│     ├── 📄 application.yml   # 환경 설정 파일
-│
-├── 📂 test                     # JUnit을 활용한 테스트 코드
-├── 📄 build.gradle             # 프로젝트 빌드 설정
-├── 📄 README.md                # 프로젝트 문서
+│     ├── 📂 static                # 정적 리소스 (CSS, JS, img, video)
+│     ├── 📂 templates             # Thymeleaf 템플릿 (HTML 뷰)
+│     ├── 📄 application.yml       # 환경 설정 파일
+│     ├── 📄 application-oauth.yml # 소셜 로그인 환경 설정 파일
+├── 📄 build.gradle                # 프로젝트 빌드 설정
+├── 📄 README.md                   # 프로젝트 문서
 
 ```
 
