@@ -4,6 +4,9 @@
 
 **Project Wave**는 번개장터를 벤치마킹한 중고거래 플랫폼이며, 어떠한 예외처리도 용납하지 않는 안정성과 완성도가 높은 플랫폼입니다.
 
+## 📌 웹 링크
+[http://ec2-52-78-157-47.ap-northeast-2.compute.amazonaws.com:8080]
+
 - **주요 목표**:
   - 안전하고 신뢰성 있는 중고 거래 환경 제공
   - 상점 관리 페이지를 통한 통합 정보 조회 제공
@@ -142,10 +145,6 @@ project-wave
 
   
 ## 📌 개발 환경 설정 (Setup Instructions)
-프로젝트 클론 (Clone the repository)
-```plaintext
-git clone https://github.com/dragont1ger/waveStore.git
-```
 
 빌드 도구 설정
 build.gradle 파일에 설정된 Gradle을 사용하여 의존성 패키지를 설치합니다.
@@ -162,7 +161,3 @@ Spring Boot 애플리케이션을 실행합니다.
 ```
 웹 브라우저에서 접속
 애플리케이션이 성공적으로 실행되면 웹 브라우저에서 http://localhost:8080을 통해 접속할 수 있습니다.
-
-## 📌 웹 링크
-http://ec2-52-79-61-147.ap-northeast-2.compute.amazonaws.com/
-
