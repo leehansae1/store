@@ -25,6 +25,8 @@ public class Chat {
 
     private String content;
 
+    private String productImgUrl;
+
     @CreatedDate
     private LocalDateTime chatDate;
 
@@ -41,7 +43,8 @@ public class Chat {
 
     @Builder
     public Chat(int chatId, String content, LocalDateTime chatDate, boolean isRead,
-                Member writer, ChatRoom chatRoom) {
+                Member writer, ChatRoom chatRoom, String productImgUrl) {
+        this.productImgUrl = productImgUrl;
         this.isRead = isRead;
         this.chatId = chatId;
         this.content = content;
@@ -58,6 +61,7 @@ public class Chat {
                 .writer(Member.fromEntity(chat.getWriter()))
                 .chatRoomDto(ChatRoom.fromEntity(chat.getChatRoom()))
                 .chatDate(chat.getChatDate())
+                .productImgUrl(chat.getProductImgUrl())
                 .build();
     }
     public static List<ChatDto> fromEntityList(List<Chat> chatList) {

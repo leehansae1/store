@@ -35,6 +35,7 @@ public class ChatRoomService {
         // 내 계정 & productId로 상품 & toUser 조회
         Member fromUser = user.getLoggedMember();
         String fromUserId = fromUser.getUserId();
+        resultMap.put("fromUserName", fromUser.getUserName()); //사용자와 판매자 구별
 
         Product product = productService.getProduct(productId);
         ProductDto productDto = Product.fromEntity(product);
@@ -42,8 +43,8 @@ public class ChatRoomService {
         resultMap.put("product", productDto);
 
         Member toUser = product.getSeller();
-        resultMap.put("sellerName", toUser.getUserName()); //사용자와 판매자 구별
-        resultMap.put("sellerRandomId", toUser.getRandomId());
+        resultMap.put("toUserName", toUser.getUserName()); //사용자와 판매자 구별
+        resultMap.put("toUserRandomId", toUser.getRandomId());
 
 
         ChatRoomDto existingChatRoom = null;
@@ -164,6 +165,7 @@ public class ChatRoomService {
                                     "상품명: " + product.getProductName() + "\r\n" +
                                     "결제 금액: " + product.getPrice() + "원"
                     )
+                    .productImgUrl(product.getThumbnailUrl())
                     .build();
         } else {
             ChatRoomDto newChatRoom
@@ -176,6 +178,7 @@ public class ChatRoomService {
                                     "상품명: " + product.getProductName() + "\r\n" +
                                     "결제 금액: " + product.getPrice() + "원"
                     )
+                    .productImgUrl(product.getThumbnailUrl())
                     .build();
         }
         return chatService.write(chatDto);

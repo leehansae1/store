@@ -20,7 +20,7 @@ public class ReviewDto {
 
     private String reviewText;
 
-    private int rating;
+    private double rating;
 
     private LocalDateTime reviewDate;
 

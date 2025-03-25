@@ -27,7 +27,7 @@ public class Review {
 
     private String reviewText;
 
-    private int rating;
+    private double rating;
 
     @CreatedDate
     private LocalDateTime reviewDate;
@@ -45,7 +45,7 @@ public class Review {
     private Member seller;
 
     @Builder
-    public Review(int reviewId, String reviewText, int rating, LocalDateTime reviewDate,
+    public Review(int reviewId, String reviewText, double rating, LocalDateTime reviewDate,
                   Member reviewer, Member seller, Product product) {
         this.reviewId = reviewId;
         this.reviewText = reviewText;

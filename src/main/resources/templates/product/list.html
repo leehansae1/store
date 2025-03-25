@@ -206,7 +206,7 @@
     <!-- 상품 카드 영역 -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 product-container">
         <!-- 각 상품 카드 -->
-        <div class="col product-item" th:each="product : ${productList}" th:data-category="${product.category}">
+        <div class="col product-item" th:each="product : ${productList}" th:data-category="${product.category}?:'none'">
             <div class="card h-100 shadow-sm product-card">
 
                 <a th:href="@{/product/detail/{id}(id=${product.productId})}">
@@ -217,7 +217,11 @@
                     <p class="card-text text-muted small text-truncate" th:text="${product.tag}"></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold mb-0" id="price"
+                           th:if="${product.price >= 1000}"
                            th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+                        <p class="fw-bold mb-0" id="price"
+                           th:if="${product.price < 1000}"
+                           th:text="${product.price} + '원'"></p>
                         <p class="text-muted small mb-0">
                             <span th:text="${product.getTimeAgo()}"></span>
                         </p>

@@ -28,101 +28,101 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
 
-  @Id
-  private String userId;
+    @Id
+    private String userId;
 
-  private String userPw;
+    private String userPw;
 
-  private int randomId;
+    private int randomId;
 
-  private String userName;
+    private String userName;
 
-  private String userProfile;
+    private String userProfile;
 
-  private String userEmail;
+    private String userEmail;
 
-  private String address;
+    private String address;
 
-  private String tel;
+    private String tel;
 
-  @Enumerated(EnumType.STRING)
-  private Role role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-  @CreatedDate
-  private LocalDateTime regDate;
+    @CreatedDate
+    private LocalDateTime regDate;
 
-  private String introduce;
+    private String introduce;
 
-  @Enumerated(EnumType.STRING)
-  private MemberStatus status;
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
 
-  @OneToMany(mappedBy = "member")
-  private List<Faq> faqList;
+    @OneToMany(mappedBy = "member")
+    private List<Faq> faqList;
 
-  @OneToMany(mappedBy = "writer")
-  @OrderBy("chatDate desc")
-  private List<Chat> chatList;
+    @OneToMany(mappedBy = "writer")
+    @OrderBy("chatDate desc")
+    private List<Chat> chatList;
 
-  @OneToMany(mappedBy = "toUser")
-  private List<ChatRoom> chatRoomList;
+    @OneToMany(mappedBy = "toUser")
+    private List<ChatRoom> chatRoomList;
 
-  @OneToMany(mappedBy = "seller")
-  private List<Product> productList;
+    @OneToMany(mappedBy = "seller")
+    private List<Product> productList;
 
-  @OneToMany(mappedBy = "follower")
-  private List<Follow> followList;
+    @OneToMany(mappedBy = "follower")
+    private List<Follow> followList;
 
-  @OneToMany(mappedBy = "liker")
-  private List<LikeProduct> likeProductList;
+    @OneToMany(mappedBy = "liker")
+    private List<LikeProduct> likeProductList;
 
-  @OneToMany(mappedBy = "reviewer")
-  private List<Review> reviewList;
+    @OneToMany(mappedBy = "reviewer")
+    private List<Review> reviewList;
 
-  @OneToMany(mappedBy = "customer")
-  private List<Payment> paymentList;
+    @OneToMany(mappedBy = "customer")
+    private List<Payment> paymentList;
 
-  @Builder
-  public Member(String userId, String userPw, String userName, String userProfile, String userEmail, int randomId,
-                String address, String tel, Role role, LocalDateTime regDate, String introduce,
-                MemberStatus status, List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList,
-                List<Product> productList, List<Follow> followList, List<LikeProduct> likeProductList,
-                List<Review> reviewList, List<Payment> paymentList) {
-    this.randomId = randomId;
-    this.userId = userId;
-    this.userPw = userPw;
-    this.userName = userName;
-    this.userProfile = userProfile;
-    this.userEmail = userEmail;
-    this.address = address;
-    this.tel = tel;
-    this.role = role;
-    this.regDate = regDate;
-    this.introduce = introduce;
-    this.status = status;
-    this.faqList = faqList;
-    this.chatList = chatList;
-    this.chatRoomList = chatRoomList;
-    this.productList = productList;
-    this.followList = followList;
-    this.likeProductList = likeProductList;
-    this.reviewList = reviewList;
-    this.paymentList = paymentList;
-  }
+    @Builder
+    public Member(String userId, String userPw, String userName, String userProfile, String userEmail, int randomId,
+                  String address, String tel, Role role, LocalDateTime regDate, String introduce,
+                  MemberStatus status, List<Faq> faqList, List<Chat> chatList, List<ChatRoom> chatRoomList,
+                  List<Product> productList, List<Follow> followList, List<LikeProduct> likeProductList,
+                  List<Review> reviewList, List<Payment> paymentList) {
+        this.randomId = randomId;
+        this.userId = userId;
+        this.userPw = userPw;
+        this.userName = userName;
+        this.userProfile = userProfile;
+        this.userEmail = userEmail;
+        this.address = address;
+        this.tel = tel;
+        this.role = role;
+        this.regDate = regDate;
+        this.introduce = introduce;
+        this.status = status;
+        this.faqList = faqList;
+        this.chatList = chatList;
+        this.chatRoomList = chatRoomList;
+        this.productList = productList;
+        this.followList = followList;
+        this.likeProductList = likeProductList;
+        this.reviewList = reviewList;
+        this.paymentList = paymentList;
+    }
 
-  public static MemberDto fromEntity(Member member) {
-    return MemberDto.builder()
-            .userId(member.getUserId())
-            .userPw(member.getUserPw())
-            .userName(member.getUserName())
-            .userProfile(member.getUserProfile())
-            .userEmail(member.getUserEmail())
-            .address(member.getAddress())
-            .tel(member.getTel())
-            .introduce(member.getIntroduce())
-            .role(member.getRole())
-            .regDate(member.getRegDate())
-            .status(member.getStatus())
-            .randomId(member.getRandomId())
-            .build();
-  }
+    public static MemberDto fromEntity(Member member) {
+        return MemberDto.builder()
+                .userId(member.getUserId())
+                .userPw(member.getUserPw())
+                .userName(member.getUserName())
+                .userProfile(member.getUserProfile())
+                .userEmail(member.getUserEmail())
+                .address(member.getAddress())
+                .tel(member.getTel())
+                .introduce(member.getIntroduce())
+                .role(member.getRole())
+                .regDate(member.getRegDate())
+                .status(member.getStatus())
+                .randomId(member.getRandomId())
+                .build();
+    }
 }

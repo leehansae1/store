@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <!-- 로고 -->
@@ -8,6 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>결제 성공</title>
+    <link rel="stylesheet" type="text/css" href="/css/payment/success.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 
 <body>
@@ -28,96 +30,226 @@
         <div class="p-grid-col text--right" id="paymentKey" style="white-space: initial; width: 250px"></div>
     </div>
     <div class="p-grid" style="margin-top: 30px">
-        <button class="button p-grid-col5" id="receipt-btn">돌아가기</button>
-        <button class="button p-grid-col5" onclick="location.href='https://discord.gg/A4fRFXQhRu';"
-                style="background-color: #e8f3ff; color: #1b64da">후기작성
+        <button class="button p-grid-col5" id="receipt-btn"
+                th:attr="data-product-id=${session.saveDto?.productId}">
+            돌아가기
+        </button>
+        <button class="button p-grid-col5" id="review-btn">
+            후기작성
         </button>
     </div>
 </div>
 
-<script>
-    // 쿼리 파라미터 값을 서버로 전달해 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-    // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
-    const urlParams = new URLSearchParams(window.location.search);
+<!-- 후기 작성 모달 -->
+<div id="reviewModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" id="closeModalBtn">&times;</span>
+        <h3>후기 작성</h3>
+        <form id="reviewForm" method="post" th:action="@{|/review/write/${session.saveDto?.productId}|}">
+            <!-- 후기 작성 모달 내부 별점 UI -->
+            <label>판매자와의 거래는 어땠나요?</label>
+            <div id="star-rating" class="star-rating">
+                <div class="half-star">
+                    <i class="bi bi-star-fill left-half" data-value="0.5"></i>
+                    <i class="bi bi-star-fill right-half" data-value="1.0"></i>
+                </div>
+                <div class="half-star">
+                    <i class="bi bi-star-fill left-half" data-value="1.5"></i>
+                    <i class="bi bi-star-fill right-half" data-value="2.0"></i>
+                </div>
+                <div class="half-star">
+                    <i class="bi bi-star-fill left-half" data-value="2.5"></i>
+                    <i class="bi bi-star-fill right-half" data-value="3.0"></i>
+                </div>
+                <div class="half-star">
+                    <i class="bi bi-star-fill left-half" data-value="3.5"></i>
+                    <i class="bi bi-star-fill right-half" data-value="4.0"></i>
+                </div>
+                <div class="half-star">
+                    <i class="bi bi-star-fill left-half" data-value="4.5"></i>
+                    <i class="bi bi-star-fill right-half" data-value="5.0"></i>
+                </div>
+            </div>
+            <input type="hidden" id="rating" name="rating" value="0">
+            <label for="content">후기를 자유롭게 적어주세요!</label>
+            <textarea name="reviewText" id="content" required></textarea>
+            <button type="submit" class="button send-review" disabled>등록</button>
+        </form>
+    </div>
+</div>
 
-    // 서버로 결제 승인에 필요한 결제 정보를 보내세요.
-    async function confirm() {
-        const requestData = {
-            paymentKey: urlParams.get("paymentKey"),
-            orderId: urlParams.get("orderId"),
-            amount: urlParams.get("amount"),
-        };
+<script th:inline="javascript">
+    const productId = document.querySelector("#receipt-btn").getAttribute("data-product-id");
 
-        const response = await fetch("/confirm/widget", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-        });
-        const json = await response.json();
-        if (!response.ok) {
-            throw {message: json.message, code: json.code};
+    document.addEventListener("DOMContentLoaded", () => {
+        // 쿼리 파라미터 값을 서버로 전달해 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
+        // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 서버로 결제 승인에 필요한 결제 정보를 보내세요.
+        async function confirm() {
+            const requestData = {
+                paymentKey: urlParams.get("paymentKey"),
+                orderId: urlParams.get("orderId"),
+                amount: urlParams.get("amount"),
+            };
+
+            const response = await fetch("/confirm/widget", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                throw {message: json.message, code: json.code};
+            }
+            return json;
         }
-        return json;
-    }
 
-    const receiptBtn = document.querySelector("#receipt-btn"); //결제내역 조회 버튼
-    receiptBtn.addEventListener("click", e => {
-        e.preventDefault();
-
-        location.href //나중에는 번개장터 결제내역, 구매내역으로 돌아가게 해보기
-            = `https://dashboard.tosspayments.com/receipt/redirection?transactionId=${urlParams.get("paymentKey")}&ref=PX`
-    });
-
-    confirm()
-        .then(function (data) {
-            // 여기서 data 는 json >> confirm() 함수가 json 을 return 했기 때문
-            // document.querySelector("#response").innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
-            console.log(data);
-            // 결제 내역 저장 로직
-            if (data.orderId != null) {
-                const sendData = {
-                    requestedAt: data.requestedAt,
-                    orderName: data.orderName,
-                    method: data.method,
-                    approvedAt: data.approvedAt,
-                    totalAmount: data.totalAmount,
-                    success: 1,
+        // 성공내역 가져오기, 성공 페이지 로드 시에 실패하게 된다면 실패페이지로 이동
+        confirm()
+            .then(function (data) {
+                // 여기서 data 는 json >> confirm() 함수가 json 을 return 했기 때문
+                console.log(data);
+                // 결제 내역 저장 로직
+                if (data.orderId != null) {
+                    const sendData = {
+                        requestedAt: data.requestedAt,
+                        orderName: data.orderName,
+                        method: data.method,
+                        approvedAt: data.approvedAt,
+                        totalAmount: data.totalAmount,
+                        success: 1,
+                    }
+                    fetch("/payment/resultSave", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(sendData),
+                    })
+                        .then(resp => resp.json())
+                        .then(json => {
+                            console.log(json);
+                        });
+                } else {
+                    const spaceMessage = data.message.substring(14);
+                    const message = spaceMessage.replaceAll(" ", "");
+                    console.log(data.code);
+                    window.location.href = `/payment/fail?code=${data.code}&message=${message}`;
                 }
-                fetch("/payment/resultSave", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(sendData),
-                })
-                    .then(resp => resp.json())
-                    .then(json => {
-                        console.log(json);
-                    });
-            }
-            else {
-                const spaceMessage = data.message.substring(14);
-                const message = spaceMessage.replaceAll(" ","");
-                console.log(data.code);
-                window.location.href = `/payment/fail.html?code=${data.code}&message=${message}`;
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            if (err.message !== ""){
-                window.location.href = `/payment/fail.html?message=${err.message}&code=${err.code}`;
-            } else window.location.href = `/payment/fail.html?message=이미결제되었습니다&code=${err.code}`;
+            })
+            .catch((err) => {
+                console.log(err);
+                if (err.message !== "") {
+                    window.location.href = `/payment/fail?message=${err.message}&code=${err.code}`;
+                } else window.location.href = `/payment/fail?message=이미결제되었습니다&code=${err.code}`;
+            });
+
+        // 성공 내역 출력
+        const paymentKeyElement = document.querySelector("#paymentKey");
+        const orderIdElement = document.querySelector("#orderId");
+        const amountElement = document.querySelector("#amount");
+
+        orderIdElement.textContent = urlParams.get("orderId");
+        amountElement.textContent = urlParams.get("amount") + "원";
+        paymentKeyElement.textContent = urlParams.get("paymentKey");
+
+        // 결제 성공 채팅
+        const receiptBtn = document.querySelector("#receipt-btn"); //채팅으로 돌아가기 버튼
+        receiptBtn.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.href=`/chatRoom/paymentResult/${productId}`;
         });
 
-    const paymentKeyElement = document.querySelector("#paymentKey");
-    const orderIdElement = document.querySelector("#orderId");
-    const amountElement = document.querySelector("#amount");
+        // 후기 모달 내부요소 및 접근 버튼
+        const reviewBtn = document.querySelector("#review-btn");
+        const modal = document.querySelector("#reviewModal");
+        const closeModalBtn = document.querySelector("#closeModalBtn");
+        const contentInput = document.querySelector("#content");
 
-    orderIdElement.textContent = urlParams.get("orderId");
-    amountElement.textContent = urlParams.get("amount") + "원";
-    paymentKeyElement.textContent = urlParams.get("paymentKey");
+        // 모달 열기
+        reviewBtn.addEventListener("click", () => {
+            modal.style.display = "block";
+        });
+        // 모달 닫기
+        closeModalBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // textarea 입력 시 버튼 활성화/비활성화
+        contentInput.addEventListener("input", validateForm);
+        const ratingInput = document.querySelector('#rating');
+
+        function validateForm() {
+            const content = contentInput.value.trim();
+            const rating = ratingInput.value;
+
+            const isValid = content.length > 0 && rating >= 0.5;
+            document.querySelector(".send-review").disabled = !isValid;
+        }
+
+        // 별점 매기기 로직
+        const stars = document.querySelectorAll('.half-star');
+        let currentRating = 0;
+
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const left = star.querySelector('.left-half');
+                const leftVal = parseFloat(left.dataset.value);
+                const right = star.querySelector('.right-half');
+                const rightVal = parseFloat(right.dataset.value);
+
+                if (leftVal <= rating) left.style.color = 'gold';
+                else if (leftVal + 0.5 === rating) left.style.color = 'gold';
+                else left.style.color = '#ddd';
+
+                if (rightVal <= rating) right.style.color = 'gold';
+                else right.style.color = '#ddd';
+            });
+        }
+
+        stars.forEach(star => {
+            const left = star.querySelector('.left-half');
+            const right = star.querySelector('.right-half');
+
+            left.addEventListener('mouseover', () => {
+                const val = parseFloat(left.dataset.value);
+                updateStars(val);
+            });
+            right.addEventListener('mouseover', () => {
+                const val = parseFloat(right.dataset.value);
+                updateStars(val);
+            });
+
+            left.addEventListener('mouseout', () => {
+                updateStars(currentRating);
+            });
+            right.addEventListener('mouseout', () => {
+                updateStars(currentRating);
+            });
+
+            left.addEventListener('click', () => {
+                currentRating = parseFloat(left.dataset.value);
+                document.querySelector('#rating').value = currentRating;
+                updateStars(currentRating);
+                validateForm();
+            });
+            right.addEventListener('click', () => {
+                currentRating = parseFloat(right.dataset.value);
+                document.querySelector('#rating').value = currentRating;
+                updateStars(currentRating);
+                validateForm();
+            });
+        });
+    });
 </script>
 </body>
 </html>

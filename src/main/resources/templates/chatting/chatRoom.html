@@ -66,34 +66,32 @@
                     th:data-product-id="${room.productDto.productId}">
                     <div class="chat-room-info"
                          th:data-room-id="${room.roomId}">
-                        <!-- 사용자가 판매자라면 -->
-                        <a th:if="${#authentication.principal.loggedMember.randomId eq room.productDto?.seller?.randomId}"
+                        <!-- 사용자와 상대방 구분하기 -->
+                        <a th:if="${#authentication.principal.loggedMember.randomId eq room.toUser?.randomId}"
                            class="profile-link" th:href="@{|/shop/products/${room.fromUser?.randomId}|}">
                             <img th:src="${room.fromUser.userProfile ?: '/img/unknown.jpg'}"
                                  alt="프로필" class="chat-user-profile">
                         </a>
-                        <!-- 사용자가 구매자라면 -->
-                        <a th:unless="${#authentication.principal.loggedMember.randomId eq room.productDto.seller?.randomId}"
+                        <a th:if="${#authentication.principal.loggedMember.randomId eq room.fromUser?.randomId}"
                            class="profile-link" th:href="@{|/shop/products/${room.toUser?.randomId}|}">
                             <img th:src="${room.toUser.userProfile ?: '/img/unknown.jpg'}"
                                  alt="프로필" class="chat-user-profile">
                         </a>
+                        <!-- 사용자와 상대방 구분하기 -->
                         <div class="chat-room-text">
                             <div class="room-info-container-1">
-                                <!-- 사용자가 판매자라면 -->
-                                <span th:if="${#authentication.principal.loggedMember.randomId eq room.productDto.seller.randomId}"
-                                      class="chat-user" th:text="${room.fromUser.userName}">
+                                <span th:if="${#authentication.principal.loggedMember.randomId eq room.toUser?.randomId}"
+                                      class="chat-user" th:text="${room.fromUser?.userName}">
                                 </span>
-                                <!-- 사용자가 구매자라면 -->
-                                <span th:unless="${#authentication.principal.loggedMember.randomId eq room.productDto.seller.randomId}"
-                                      class="chat-user" th:text="${room.toUser.userName}">
+                                <span th:if="${#authentication.principal.loggedMember.randomId eq room.fromUser?.randomId}"
+                                      class="chat-user" th:text="${room.toUser?.userName}">
                                 </span>
                                 <span class="chat-unread" th:if="${room.unreadCount > 0}"
                                       th:text="${room.unreadCount}"></span>
                             </div>
                             <div class="room-info-container-2">
                                 <span class="chat-last-msg" th:text="${room.latestMessage ?: ''}"></span>
-                                <span class="chat-comma" >・</span>
+                                <span class="chat-comma">・</span>
                                 <span class="chat-last-time" th:text="${room.latestTimeStr}"></span>
                             </div>
                         </div>
@@ -109,11 +107,18 @@
         <!-- 우측 채팅창 -->
         <div class="chat-window">
             <div class="chat-header blind">
-                <span id="chatTitle" th:text="${sellerName?:''}" th:data-room-id="${roomId}">
+                <span id="chatTitle" th:if="${toUserRandomId ne #authentication.principal.loggedMember.randomId}"
+                      th:text="${toUserName}" th:data-room-id="${roomId}">
+                </span>
+                <span id="chatTitle" th:unless="${toUserRandomId ne #authentication.principal.loggedMember.randomId}"
+                      th:text="${fromUserName}" th:data-room-id="${roomId}">
                 </span>
 
                 <!-- 상품 정보 카드 -->
-                <div class="chat-product-card" th:data-product-id="${product?.productId}">
+                <div class="chat-product-card" th:data-product-id="${product?.productId}"
+                     th:data-sell-status="${product?.sell}"
+                     th:data-seller-id="${product?.seller?.randomId}"
+                >
                     <img th:src="${product?.thumbnailUrl}" alt="상품 이미지" class="chat-product-image">
                     <div class="chat-product-info">
                         <p class="chat-product-name" th:text="${product?.productName}"></p>
@@ -121,7 +126,8 @@
                            th:text="${#numbers.formatInteger(product?.price, 0, 'COMMA') + '원'}"></p>
                     </div>
                     <!-- 구매하기 버튼 -->
-                    <a th:href="@{|/product/payment/checkout/${product?.productId}|}" class="chat-buy-btn">구매하기</a>
+                    <a th:href="@{|/product/payment/checkout/${product?.productId}/chatting|}"
+                       class="chat-buy-btn">구매하기</a>
                 </div>
             </div>
             <div class="chat-messages" id="chatMessages">
@@ -137,7 +143,12 @@
                             <div class="chat-date" th:text="${#temporals.format(chat.chatDate, 'yyyy년 M월 dd일')}"></div>
                         </th:block>
 
+                        <img th:if="${chat.productImgUrl != null}" th:src="@{${chat?.productImgUrl}}"
+                             class="chat-img" style="width: 193px; height: 193px; margin: 0"
+                             th:classappend="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId} ? 'chat-right' : 'chat-left'"
+                        >
                         <div th:classappend="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId} ? 'chat-right' : 'chat-left'">
+
                             <th:block
                                     th:unless="${chat.writer.randomId eq #authentication.principal.loggedMember.randomId}">
                                 <span class="chat-content" th:text="${chat.content}"></span>

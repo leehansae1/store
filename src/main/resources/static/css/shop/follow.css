@@ -21,6 +21,10 @@
     text-decoration: none;
 }
 
+.no-follow-text, .no-follower-text {
+    font-weight: bold;
+}
+
 /* 팔로우 카드 */
 .follow-card {
     display: flex;

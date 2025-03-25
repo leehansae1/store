@@ -22,7 +22,7 @@
     <!-- 커스텀 스타일 -->
     <link rel="stylesheet" href="/css/product/product-detail.css">
 </head>
-<body>
+<body th:data-delete-user="${product.seller.status}">
 
 <!-- todo 헤더: 로그인, 메인, 업로드와 동일 -->
 <header class="navbar navbar-expand-lg navbar-dark fixed-top wave-navbar">
@@ -275,9 +275,24 @@
                                                     <p class="review-name" th:text="${review.reviewer.userName}">사용자
                                                         이름</p>
                                                     <p class="review-rating">
-                                                        <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span><span
-                                                            th:if="${review.rating < 5}"
-                                                            th:each="i : ${#numbers.sequence(1, 5 - review.rating)}">☆</span>
+                                                        <span>
+                                                            <!-- 꽉 찬 별 -->
+                            <th:block th:if="${review.rating ne 0.0}"
+                                      th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(review.rating))}">
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </th:block>
+
+                                                            <!-- 반 별 (딱 0.5인 경우만) -->
+                            <th:block th:if="${review.rating % 1 >= 0.5}">
+                                <i class="bi bi-star-half text-warning"></i>
+                            </th:block>
+
+                                                            <!-- 빈 별: 5 - 꽉찬 - 반 -->
+                            <th:block th:if="${review.rating < 4.5}"
+                                      th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).floor(review.rating) - (review.rating % 1 >= 0.5 ? 1 : 0))}">
+                                <i class="bi bi-star text-warning"></i>
+                            </th:block>
+                                                        </span>
                                                     </p>
                                                 </div>
                                                 <!-- 후기 작성일 -->
@@ -334,6 +349,13 @@
     });
 </script>
 <script th:inline="javascript" th:unless="${#authentication.name eq member.userId}">
+
+    const isDelete = document.querySelector("body").dataset.deleteUser;
+    console.log(isDelete);
+    if (isDelete === "STATUS_DELETED") {
+        alert("잘못 된 접근입니다.");
+        window.location.href = "/";
+    }
     const isLoggedIn = /*[[${#authentication.name != 'anonymousUser'}]]*/ false;
 
     document.querySelectorAll(".btn-need-login").forEach(b => {
@@ -357,7 +379,7 @@
         const paymentBtn = document.querySelector(".btn-payment");
         paymentBtn.addEventListener("click", e => {
             e.preventDefault();
-            window.location.href = '/product/payment/checkout/' + productId;
+            window.location.href = `/product/payment/checkout/${productId}/detail`;
         });
         // todo 찜 기능 처리
         const likeBtn = document.querySelector('#likeBtn');

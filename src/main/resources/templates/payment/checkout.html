@@ -23,7 +23,7 @@
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 
-<body>
+<body th:data-sell-status="${product.sell}">
 <!-- 주문서 영역 -->
 <div class="wrapper">
     <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
@@ -50,11 +50,12 @@
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
         <!-- 결제하기 버튼 -->
-        <div class="result wrapper d-flex">
+        <div class="wave-payment wave-wrapper d-flex">
             <button class="button btn-lg" id="payment-button" style="margin-top: 30px">
                 결제하기
             </button>
-            <button class="button btn-outline-primary btn-lg" id="back-btn" style="margin-top: 30px">
+            <button class="button btn-outline-primary btn-lg" id="back-btn" style="margin-top: 30px"
+                    th:data-case="${backCase}">
                 돌아가기
             </button>
         </div>
@@ -70,7 +71,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
-            ⏰ 결제 시간이 만료되었습니다. 다시 시도해주세요.
+            ⏰ 결제 세션이 만료되었습니다.
         </div>
     </div>
 </div>
@@ -87,6 +88,10 @@
 <script th:inline="javascript">
     const productId = /*[[${product.productId}]]*/ 0;
     const isSaveDtoExists = /*[[${saveDtoExists}]]*/ false;
+    const isSell = document.querySelector("body").dataset.sellStatus;
+    if (isSell === "true") {
+        window.location.href = "/";
+    }
 
     if (isSaveDtoExists) {
         const toastEl = document.querySelector('#session-expired-toast');
@@ -94,118 +99,121 @@
         toast.show();
     }
 
-    document.querySelector("#back-btn").addEventListener("click", e => {
+    const backBtn = document.querySelector("#back-btn");
+    backBtn.addEventListener("click", e => {
+        const backCase = backBtn.dataset.case;
+        if (backCase === "chatting") window.location.href = `/chatRoom/${productId}`;
+        else if (backCase === "detail") window.location.href = `/product/detail/${productId}`;
         e.preventDefault();
-        window.location.href = `/product/detail/${productId}`;
     });
 
-    main();
+    const paymentBtn = document.querySelector("#payment-button");
+    const price = /*[[${product.price}]]*/ 0;
+    const userId = /*[[${#authentication.principal.loggedMember.userId}]]*/ "";
+    const userName = /*[[${#authentication.principal.loggedMember.userName}]]*/ "";
+    const userEmail = /*[[${#authentication.principal.loggedMember.userEmail}]]*/ "";
+    const productName = /*[[${product.productName}]]*/ "";
+    const sellerId = /*[[${product.seller.userId}]]*/ "";
+    if (userId === sellerId) {
+        window.location.href = "/";
+    }
 
-    async function main() {
-        const button = document.querySelector("#payment-button");
-        const price = /*[[${product.price}]]*/ 0;
-        const userId = /*[[${#authentication.principal.loggedMember.userId}]]*/ "";
-        const userName = /*[[${#authentication.principal.loggedMember.userName}]]*/ "";
-        const userEmail = /*[[${#authentication.principal.loggedMember.userEmail}]]*/ "";
-        const productName = /*[[${product.productName}]]*/ "";
+    const userTel = /*[[${#authentication.principal.loggedMember.tel}]]*/ null;
+    let tel = "";
+    if (userTel !== null) {
+        tel = userTel.replaceAll("-", "");
+    }
 
-        const userTel = /*[[${#authentication.principal.loggedMember.tel}]]*/ null;
-        let tel = "";
-        if (userTel !== null) {
-            tel = userTel.replaceAll("-", "");
-        }
+    const amount = {
+        currency: "KRW",
+        value: price,
+    };
 
-        const amount = {
-            currency: "KRW",
-            value: price,
+    // ------  결제위젯 초기화 ------
+    const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+    const customerKey = /*[[${orderId}]]*/ "";
+    const tossPayments = TossPayments(clientKey);
+    const widgets = tossPayments.widgets({customerKey});
+
+    widgets.setAmount(amount);
+
+    Promise.all([
+        widgets.renderPaymentMethods({
+            selector: "#payment-method",
+            variantKey: "DEFAULT",
+        }),
+        widgets.renderAgreement({
+            selector: "#agreement",
+            variantKey: "AGREEMENT",
+        })
+    ]);
+
+    const baseUrl = window.location.origin;
+
+    // 타이머 설정 (5분)
+    const TIMER_DURATION = 300;
+    let remainingTime = TIMER_DURATION;
+    let timerInterval;
+    const timerContainer = document.querySelector("#payment-timer");
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        timerContainer.innerText = `⏳ 결제 가능 시간: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function startTimer() {
+        // 기존 타이머가 있다면 삭제 후 초기화
+        if (timerInterval) clearInterval(timerInterval);
+        remainingTime = TIMER_DURATION;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            remainingTime--;
+            updateTimerDisplay();
+
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                timerContainer.innerText = "⏳ 결제 세션이 만료되었습니다. 페이지를 새로고침합니다.";
+                location.reload();
+            }
+        }, 1000);
+    }
+
+    paymentBtn.addEventListener("click", function () {
+        const sendData = {
+            orderId: customerKey,
+            customerEmail: userEmail,
+            amount: price,
+            productId: productId,
+            customerId: userId,
+            orderName: productName
         };
 
-        // ------  결제위젯 초기화 ------
-        const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
-        const customerKey = /*[[${orderId}]]*/ "";
-        const tossPayments = TossPayments(clientKey);
-        const widgets = tossPayments.widgets({customerKey});
-
-        await widgets.setAmount(amount);
-
-        await Promise.all([
-            widgets.renderPaymentMethods({
-                selector: "#payment-method",
-                variantKey: "DEFAULT",
-            }),
-            widgets.renderAgreement({
-                selector: "#agreement",
-                variantKey: "AGREEMENT",
-            })
-        ]);
-
-        const baseUrl = window.location.origin;
-
-        // 타이머 설정 (5분)
-        const TIMER_DURATION = 300;
-        let remainingTime = TIMER_DURATION;
-        let timerInterval;
-        const timerContainer = document.querySelector("#payment-timer");
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(remainingTime / 60);
-            const seconds = remainingTime % 60;
-            timerContainer.innerText = `⏳ 결제 가능 시간: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        function startTimer() {
-            // 기존 타이머가 있다면 삭제 후 초기화
-            if (timerInterval) clearInterval(timerInterval);
-            remainingTime = TIMER_DURATION;
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                remainingTime--;
-                updateTimerDisplay();
-
-                if (remainingTime <= 0) {
-                    clearInterval(timerInterval);
-                    timerContainer.innerText = "⏳ 결제 시간이 만료되었습니다. 페이지를 새로고침합니다.";
-                    location.reload();
+        // 임시 저장 요청 (saveDto 생성)
+        fetch(baseUrl + "/payment/temporary-save", {
+            headers: {"Content-Type": "application/json"},
+            method: "POST",
+            body: JSON.stringify(sendData),
+        })
+            .then(resp => resp.json())
+            .then(json => {
+                if (json.isSaved) {
+                    timerContainer.style.display = "block";
+                    startTimer(); //타이머 시작 (5분)
                 }
-            }, 1000);
-        }
-
-        button.addEventListener("click", async function () {
-            const sendData = {
-                orderId: customerKey,
-                customerEmail: userEmail,
-                amount: price,
-                productId: productId,
-                customerId: userId,
-                orderName: productName
-            };
-
-            // 임시 저장 요청 (saveDto 생성)
-            fetch(baseUrl + "/payment/temporary-save", {
-                headers: {"Content-Type": "application/json"},
-                method: "POST",
-                body: JSON.stringify(sendData),
             })
-                .then(resp => resp.json())
-                .then(json => {
-                    if (json.isSaved) {
-                        timerContainer.style.display = "block";
-                        startTimer(); //타이머 시작 (5분)
-                    }
-                })
-                .catch(e => console.log("음..", e));
+            .catch(e => console.log("음..", e));
 
-            await widgets.requestPayment({
-                orderId: customerKey,
-                orderName: productName,
-                successUrl: `${baseUrl}/payment/success.html`,
-                failUrl: `${baseUrl}/payment/fail`,
-                customerEmail: userEmail,
-                customerName: userName,
-                customerMobilePhone: tel,
-            });
+        widgets.requestPayment({
+            orderId: customerKey,
+            orderName: productName,
+            successUrl: `${baseUrl}/payment/success`,
+            failUrl: `${baseUrl}/payment/fail`,
+            customerEmail: userEmail,
+            customerName: userName,
+            customerMobilePhone: tel,
         });
-    }
+    });
 </script>
 </body>
 </html>

@@ -3,6 +3,22 @@ const reviewTab = document.querySelector("[data-tab='#reviews']");
 const reviewContainer = document.querySelector("#review-container");
 let realProductId;
 
+function renderStars(rating) {
+    const fullStar = '<i class="bi bi-star-fill text-warning"></i>';
+    const halfStar = '<i class="bi bi-star-half text-warning"></i>';
+    const emptyStar = '<i class="bi bi-star text-warning"></i>';
+
+    const fullCount = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyCount = 5 - fullCount - hasHalf;
+
+    return (
+        fullStar.repeat(fullCount) +
+        (hasHalf ? halfStar : '') +
+        emptyStar.repeat(emptyCount)
+    );
+}
+
 reviewTab.addEventListener("click", function () {
     const userId = reviewContainer.dataset.userId;
     fetch(`/shop/reviews/${userId}`, {
@@ -29,7 +45,7 @@ reviewTab.addEventListener("click", function () {
             <img class="review-profile" src="${review.reviewer.userProfile || '/img/unknown.jpg'}" alt="프로필 이미지">
             <div class="review-info">
                 <p class="reviewer-name">${review.reviewer.userName}</p>
-                <p class="review-rating">${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</p>
+                <p class="review-rating">${renderStars(review.rating)}</p>
                 <p class="product-btn">${review.productDto.productName}</p>
             </div>
         </div>

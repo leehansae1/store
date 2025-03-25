@@ -26,18 +26,22 @@ public class MemberDto {
     private LocalDateTime regDate;
     private String introduce;
     private MemberStatus status;
+
     private int followCount;
     private boolean followState;
     private int productCount;
+    private double ratingAverage;
 
     private String userProfile;
     private String roleStr;
+
 
     @Builder
     public MemberDto(String userId, String userPw, String userName, String userProfile, MultipartFile profile,
                      String userEmail, String address, Role role, String tel, LocalDateTime regDate, int randomId,
                      String introduce, MemberStatus status, int followCount, boolean followState, String roleStr,
-                     int productCount) {
+                     int productCount, double ratingAverage) {
+        this.ratingAverage = ratingAverage;
         this.productCount = productCount;
         this.randomId = randomId;
         this.roleStr = roleStr;

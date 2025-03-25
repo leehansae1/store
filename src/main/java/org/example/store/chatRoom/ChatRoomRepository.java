@@ -12,23 +12,21 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Integer> {
 
     // 내가 구매자, 판매자인 채팅방 조회
     @Query("""
-    SELECT cr AS chatRoom, 
-           (SELECT c.content FROM Chat c 
-            WHERE c.chatRoom.roomId = cr.roomId 
-            ORDER BY c.chatDate DESC FETCH FIRST 1 ROW ONLY) AS latestMessage,
-           COALESCE(
-               (SELECT c.chatDate FROM Chat c 
-                WHERE c.chatRoom.roomId = cr.roomId 
-                ORDER BY c.chatDate DESC FETCH FIRST 1 ROW ONLY),
-               TO_TIMESTAMP('', '')
-           ) AS latestMessageTime
-    FROM ChatRoom cr
-    LEFT JOIN FETCH cr.product p
-    LEFT JOIN FETCH cr.fromUser
-    LEFT JOIN FETCH cr.toUser
-    WHERE cr.fromUser.userId = :userId OR cr.toUser.userId = :userId
-    ORDER BY latestMessageTime DESC
-""")
+            SELECT cr AS chatRoom,
+                (SELECT c.content FROM Chat c WHERE c.chatRoom.roomId = cr.roomId
+                ORDER BY c.chatDate DESC FETCH FIRST 1 ROW ONLY) AS latestMessage,
+                COALESCE(
+                    (SELECT c.chatDate FROM Chat c WHERE c.chatRoom.roomId = cr.roomId
+                     ORDER BY c.chatDate DESC FETCH FIRST 1 ROW ONLY),
+                     TO_TIMESTAMP('1970-01-01', 'YYYY-MM-DD')
+                ) AS latestMessageTime
+            FROM ChatRoom cr
+                LEFT JOIN FETCH cr.product
+                LEFT JOIN FETCH cr.fromUser
+                LEFT JOIN FETCH cr.toUser
+            WHERE cr.fromUser.userId = :userId OR cr.toUser.userId = :userId
+            ORDER BY latestMessageTime DESC
+            """)
     List<ChatRoomProjection> findAllChatRoomsWithLatestMessage(@Param("userId") String userId);
 
     // 상품 아이디로 내가 그 상품을 거래했던 채팅방 찾기 >> 나와 상품이 같은 채팅방은 하나일 수 밖에 없음

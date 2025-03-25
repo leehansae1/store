@@ -317,6 +317,10 @@ a {
     display: block;
 }
 
+.chat-img {
+    border-radius: 12px;
+}
+
 .chat-right, .chat-left {
     display: flex;
     margin-bottom: 10px;
@@ -357,6 +361,7 @@ a {
     padding: 10px;
     border-radius: 12px;
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .chat-left .chat-content {

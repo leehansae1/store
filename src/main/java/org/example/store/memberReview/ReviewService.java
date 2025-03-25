@@ -51,4 +51,10 @@ public class ReviewService {
         });
         return reviewDtoList;
     }
+
+    public double findCountAndAvgBySeller(String sellerId) {
+        String avg = reviewRepository.findAvgBySeller(sellerId);
+        if (avg == null) return 0.0;
+        return Math.round(Double.parseDouble(avg) * 2) / 2.0;
+    }
 }

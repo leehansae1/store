@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -100,23 +101,33 @@ public class PaymentController {
         return connection;
     }
 
+    @GetMapping("/payment/success")
+    public String showSuccessPage(HttpSession session, Model model) {
+        SaveDto saveDto = (SaveDto) session.getAttribute("saveDto");
+        if (saveDto != null) {
+            model.addAttribute("productId", saveDto.getProductId());
+        }
+        return "payment/success";
+    }
+
     // 결제 실패 시 진입화면
     @GetMapping("/payment/fail")
-    public String failPayment(HttpServletRequest request, Model model) {
-        log.info("여기는 실패");
-        model.addAttribute("code", request.getParameter("code"));
-        model.addAttribute("message", request.getParameter("message"));
+    public String failPage(@RequestParam String message, @RequestParam String code, Model model) {
+        model.addAttribute("code", code);
+        model.addAttribute("message", message);
         return "payment/fail";
     }
+
 
     // 결제 성공, 실패 내역 저장
     @PostMapping("/payment/resultSave")
     @ResponseBody
-    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto, HttpSession session) {
+    public Map<String, Object> paymentSuccess(@RequestBody PaymentDto paymentDto,
+                                              HttpSession session) {
         SaveDto saveDto = (SaveDto) session.getAttribute("saveDto"); //임시저장 값 가져오기
-        Long createdTime = (Long) session.getAttribute("saveDtoCreatedTime");
+        log.info("success saveDto === {}", saveDto);
+        if (saveDto == null) return Map.of("save", "saveDto 세션 값 없음");
         log.info("saveDto userId : {}", saveDto.getCustomerId());
-        log.info("createdTime : {}", createdTime);
         session.removeAttribute("saveDto");
         session.removeAttribute("saveDtoCreatedTime");
 
@@ -124,21 +135,11 @@ public class PaymentController {
         return Map.of("save", isSaved);
     }
 
-    // 결제 실패 내역
-    @GetMapping("/payment/getPayments")
-    public List<PaymentDto> getFailPayments(@AuthenticationPrincipal CustomUserDetails user) {
-        return paymentService.getFailPaymentList(user);
-    }
-
-    // 내 판매 내역
-    @GetMapping("/payment/sellHistory")
-    public List<PaymentDto> getSellPayments(@AuthenticationPrincipal CustomUserDetails user) {
-        return paymentService.getSellPayments(user);
-    }
-
-    // 내 구매 내역
+    // 내 결제 내역
     @GetMapping("/payment/buyHistory")
-    public List<PaymentDto> getBuyPayments(@AuthenticationPrincipal CustomUserDetails user) {
-        return paymentService.getBuyPayments(user);
+    public String getBuyPayments(@AuthenticationPrincipal CustomUserDetails user, Model model) {
+        List<PaymentDto> paymentDtoList = paymentService.getBuyPayments(user);
+        model.addAttribute("paymentList", paymentDtoList);
+        return "payment/buyHistory";
     }
 }

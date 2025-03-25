@@ -4,6 +4,7 @@ import lombok.*;
 import org.example.store.member.dto.MemberDto;
 import org.example.store.product.dto.ProductDto;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PaymentDto {
+
+    private int paymentId;
 
     private String orderId; //이게 pk가 되게꾼
 
@@ -26,6 +29,8 @@ public class PaymentDto {
     private String approvedAt;
 
     private int totalAmount;
+
+    private LocalDateTime buyTime;
 
     private MemberDto customer;
 
@@ -40,6 +45,7 @@ public class PaymentDto {
 
     public static Payment toEntity(PaymentDto paymentDto) {
         return Payment.builder()
+                .paymentId(paymentDto.getPaymentId())
                 .orderId(paymentDto.getOrderId())
                 .requestedAt(paymentDto.getRequestedAt())
                 .orderName(paymentDto.getOrderName())

@@ -18,6 +18,8 @@ public class ChatDto {
 
     private String content;
 
+    private String productImgUrl;
+
     private LocalDateTime chatDate;
 
     private boolean isRead;
@@ -27,7 +29,7 @@ public class ChatDto {
     private ChatRoomDto chatRoomDto;
 
     @Builder
-    public ChatDto(int chatId, String content, LocalDateTime chatDate,
+    public ChatDto(int chatId, String content, LocalDateTime chatDate, String productImgUrl,
                    MemberDto writer, boolean isRead, ChatRoomDto chatRoomDto) {
         this.isRead = isRead;
         this.chatId = chatId;
@@ -35,6 +37,7 @@ public class ChatDto {
         this.chatDate = chatDate;
         this.writer = writer;
         this.chatRoomDto = chatRoomDto;
+        this.productImgUrl = productImgUrl;
     }
 
     public static Chat toEntity(ChatDto chatDto) {
@@ -45,6 +48,7 @@ public class ChatDto {
                 .writer(MemberDto.toEntity(chatDto.getWriter()))
                 .chatRoom(ChatRoomDto.toEntity(chatDto.getChatRoomDto()))
                 .isRead(chatDto.isRead())
+                .productImgUrl(chatDto.getProductImgUrl())
                 .build();
     }
 

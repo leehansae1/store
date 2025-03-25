@@ -1,0 +1,159 @@
+#review-btn {
+    background-color: #e8f3ff;
+    color: #1b64da
+}
+
+#reviewForm {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #f9fcff;
+    margin: 10% auto;
+    padding: 24px 28px;
+    border-radius: 16px;
+    width: 600px;
+    height: 600px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h3 {
+    margin: 0 0 50px 0;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+}
+
+label {
+    text-align: center;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: #333;
+}
+
+#content {
+    width: 100%;
+    height: 220px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #1b64da;
+    margin-bottom: 18px;
+    font-size: 14px;
+    border-radius: 8px;
+    outline: none;
+    resize: none;
+}
+
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    font-size: 38px;
+    margin-bottom: 20px;
+    user-select: none;
+    flex-grow: 1;
+}
+
+.half-star {
+    position: relative;
+    width: 38px;
+    /*height: 38px;*/
+    display: inline-block;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.left-half,
+.right-half {
+    position: absolute;
+    top: 0;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+/* 왼쪽 반쪽 */
+.left-half {
+    left: 0;
+    width: 50%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* 오른쪽 반쪽 */
+.right-half {
+    right: 0;
+    width: 50%;
+    overflow: hidden;
+    transform: scaleX(-1);
+    z-index: 0;
+}
+
+.send-review {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    background-color: #1b64da;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 50px 0 0 0;
+    outline: none;
+}
+
+.send-review:hover:enabled {
+    background-color: #154fb1;
+}
+
+.send-review:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: #000;
+}

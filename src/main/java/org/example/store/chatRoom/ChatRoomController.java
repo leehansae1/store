@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.store.chat.ChatDto;
 import org.example.store.member.dto.CustomUserDetails;
 import org.example.store.product.dto.ProductDto;
-import org.example.store.product.entity.Product;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,8 +30,9 @@ public class ChatRoomController {
 
         List<ChatRoomDto> chatRoomDtos = (List<ChatRoomDto>) resultMap.get("chatRoomList");
         List<ChatDto> chatDtos = (List<ChatDto>) resultMap.get("chatList");
-        model.addAttribute("sellerRandomId", resultMap.get("sellerRandomId"));
-        model.addAttribute("sellerName", resultMap.get("sellerName"));
+        model.addAttribute("toUserRandomId", resultMap.get("toUserRandomId"));
+        model.addAttribute("toUserName", resultMap.get("toUserName"));
+        model.addAttribute("fromUserName", resultMap.get("fromUserName"));
         model.addAttribute("roomId", resultMap.get("roomId"));
         model.addAttribute("product", resultMap.get("product"));
         chatRoomDtos.forEach(chatRoomDto -> log.info("chatRoomDto === {}", chatRoomDto.toString()));
@@ -82,7 +82,7 @@ public class ChatRoomController {
     @GetMapping("/chatRoom/paymentResult/{productId}")
     public String writePaymentResult(@PathVariable int productId,
                                      @AuthenticationPrincipal CustomUserDetails user) {
-        return chatRoomService.writePaymentResult(productId, user) != null
-                ? "redirect:/chatting/chatRoom/" + productId : "/";
+        ChatDto chatDto = chatRoomService.writePaymentResult(productId, user);
+        return "redirect:/chatRoom/" + productId;
     }
 }

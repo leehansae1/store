@@ -49,10 +49,11 @@ public class ShopController {
             log.info("비회원 접근이에요");
         }
 
+        Member member;
         List<ProductDto> productDtoList;
         MemberDto memberDto;
         if (randomId != null) { //판매자의 상점이라면
-            Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
+            member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
             memberDto = Member.fromEntity(member);
             int followCount = followService.getFollowCount(member);
             boolean followState;
@@ -65,10 +66,16 @@ public class ShopController {
 
             productDtoList = productService.getSellerProducts(member);
         } else { //내 상점이라면
-            memberDto = Member.fromEntity(user.getLoggedMember());
+            member = user.getLoggedMember();
+            memberDto = Member.fromEntity(member);
             productDtoList = productService.getMyProducts(user);
         }
+        double userRating = reviewService.findCountAndAvgBySeller(member.getUserId());
+        memberDto.setRatingAverage(userRating);
+
+        productDtoList.forEach(product -> product.getSeller().setUserPw(""));
         memberDto.setUserPw("");
+
         model.addAttribute("member", memberDto);
         model.addAttribute("productList", productDtoList);
         // 공통
@@ -115,9 +122,10 @@ public class ShopController {
     public Map<String, Object> getAllFollowers(@PathVariable String randomId) {
         Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
         List<MemberDto> memberList = followService.getAllFollowers(member);
-        memberList.forEach(memberDto ->
-                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)))
-        );
+        memberList.forEach(memberDto ->{
+                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)));
+                memberDto.setUserPw("");
+        });
         return memberList.isEmpty()
                 ? Map.of("isEmpty", true, "count", "0")
                 : Map.of("isEmpty", false, "memberList", memberList, "count", memberList.size());
@@ -129,9 +137,10 @@ public class ShopController {
     public Map<String, Object> getAllSeller(@PathVariable String randomId) {
         Member member = memberService.getMemberByRandomId(Integer.parseInt(randomId));
         List<MemberDto> memberList = followService.getAllSeller(member);
-        memberList.forEach(memberDto ->
-                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)))
-        );
+        memberList.forEach(memberDto -> {
+                memberDto.setProductCount(productService.countBySeller(MemberDto.toEntity(memberDto)));
+                memberDto.setUserPw("");
+        });
         return memberList.isEmpty()
                 ? Map.of("isEmpty", true, "count", "0")
                 : Map.of("isEmpty", false, "memberList", memberList, "count", memberList.size());

@@ -25,7 +25,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         String errorMessage;
 
         if (exception instanceof BadCredentialsException) {
-            errorMessage = "아이디 또는 비밀번호를 확인해주세요."; // ✅ 비밀번호 오류
+            errorMessage = "아이디 또는 비밀번호를 확인해주세요."; // 비밀번호 오류
         } else if (exception instanceof InternalAuthenticationServiceException) {
             Throwable cause = exception.getCause();
             log.info("cause {}", cause.getMessage());

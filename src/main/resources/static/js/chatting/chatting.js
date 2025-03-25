@@ -66,12 +66,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // 상품 상세화면 이동
-document.querySelector(".chat-header").addEventListener("click", event => {
-    let chatProductCard = event.target.closest(".chat-product-card");
+document.querySelector(".chat-header").addEventListener("click", e => {
+    let chatProductCard = e.target.closest(".chat-product-card");
+
+    let isSell = chatProductCard.dataset.sellStatus;
+    let sellerId = chatProductCard.dataset.sellerId;
+
+    if (e.target.closest(".chat-buy-btn") && isSell === "true") {
+        e.preventDefault();
+        alert("이미 판매 된 상품입니다.");
+        return;
+    }
+
+    if (e.target.closest(".chat-buy-btn") && sellerId == userRandomId) {
+        e.preventDefault();
+        return;
+    }
+
     if (!chatProductCard) return; // 상품 카드가 아닌 곳 클릭 시 무시
 
     let productId = chatProductCard.dataset.productId;
-    if (productId) {
+    if (productId && isSell === "false") {
         window.location.href = `/product/detail/${productId}`;
     }
 });
@@ -123,6 +138,8 @@ function loadChatMessages(element) {
                 let productCard = document.createElement("div");
                 productCard.className = "chat-product-card";
                 productCard.dataset.productId = productData.productId;
+                productCard.dataset.sellStatus = productData.sell;
+                productCard.dataset.sellerId = productData.seller.randomId;
 
                 productCard.innerHTML = `
                 <img src="${productData.thumbnailUrl}" alt="상품 이미지" class="chat-product-image">
@@ -130,7 +147,7 @@ function loadChatMessages(element) {
                     <p class="chat-product-name">${productData.productName}</p>
                     <p class="chat-product-price">${productData.price.toLocaleString()}원</p>
                 </div>
-                <a href="/product/payment/checkout/${productData.productId}" class="chat-buy-btn">구매하기</a>`;
+                <a href="/product/payment/checkout/${productData.productId}/chatting" class="chat-buy-btn">구매하기</a>`;
 
                 // 채팅 헤더에 상품 카드 추가
                 chatHeader.appendChild(productCard);
@@ -161,9 +178,21 @@ function loadChatMessages(element) {
                     lastDate = formattedDate;
                 }
 
+                if (chat.productImgUrl !== null) {
+                    let img = document.createElement("img");
+                    img.classList.add(chat.writer.randomId == userRandomId ? "chat-right" : "chat-left");
+                    img.classList.add("chat-img");
+                    img.src = chat.productImgUrl;
+                    img.style.width = "193px";
+                    img.style.height = "193px";
+                    img.style.margin = "0";
+                    chatMessages.appendChild(img);
+                }
+
                 let unreadIndicator = chat.read
                     ? "<span class='chat-unread-indicator'></span>"
                     : "<span class='chat-unread-indicator'>1</span>";
+
 
                 let div = document.createElement("div");
                 div.className = chat.writer.randomId == userRandomId ? "chat-right" : "chat-left";

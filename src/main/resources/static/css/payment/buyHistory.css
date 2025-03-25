@@ -1,0 +1,143 @@
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 80px 0 0 0;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.wave-navbar {
+    width: 100vw;
+    background: rgba(0, 123, 255, 0.85);
+    backdrop-filter: blur(8px);
+    height: 80px;
+}
+
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+#search-input {
+    width: 100%;
+    height: 50px;
+    padding-right: 50px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+}
+
+#search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+/* main 요소가 가변적으로 확장되도록 설정 */
+main {
+    flex-grow: 1;
+    background-color: #e0f7fa;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+/* 카드 외곽 */
+.horizontal-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease-in-out;
+    padding: 20px;
+}
+
+.horizontal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+    width: 40%;
+    flex-shrink: 0;
+    margin-right: 30px;
+}
+
+.image-container img {
+    object-fit: cover;
+    max-height: 250px;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 12px;
+}
+
+.info-container {
+    flex-grow: 1;
+}
+
+/* 카드 내부 내용 */
+.card-body {
+    padding: 0;
+    font-size: 15px;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 22px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.product-name {
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.error-msg span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* 푸터 스타일 */
+.wave-footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}

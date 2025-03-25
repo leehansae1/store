@@ -19,10 +19,10 @@ public class ReviewController {
 
     // 리뷰는 결제 성공 페이지에서 모달을 띄워 작성
     @PostMapping("/write/{productId}")
-    @ResponseBody
-    public Map<String, Boolean> writeReview(ReviewDto reviewDto, @PathVariable int productId,
-                                            @AuthenticationPrincipal CustomUserDetails user) {
+    public String writeReview(@ModelAttribute ReviewDto reviewDto, @PathVariable int productId,
+                              @AuthenticationPrincipal CustomUserDetails user) {
         boolean isSaved = reviewService.writeReview(reviewDto, productId, user);
-        return Map.of("isSaved", isSaved);
+        if (isSaved) return "redirect:/chatRoom/" + productId;
+        else return "/payment/success";
     }
 }

@@ -6,8 +6,8 @@ import java.time.temporal.ChronoUnit;
 public class DateUtils {
 
     public static String getTimeAgo(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return "";
+        if (dateTime == null || dateTime.getYear() == 1970) {
+            return "";  // 메시지가 없거나 기본값일 때는 빈 문자열 반환
         }
 
         LocalDateTime now = LocalDateTime.now();

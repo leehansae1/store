@@ -112,8 +112,10 @@ public class ProductController {
                 ? Map.of("unlike", true) : Map.of("unlike", false);
     }
 
-    @GetMapping("/payment/checkout/{productId}")
-    public String checkout(Model model, @PathVariable int productId, HttpSession session) {
+    @GetMapping("/payment/checkout/{productId}/{backCase}")
+    public String checkout(Model model, HttpSession session,
+                           @PathVariable int productId, @PathVariable String backCase) {
+        model.addAttribute("backCase", backCase);
         model.addAttribute("orderId", UUID.randomUUID().toString().substring(0, 8));
         ProductDto productDto = productService.getProductDto(productId);
         model.addAttribute("product", productDto);

@@ -17,6 +17,9 @@ import java.util.List;
 public class Payment {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int paymentId;
+
     private String orderId;
 
     private String orderName; //주문명
@@ -44,9 +47,10 @@ public class Payment {
     private String errorMessage;
 
     @Builder
-    public Payment(String orderId, String orderName, int totalAmount,
+    public Payment(String orderId, String orderName, int totalAmount, int paymentId,
                    String method, String requestedAt, String approvedAt,
                    int success, Member customer, Product product, String errorMessage, String errorCode) {
+        this.paymentId = paymentId;
         this.orderId = orderId;
         this.orderName = orderName;
         this.totalAmount = totalAmount;
@@ -72,6 +76,7 @@ public class Payment {
                 .success(payment.getSuccess())
                 .errorCode(payment.getErrorCode())
                 .errorMessage(payment.getErrorMessage())
+                .paymentId(payment.getPaymentId())
 
                 .productDto(Product.fromEntity(payment.getProduct()))
                 .customer(Member.fromEntity(payment.getCustomer()))

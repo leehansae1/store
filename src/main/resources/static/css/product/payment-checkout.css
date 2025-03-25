@@ -88,17 +88,17 @@ body {
     margin: 0;
 }
 
-.result {
+.wave-payment {
     justify-content: center;
 }
 
-.result #back-btn {
+.wave-payment #back-btn {
     background: #fff;
     color: #1b64da;
     border: 1px solid #1b64da;
 }
 
-.result #back-btn:active, .result #back-btn:hover {
+.wave-payment #back-btn:active, .wave-payment #back-btn:hover {
     background: #eee;
     color: #0f3a7a;
     border-color: #0f3a7a;

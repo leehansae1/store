@@ -7,13 +7,14 @@ import org.example.store.member.entity.Member;
 import org.example.store.member.service.MemberService;
 import org.example.store.product.ProductService;
 import org.example.store.product.dto.ProductDto;
+import org.example.store.util.DateUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -47,52 +48,31 @@ public class PaymentService {
         return Payment.fromEntity(payment) != null;
     }
 
-    // 결제실패내역
-    public List<PaymentDto> getFailPaymentList(CustomUserDetails user) {
-        List<PaymentDto> paymentDtos = new ArrayList<>();
-        List<Payment> payments = paymentRepository
-                .findAllByCustomerOrProduct_SellerAndSuccess(
-                        user.getLoggedMember(), user.getLoggedMember(), 0
-                );
-        payments.forEach(payment ->
-                paymentDtos.add(Payment.fromEntity(payment))
-        );
-        return paymentDtos;
-    }
-
     // 모든 구매내역
     public List<PaymentDto> getBuyPayments(CustomUserDetails user) {
         List<PaymentDto> paymentDtos = new ArrayList<>();
         List<Payment> payments = paymentRepository
-                .findAllByCustomerAndSuccess(user.getLoggedMember(), 1);
+                .findAllByCustomerOrderByPaymentIdDesc(user.getLoggedMember());
         payments.forEach(payment ->
                 paymentDtos.add(Payment.fromEntity(payment))
         );
+        paymentDtos.forEach(paymentDto -> {
+            // LocalDateTime으로 변경
+            String target = paymentDto.getApprovedAt() != null
+                    ? paymentDto.getApprovedAt()
+                    : paymentDto.getRequestedAt();
+            LocalDateTime ldt;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            if (target.contains("T")){
+                ldt = OffsetDateTime.parse(target).toLocalDateTime();
+            } else ldt = LocalDateTime.parse(target, formatter);
+            paymentDto.setBuyTime(ldt);
+
+            paymentDto.getCustomer().setUserPw("");
+            paymentDto.getProductDto().getSeller().setUserPw("");
+
+            log.info("paymentDto == {}", paymentDto);
+        });
         return paymentDtos;
-    }
-
-    // 모든 판매내역 //멤버는 커스텀디테일 유저
-    public List<PaymentDto> getSellPayments(CustomUserDetails user) {
-        List<PaymentDto> paymentDtos = new ArrayList<>();
-        List<Payment> payments = paymentRepository
-                .findAllByProduct_SellerAndSuccess(user.getLoggedMember(), 0);
-        payments.forEach(payment ->
-                paymentDtos.add(Payment.fromEntity(payment))
-        );
-        return paymentDtos;
-    }
-
-    // 구매내역 하나만 필요할 때 >> 채팅창에서 or 구매내역에서 주문 내역 상세 확인할 때
-    public Payment getBuyPayment(CustomUserDetails user, int productId) {
-        Optional<Payment> optionalPayment = paymentRepository
-                .findByCustomerAndProduct_ProductId(user.getLoggedMember(), productId);
-        return optionalPayment.orElse(null);
-    }
-
-    // 판매내역 하나만 필요할 때 >> 채팅창에서 or 구매내역에서 주문 내역 상세 확인할 때
-    public Payment getSellPayment(CustomUserDetails user, int productId) {
-        Optional<Payment> optionalPayment = paymentRepository
-                .findByProduct_SellerAndProduct_ProductId(user.getLoggedMember(), productId);
-        return optionalPayment.orElse(null);
     }
 }

@@ -1,10 +1,10 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="WAVE Market 상점 관리 페이지입니다.">
-    <title>WAVE Market - 내 상점 관리</title>
+    <title>WAVE Market - 상점</title>
     <!-- 로고 -->
     <link rel="icon" href="/img/wave-logo.png"/>
     <!-- 구글 폰트 (Poppins) -->
@@ -77,27 +77,56 @@
                     </div>
                     <!-- 실제 프로필 정보 -->
                     <div class="profile-content">
-                        <th:block th:if="${#authentication.principal.loggedMember.randomId eq member.randomId}">
-                        <img class="profile-image my-image"
-                             th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
-                             alt="프로필 이미지">
-                        </th:block>
-                        <th:block th:unless="${#authentication.principal.loggedMember.randomId eq member.randomId}">
-                            <img class="profile-image"
+                        <th:block sec:authorize="isAuthenticated()">
+                            <img class="profile-image my-image"
+                                 th:if="${#authentication.principal?.loggedMember?.randomId eq member.randomId}"
                                  th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
                                  alt="프로필 이미지">
                         </th:block>
                         <th:block sec:authorize="isAuthenticated()">
-                        <input th:if="${#authentication.principal.loggedMember.randomId eq member.randomId}"
-                               type="file" name="profileImage" id="profile-input" style="display: none"/>
+                            <img class="profile-image"
+                                 th:unless="${#authentication?.principal?.loggedMember?.randomId eq member.randomId}"
+                                 th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
+                                 alt="프로필 이미지">
+                        </th:block>
+                        <th:block sec:authorize="!isAuthenticated()">
+                            <img class="profile-image"
+                                 th:src="${member.userProfile} != null ? ${member.userProfile} : '/img/unknown.jpg'"
+                                 alt="프로필 이미지">
+                        </th:block>
+
+                        <th:block sec:authorize="isAuthenticated()">
+                            <input th:if="${#authentication?.principal?.loggedMember?.randomId eq member.randomId}"
+                                   type="file" name="profileImage" id="profile-input" style="display: none"/>
                         </th:block>
                         <p class="profile-name" th:text="${member.userName}">여기에 회원명</p>
                         <!-- todo 별점 평균내서 0.5으로 내림해서 별로 뿌리기 -->
-                        <p class="profile-rating">★★★★☆</p>
+                        <p class="profile-rating">
+                            <!-- 꽉 찬 별 -->
+                            <th:block th:if="${member.ratingAverage ne 0.0}"
+                                      th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(member.ratingAverage))}">
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </th:block>
+
+                            <!-- 반 별 (딱 0.5인 경우만) -->
+                            <th:block th:if="${member.ratingAverage % 1 >= 0.5}">
+                                <i class="bi bi-star-half text-warning"></i>
+                            </th:block>
+
+                            <!-- 빈 별: 5 - 꽉찬 - 반 -->
+                            <th:block th:if="${member.ratingAverage < 4.5}"
+                                      th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).floor(member.ratingAverage) - (member.ratingAverage % 1 >= 0.5 ? 1 : 0))}">
+                                <i class="bi bi-star text-warning"></i>
+                            </th:block>
+                        </p>
                         <div th:if="${#authentication.name eq member.userId}">
                             <button id="manage-account" onclick="window.location.href='/member/info'">내 계정 관리</button>
                             <button id="btn-logout" class="btn" onclick="window.location.href='/member/logout'">
                                 로그아웃
+                            </button>
+                            <button id="btn-payment-history" class="btn"
+                                    onclick="window.location.href='/payment/buyHistory'">
+                                결제 내역
                             </button>
                         </div>
                         <div th:unless="${#authentication.name eq member.userId}">
@@ -125,7 +154,8 @@
                         <span th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd')}"></span>
                     </div>
                     <div>
-                        <i class="bi bi-box-seam"></i> 상품판매: <span th:text="${sellCount?:'0'} + '회'"></span></div>
+                        <i class="bi bi-box-seam"></i> 상품판매: <span th:text="${sellCount?:'0'} + '회'"></span>
+                    </div>
                     <div>
                         <i class="bi bi-grid"></i> 상품등록:
                         <span th:if="${#lists.isEmpty(productList)}">아직 상품이 없어요 😥</span>
@@ -174,27 +204,49 @@
                      th:attr="data-product-id=${product.productId},data-post-date=${product.postDate}">
                     <!-- 상품 이미지 -->
                     <div class="product-cell image-cell">
-                        <a th:if="${!product.sell}" th:href="@{/product/detail/{id}(id=${product.productId})}">
+                        <a th:unless="${product.sell || product.seller.status.toString() eq 'STATUS_DELETED'}"
+                           th:href="@{/product/detail/{id}(id=${product.productId})}">
                             <img th:src="${product.thumbnailUrl}" alt="상품 이미지">
                         </a>
-                        <img th:if="${product.sell}" th:src="${product.thumbnailUrl}" alt="상품 이미지">
+                        <img th:if="${product.sell || product.seller.status.toString() eq 'STATUS_DELETED'}"
+                             th:src="${product.thumbnailUrl}" alt="상품 이미지">
                     </div>
 
                     <!-- 판매 상태 -->
-                    <div th:unless="${product.sell}" class="product-cell status-cell">판매중</div>
-                    <div th:if="${product.sell}" class="product-cell-sell status-cell">판매완료</div>
+                    <th:block th:if="${product.seller.status.toString() ne 'STATUS_DELETED'}">
+                    <div th:unless="${product.sell}"
+                         class="product-cell status-cell">판매중
+                    </div>
+                    <div th:if="${product.sell}"
+                         class="product-cell-sell status-cell">판매완료
+                    </div>
+                    </th:block>
+
+                    <th:block th:if="${product.seller.status.toString() eq 'STATUS_DELETED'}">
+                        <div class="product-cell status-cell">거래불가</div>
+                    </th:block>
 
                     <!-- 상품명 -->
                     <div class="product-cell name-cell">
-                        <a th:unless="${product.sell}" th:href="@{/product/detail/{id}(id=${product.productId})}"
-                           th:text="${product.productName}">상품명</a>
-                        <span th:if="${product.sell}" th:text="${product.productName}">상품명</span>
+                        <a th:unless="${product.sell || product.seller.status.toString() eq 'STATUS_DELETED'}"
+                           th:href="@{/product/detail/{id}(id=${product.productId})}"
+                           th:text="${product.productName}"
+                        >상품명</a>
+                        <span th:if="${product.sell || product.seller.status.toString() eq 'STATUS_DELETED'}"
+                              th:text="${product.productName}"
+                        >상품명</span>
                     </div>
 
                     <!-- 가격 -->
                     <div class="product-cell price-cell"
+                         th:unless="${product.price < 1000}"
                          th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">
-                        10,000원
+                        1000원 이상
+                    </div>
+                    <div class="product-cell price-cell"
+                         th:if="${product.price < 1000}"
+                         th:text="${product.price} + '원'">
+                        1000원 미만
                     </div>
 
                     <!-- 찜 -->
@@ -259,8 +311,6 @@
             </div>
         </div>
     </section>
-
-
 </main>
 
 <footer class="wave-footer text-center py-4">
