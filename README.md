@@ -26,10 +26,10 @@
 
 ## 📌 기술 스택 (Tech Stack)
 
-- **프론트엔드**: HTML, CSS, JavaScript, Thymeleaf
+- **프론트엔드**: JavaScript, Thymeleaf
 - **백엔드**: Java, Spring Boot, JPA
 - **데이터베이스**: Oracle
-- **보안**: JWT (JSON Web Token), OAuth2 (소셜 로그인), BCrypt 암호화
+- **보안**: Spring Security, OAuth2, BCrypt
 - **빌드 도구**: Gradle
 - **배포**: AWS EC2, Elastic IP
 - **테스트**: Postman
