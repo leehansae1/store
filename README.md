@@ -35,6 +35,8 @@
 - **테스트**: Postman
 
 ## 🎯 구현 결과
+상세 설명은 여기에서 [https://highfalutin-breeze-eae.notion.site/Project-Wave-1a46f9e05cdc81bd8f52edfabc68f29b]
+
 메인 페이지
 ![메인](https://github.com/user-attachments/assets/5784f8bc-0be5-450b-83f5-1834d7a2aacf)
 1. **카테고리 및 검색 기능**
