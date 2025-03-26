@@ -34,8 +34,9 @@
 - **배포**: AWS EC2, Elastic IP
 - **테스트**: Postman
 
-## 🎯 구현 결과 (프리뷰 링크입니다!)
-[https://highfalutin-breeze-eae.notion.site/Project-Wave-1a46f9e05cdc81bd8f52edfabc68f29b]
+## 🎯 구현 결과 
+프리뷰 링크입니다! [https://highfalutin-breeze-eae.notion.site/Project-Wave-1a46f9e05cdc81bd8f52edfabc68f29b]
+
 ![Image](https://github.com/user-attachments/assets/f4a4bf4a-e0a5-4491-b312-ec1a7bbf2c95)
 
 ### **📆**프로젝트 기간
