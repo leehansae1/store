@@ -36,6 +36,7 @@
 
 ## 🎯 구현 결과 (프리뷰 링크입니다!)
 [https://highfalutin-breeze-eae.notion.site/Project-Wave-1a46f9e05cdc81bd8f52edfabc68f29b]
+https://github.com/leehansae1/store/issues/1#issue-2948356354
 
 ### **📆**프로젝트 기간
 
